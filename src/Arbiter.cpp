@@ -13,6 +13,8 @@
 #include "box2d-lite/Body.h"
 #include "box2d-lite/World.h"
 
+// #include <cstdio>
+
 Arbiter::Arbiter(Body* b1, Body* b2)
 {
 	if (b1 < b2)
@@ -180,18 +182,18 @@ void Arbiter::ApplyImpulse()
 
             if (World::accumulateImpulses)
             {
-                float maxPt = friction * c->Pn;
+                float Ptl_max = friction * c->Pn;
 
                 float Pt_old = c->Pt;
-                float Pt_new = Clamp(c->Pt + Ptl, -maxPt, +maxPt);
+                float Pt_new = Clamp(c->Pt + Ptl, -Ptl_max, +Ptl_max);
                 c->Pt = Pt_new;
 
                 Ptl = Pt_new - Pt_old;
             }
             else
             {
-                float maxPt = friction * Pnl;
-                Ptl = Clamp(Ptl, -maxPt, maxPt);
+                float Ptl_max = friction * Pnl;
+                Ptl = Clamp(Ptl, -Ptl_max, Ptl_max);
             }
 
             Vec2 Pt = Ptl * tangent;

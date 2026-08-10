@@ -214,6 +214,12 @@ static void Demo3(Body* b, Joint* j)
 		world.Add(b);
 		++b; ++numBodies;
 	}
+
+    // b->Set(Vec2(0.5f, 0.5f), 25.0f);
+    // b->friction = 100.75f;
+    // b->position.Set(-7.5f + 2.0f, 14.0f);
+    // world.Add(b);
+    // ++b; ++numBodies;
 }
 
 // A vertical stack
