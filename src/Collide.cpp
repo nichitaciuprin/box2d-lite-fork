@@ -4,8 +4,8 @@
 * Permission to use, copy, modify, distribute and sell this software
 * and its documentation for any purpose is hereby granted without fee,
 * provided that the above copyright notice appear in all copies.
-* Erin Catto makes no representations about the suitability 
-* of this software for any purpose.  
+* Erin Catto makes no representations about the suitability
+* of this software for any purpose.
 * It is provided "as is" without express or implied warranty.
 */
 
@@ -54,8 +54,7 @@ void Flip(FeaturePair& fp)
 	Swap(fp.e.outEdge1, fp.e.outEdge2);
 }
 
-int ClipSegmentToLine(ClipVertex vOut[2], ClipVertex vIn[2],
-					  const Vec2& normal, float offset, char clipEdge)
+int ClipSegmentToLine(ClipVertex vOut[2], ClipVertex vIn[2], const Vec2& normal, float offset, char clipEdge)
 {
 	// Start with no output points
 	int numOut = 0;
@@ -92,8 +91,7 @@ int ClipSegmentToLine(ClipVertex vOut[2], ClipVertex vIn[2],
 	return numOut;
 }
 
-static void ComputeIncidentEdge(ClipVertex c[2], const Vec2& h, const Vec2& pos,
-								const Mat22& Rot, const Vec2& normal)
+static void ComputeIncidentEdge(ClipVertex c[2], const Vec2& h, const Vec2& pos, const Mat22& Rot, const Vec2& normal)
 {
 	// The normal is from the reference box. Convert it
 	// to the incident boxe's frame and flip sign.
@@ -322,7 +320,7 @@ int Collide(Contact* contacts, Body* bodyA, Body* bodyB)
         if (axis == FACE_B_X || axis == FACE_B_Y)
             Flip(contact.feature);
 
-        ++numContacts;
+        numContacts++;
 	}
 
 	return numContacts;
