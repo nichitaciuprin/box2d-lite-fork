@@ -52,13 +52,13 @@ void Arbiter::Update(Contact* newContacts, int numNewContacts)
 {
 	Contact mergedContacts[2];
 
-	for (int i = 0; i < numNewContacts; ++i)
+	for (int i = 0; i < numNewContacts; i++)
 	{
 		Contact* cNew = newContacts + i;
 
 		int k = -1;
 
-		for (int j = 0; j < numContacts; ++j)
+		for (int j = 0; j < numContacts; j++)
 		{
 			Contact* cOld = contacts + j;
 
@@ -69,29 +69,28 @@ void Arbiter::Update(Contact* newContacts, int numNewContacts)
 			}
 		}
 
-		if (k > -1)
-		{
-			Contact* c = mergedContacts + i;
-			Contact* cOld = contacts + k;
-			*c = *cNew;
+        if (k == -1)
+        {
+            mergedContacts[i] = newContacts[i];
+            continue;
+        }
 
-			if (World::warmStarting)
-			{
-				c->Pn = cOld->Pn;
-				c->Pt = cOld->Pt;
-				c->Pnb = cOld->Pnb;
-			}
-			else
-			{
-				c->Pn = 0.0f;
-				c->Pt = 0.0f;
-				c->Pnb = 0.0f;
-			}
-		}
-		else
-		{
-			mergedContacts[i] = newContacts[i];
-		}
+        Contact* c = mergedContacts + i;
+        Contact* cOld = contacts + k;
+        *c = *cNew;
+
+        if (World::warmStarting)
+        {
+            c->Pn = cOld->Pn;
+            c->Pt = cOld->Pt;
+            c->Pnb = cOld->Pnb;
+        }
+        else
+        {
+            c->Pn = 0.0f;
+            c->Pt = 0.0f;
+            c->Pnb = 0.0f;
+        }
 	}
 
 	for (int i = 0; i < numNewContacts; i++)
