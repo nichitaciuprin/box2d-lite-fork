@@ -162,7 +162,8 @@ int Collide(Contact* contacts, Body* bodyA, Body* bodyB)
 	Vec2 posA = bodyA->position;
 	Vec2 posB = bodyB->position;
 
-	Mat22 RotA(bodyA->rotation), RotB(bodyB->rotation);
+	Mat22 RotA(bodyA->rotation);
+    Mat22 RotB(bodyB->rotation);
 
 	Mat22 RotAT = RotA.Transpose();
 	Mat22 RotBT = RotB.Transpose();
@@ -177,13 +178,11 @@ int Collide(Contact* contacts, Body* bodyA, Body* bodyB)
 
 	// Box A faces
 	Vec2 faceA = Abs(dA) - hA - absC * hB;
-	if (faceA.x > 0.0f || faceA.y > 0.0f)
-		return 0;
+	if (faceA.x > 0.0f || faceA.y > 0.0f) return 0;
 
 	// Box B faces
 	Vec2 faceB = Abs(dB) - absCT * hA - hB;
-	if (faceB.x > 0.0f || faceB.y > 0.0f)
-		return 0;
+	if (faceB.x > 0.0f || faceB.y > 0.0f) return 0;
 
 	// Find best axis
 	Axis axis;
@@ -229,7 +228,7 @@ int Collide(Contact* contacts, Body* bodyA, Body* bodyB)
 	// Compute the clipping lines and the line segment to be clipped.
 	switch (axis)
 	{
-	case FACE_A_X:
+	    case FACE_A_X:
 		{
 			frontNormal = normal;
 			front = Dot(posA, frontNormal) + hA.x;
@@ -243,7 +242,7 @@ int Collide(Contact* contacts, Body* bodyA, Body* bodyB)
 		}
 		break;
 
-	case FACE_A_Y:
+	    case FACE_A_Y:
 		{
 			frontNormal = normal;
 			front = Dot(posA, frontNormal) + hA.y;
@@ -257,7 +256,7 @@ int Collide(Contact* contacts, Body* bodyA, Body* bodyB)
 		}
 		break;
 
-	case FACE_B_X:
+	    case FACE_B_X:
 		{
 			frontNormal = -normal;
 			front = Dot(posB, frontNormal) + hB.x;
@@ -271,7 +270,7 @@ int Collide(Contact* contacts, Body* bodyA, Body* bodyB)
 		}
 		break;
 
-	case FACE_B_Y:
+	    case FACE_B_Y:
 		{
 			frontNormal = -normal;
 			front = Dot(posB, frontNormal) + hB.y;
@@ -294,35 +293,32 @@ int Collide(Contact* contacts, Body* bodyA, Body* bodyB)
 
 	// Clip to box side 1
 	np = ClipSegmentToLine(clipPoints1, incidentEdge, -sideNormal, negSide, negEdge);
-
-	if (np < 2)
-		return 0;
+	if (np < 2) return 0;
 
 	// Clip to negative box side 1
 	np = ClipSegmentToLine(clipPoints2, clipPoints1,  sideNormal, posSide, posEdge);
-
-	if (np < 2)
-		return 0;
+	if (np < 2) return 0;
 
 	// Now clipPoints2 contains the clipping points.
 	// Due to roundoff, it is possible that clipping removes all points.
 
 	int numContacts = 0;
-	for (int i = 0; i < 2; ++i)
+
+	for (int i = 0; i < 2; i++)
 	{
 		float separation = Dot(frontNormal, clipPoints2[i].v) - front;
+		if (separation > 0) continue;
 
-		if (separation <= 0)
-		{
-			contacts[numContacts].separation = separation;
-			contacts[numContacts].normal = normal;
-			// slide contact point onto reference face (easy to cull)
-			contacts[numContacts].position = clipPoints2[i].v - separation * frontNormal;
-			contacts[numContacts].feature = clipPoints2[i].fp;
-			if (axis == FACE_B_X || axis == FACE_B_Y)
-				Flip(contacts[numContacts].feature);
-			++numContacts;
-		}
+        contacts[numContacts].separation = separation;
+        contacts[numContacts].normal = normal;
+        // slide contact point onto reference face (easy to cull)
+        contacts[numContacts].position = clipPoints2[i].v - separation * frontNormal;
+        contacts[numContacts].feature = clipPoints2[i].fp;
+
+        if (axis == FACE_B_X || axis == FACE_B_Y)
+            Flip(contacts[numContacts].feature);
+
+        ++numContacts;
 	}
 
 	return numContacts;

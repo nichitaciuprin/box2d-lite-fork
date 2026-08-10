@@ -55,23 +55,18 @@ void World::BroadPhase()
         Arbiter newArb(bi, bj);
         ArbiterKey key(bi, bj);
 
-        if (newArb.numContacts > 0)
-        {
-            ArbIter iter = arbiters.find(key);
-
-            if (iter == arbiters.end())
-            {
-                arbiters.insert(ArbPair(key, newArb));
-            }
-            else
-            {
-                iter->second.Update(newArb.contacts, newArb.numContacts);
-            }
-        }
-        else
+        if (newArb.numContacts == 0)
         {
             arbiters.erase(key);
+            continue;
         }
+
+        ArbIter iter = arbiters.find(key);
+        bool found = iter != arbiters.end();
+        if (!found)
+            arbiters.insert(ArbPair(key, newArb));
+        else
+            iter->second.Update(newArb.contacts, newArb.numContacts);
 	}
 }
 
