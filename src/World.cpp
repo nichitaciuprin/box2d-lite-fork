@@ -4,8 +4,8 @@
 * Permission to use, copy, modify, distribute and sell this software
 * and its documentation for any purpose is hereby granted without fee,
 * provided that the above copyright notice appear in all copies.
-* Erin Catto makes no representations about the suitability 
-* of this software for any purpose.  
+* Erin Catto makes no representations about the suitability
+* of this software for any purpose.
 * It is provided "as is" without express or implied warranty.
 */
 
@@ -82,8 +82,7 @@ void World::Step(float dt)
 	{
 		Body* b = bodies[i];
 
-		if (b->invMass == 0.0f)
-			continue;
+		if (b->invMass == 0.0f) continue;
 
 		b->velocity += dt * (gravity + b->invMass * b->force);
 		b->angularVelocity += dt * b->invI * b->torque;
@@ -91,27 +90,19 @@ void World::Step(float dt)
 
 	// Perform pre-steps.
 	for (ArbIter arb = arbiters.begin(); arb != arbiters.end(); ++arb)
-	{
 		arb->second.PreStep(inv_dt);
-	}
 
 	for (int i = 0; i < (int)joints.size(); ++i)
-	{
-		joints[i]->PreStep(inv_dt);	
-	}
+		joints[i]->PreStep(inv_dt);
 
 	// Perform iterations
 	for (int i = 0; i < iterations; ++i)
 	{
 		for (ArbIter arb = arbiters.begin(); arb != arbiters.end(); ++arb)
-		{
 			arb->second.ApplyImpulse();
-		}
 
 		for (int j = 0; j < (int)joints.size(); ++j)
-		{
 			joints[j]->ApplyImpulse();
-		}
 	}
 
 	// Integrate Velocities
