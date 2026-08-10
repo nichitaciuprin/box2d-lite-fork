@@ -126,11 +126,11 @@ void Arbiter::PreStep(float inv_dt)
 	}
 }
 
-Vec2 CalcRelativeVelocity(Contact* c, Body* b1, Body* b2)
+Vec2 CalcRelativeVelocity(Body* b1, Body* b2, Vec2 r1, Vec2 r2)
 {
     return
-    b2->velocity + Cross(b2->angularVelocity, c->r2) -
-    b1->velocity - Cross(b1->angularVelocity, c->r1);
+    b2->velocity + Cross(b2->angularVelocity, r2) -
+    b1->velocity - Cross(b1->angularVelocity, r1);
 }
 
 void Arbiter::ApplyImpulse()
@@ -149,11 +149,9 @@ void Arbiter::ApplyImpulse()
         Vec2 normal = c->normal;
         Vec2 tangent = Cross(c->normal, 1.0f);
 
-        Vec2 Pn, Pt;
-        float Pnl, Ptl;
-
+        float Pnl;
         {
-            Vec2 vr = CalcRelativeVelocity(c, b1, b2);
+            Vec2 vr = CalcRelativeVelocity(b1, b2, c->r1, c->r2);
             Pnl = c->massNormal * (-Dot(vr, normal) + c->bias);
 
             if (World::accumulateImpulses)
@@ -169,18 +167,17 @@ void Arbiter::ApplyImpulse()
                 Pnl = Max(Pnl, 0.0f);
             }
 
-            // apply contact impulse
-            Pn = Pnl * normal;
+            Vec2 Pn = Pnl * normal;
+            b1->velocity -= b1->invMass * Pn;
+            b2->velocity += b2->invMass * Pn;
+            b1->angularVelocity -= b1->invI * Cross(c->r1, Pn);
+            b2->angularVelocity += b2->invI * Cross(c->r2, Pn);
         }
 
-        b1->velocity -= b1->invMass * Pn;
-        b2->velocity += b2->invMass * Pn;
-        b1->angularVelocity -= b1->invI * Cross(c->r1, Pn);
-        b2->angularVelocity += b2->invI * Cross(c->r2, Pn);
-
+        float Ptl;
         {
             // relative velocity at contact
-            Vec2 vr = CalcRelativeVelocity(c, b1, b2);
+            Vec2 vr = CalcRelativeVelocity(b1, b2, c->r1, c->r2);
             Ptl = c->massTangent * (-Dot(vr, tangent));
 
             if (World::accumulateImpulses)
@@ -199,12 +196,11 @@ void Arbiter::ApplyImpulse()
                 Ptl = Clamp(Ptl, -maxPt, maxPt);
             }
 
-            Pt = Ptl * tangent;
+            Vec2 Pt = Ptl * tangent;
+            b1->velocity -= b1->invMass * Pt;
+            b2->velocity += b2->invMass * Pt;
+            b1->angularVelocity -= b1->invI * Cross(c->r1, Pt);
+            b2->angularVelocity += b2->invI * Cross(c->r2, Pt);
         }
-
-        b1->velocity -= b1->invMass * Pt;
-        b2->velocity += b2->invMass * Pt;
-        b1->angularVelocity -= b1->invI * Cross(c->r1, Pt);
-        b2->angularVelocity += b2->invI * Cross(c->r2, Pt);
 	}
 }
