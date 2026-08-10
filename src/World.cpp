@@ -87,8 +87,8 @@ void World::Step(float dt)
 
         b->velocity += dt * gravity;
 
-        b->velocity += dt * b->invMass * b->force;
-		b->angularVelocity += dt * b->invI * b->torque;
+        b->velocity        += dt * b->invMass * b->force;
+		b->angularVelocity += dt * b->invI    * b->torque;
 
         // b->velocity += dt * (gravity + b->invMass * b->force);
         // b->angularVelocity += dt * b->invI * b->torque;
