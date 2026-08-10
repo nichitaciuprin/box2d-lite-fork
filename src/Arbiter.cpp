@@ -150,7 +150,8 @@ void Arbiter::ApplyImpulse()
             float impOld = c->Pn;
             float impNew = Max(impOld + impInit, 0.0f);
             float impDiff = impNew - impOld;
-            UpdateVelocity(c, body1, body2, normal * impDiff);
+            Vec2 impulse = normal * impDiff;
+            UpdateVelocity(c, body1, body2, impulse);
             c->Pn = impNew;
         }
 
@@ -163,7 +164,8 @@ void Arbiter::ApplyImpulse()
             float impOld = c->Pt;
             float impNew = Clamp(impOld + impInit, -maxFriction, +maxFriction);
             float impDiff = impNew - impOld;
-            UpdateVelocity(c, body1, body2, tangent * impDiff);
+            Vec2 impulse = tangent * impDiff;
+            UpdateVelocity(c, body1, body2, impulse);
             c->Pt = impNew;
         }
 	}
