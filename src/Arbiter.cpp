@@ -127,8 +127,8 @@ void Arbiter::PreStep(float dti)
 		c->massTangent = 1.0f / massTangent;
 		c->bias = Min(0.0f, c->separation + k_allowedPenetration) * -k_biasFactor * dti;
 
-        // Apply normal + friction impulse
-        Vec2 impulse = c->Pn * normal + c->Pt * tangent;
+        // apply normal and friction impulse
+        Vec2 impulse = normal * c->Pn + tangent * c->Pt;
         ApplyImpulse2(c, body1, body2, impulse);
 	}
 }
@@ -145,7 +145,7 @@ void Arbiter::ApplyImpulse()
             float impOld = c->Pn;
             float impNew = Max(impOld + impInit, 0.0f);
             float impDiff = impNew - impOld;
-            ApplyImpulse2(c, body1, body2, impDiff * normal);
+            ApplyImpulse2(c, body1, body2, normal * impDiff);
             c->Pn = impNew;
         }
 
@@ -158,7 +158,7 @@ void Arbiter::ApplyImpulse()
             float impOld = c->Pt;
             float impNew = Clamp(impOld + impInit, -maxFriction, +maxFriction);
             float impDiff = impNew - impOld;
-            ApplyImpulse2(c, body1, body2, impDiff * tangent);
+            ApplyImpulse2(c, body1, body2, tangent * impDiff);
             c->Pt = impNew;
         }
 	}
