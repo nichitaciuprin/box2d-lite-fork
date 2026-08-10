@@ -141,17 +141,16 @@ void Arbiter::ApplyImpulse()
 	for (int i = 0; i < numContacts; i++)
 	{
 		Contact* c = contacts + i;
-        // Contact* c = &contacts[i];
 
-		c->r1 = c->position - b1->position;
-		c->r2 = c->position - b2->position;
+		Vec2 r1 = c->position - b1->position;
+		Vec2 r2 = c->position - b2->position;
 
         Vec2 normal = c->normal;
         Vec2 tangent = Cross(c->normal, 1.0f);
 
         float Pnl;
         {
-            Vec2 vr = CalcRelativeVelocity(b1, b2, c->r1, c->r2);
+            Vec2 vr = CalcRelativeVelocity(b1, b2, r1, r2);
             Pnl = c->massNormal * (-Dot(vr, normal) + c->bias);
 
             if (World::accumulateImpulses)
@@ -170,14 +169,13 @@ void Arbiter::ApplyImpulse()
             Vec2 Pn = Pnl * normal;
             b1->velocity -= b1->invMass * Pn;
             b2->velocity += b2->invMass * Pn;
-            b1->angularVelocity -= b1->invI * Cross(c->r1, Pn);
-            b2->angularVelocity += b2->invI * Cross(c->r2, Pn);
+            b1->angularVelocity -= b1->invI * Cross(r1, Pn);
+            b2->angularVelocity += b2->invI * Cross(r2, Pn);
         }
 
         float Ptl;
         {
-            // relative velocity at contact
-            Vec2 vr = CalcRelativeVelocity(b1, b2, c->r1, c->r2);
+            Vec2 vr = CalcRelativeVelocity(b1, b2, r1, r2);
             Ptl = c->massTangent * (-Dot(vr, tangent));
 
             if (World::accumulateImpulses)
@@ -199,8 +197,8 @@ void Arbiter::ApplyImpulse()
             Vec2 Pt = Ptl * tangent;
             b1->velocity -= b1->invMass * Pt;
             b2->velocity += b2->invMass * Pt;
-            b1->angularVelocity -= b1->invI * Cross(c->r1, Pt);
-            b2->angularVelocity += b2->invI * Cross(c->r2, Pt);
+            b1->angularVelocity -= b1->invI * Cross(r1, Pt);
+            b2->angularVelocity += b2->invI * Cross(r2, Pt);
         }
 	}
 }

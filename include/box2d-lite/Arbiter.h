@@ -34,7 +34,6 @@ struct Contact
 
 	Vec2 position;
 	Vec2 normal;
-	Vec2 r1, r2;
 	float separation;
 	float Pn;	// accumulated normal impulse
 	float Pt;	// accumulated tangent impulse
@@ -78,6 +77,7 @@ struct Arbiter
 	void Update(Contact* contacts, int numContacts);
 	void PreStep(float inv_dt);
 	void ApplyImpulse();
+    void ApplyImpulse2();
 };
 
 // This is used by std::set
