@@ -315,6 +315,8 @@ int Collide(Contact* contacts, Body* bodyA, Body* bodyB)
         contacts[numContacts].position = clipPoints2[i].v - separation * frontNormal;
         contacts[numContacts].feature = clipPoints2[i].fp;
 
+        // contacts[numContacts].bias
+
         if (axis == FACE_B_X || axis == FACE_B_Y)
             Flip(contacts[numContacts].feature);
 

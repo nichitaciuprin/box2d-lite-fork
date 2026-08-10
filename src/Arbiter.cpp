@@ -85,7 +85,21 @@ void Arbiter::Update(Contact* newContacts, int numNewContacts)
 	numContacts = numNewContacts;
 }
 
-void Arbiter::PreStep(float inv_dt)
+static inline Vec2 CalcRelativeVelocity(Body* b1, Body* b2, Vec2 r1, Vec2 r2)
+{
+    return
+    b2->velocity + Cross(b2->angularVelocity, r2) -
+    b1->velocity - Cross(b1->angularVelocity, r1);
+}
+static inline void ApplyImpulse2(Body* b1, Body* b2, Vec2 r1, Vec2 r2, Vec2 impulse)
+{
+    b1->velocity -= b1->invMass * impulse;
+    b2->velocity += b2->invMass * impulse;
+    b1->angularVelocity -= b1->invI * Cross(r1, impulse);
+    b2->angularVelocity += b2->invI * Cross(r2, impulse);
+}
+
+void Arbiter::PreStep(float dti)
 {
 	const float k_allowedPenetration = 0.01f;
 	const float k_biasFactor = World::positionCorrection ? 0.2f : 0.0f;
@@ -98,6 +112,7 @@ void Arbiter::PreStep(float inv_dt)
 		Vec2 tangent = Cross(c->normal, 1.0f);
 		Vec2 r1 = c->position - body1->position;
 		Vec2 r2 = c->position - body2->position;
+
         float rls1 = Dot(r1, r1);
         float rls2 = Dot(r2, r2);
 		float rnl1 = Dot(r1, normal);
@@ -114,76 +129,49 @@ void Arbiter::PreStep(float inv_dt)
 
 		c->massNormal  = 1.0f / massNormal;
 		c->massTangent = 1.0f / massTangent;
-		c->bias = Min(0.0f, c->separation + k_allowedPenetration) * -k_biasFactor * inv_dt;
-
-		if (!World::accumulateImpulses) continue;
+		c->bias = Min(0.0f, c->separation + k_allowedPenetration) * -k_biasFactor * dti;
 
         // Apply normal + friction impulse
-        Vec2 P = c->Pn * normal + c->Pt * tangent;
+        Vec2 impulse = c->Pn * normal + c->Pt * tangent;
 
-        body1->velocity -= body1->invMass * P;
-        body2->velocity += body2->invMass * P;
-        body1->angularVelocity -= body1->invI * Cross(r1, P);
-        body2->angularVelocity += body2->invI * Cross(r2, P);
+        body1->velocity -= body1->invMass * impulse;
+        body2->velocity += body2->invMass * impulse;
+        body1->angularVelocity -= body1->invI * Cross(r1, impulse);
+        body2->angularVelocity += body2->invI * Cross(r2, impulse);
 	}
-}
-
-static inline Vec2 CalcRelativeVelocity(Body* b1, Body* b2, Vec2 r1, Vec2 r2)
-{
-    return
-    b2->velocity + Cross(b2->angularVelocity, r2) -
-    b1->velocity - Cross(b1->angularVelocity, r1);
-}
-static inline void ApplyImpulse2(Body* b1, Body* b2, Vec2 r1, Vec2 r2, Vec2 impulse)
-{
-    b1->velocity -= b1->invMass * impulse;
-    b2->velocity += b2->invMass * impulse;
-    b1->angularVelocity -= b1->invI * Cross(r1, impulse);
-    b2->angularVelocity += b2->invI * Cross(r2, impulse);
 }
 
 void Arbiter::ApplyImpulse()
 {
-	Body* b1 = body1;
-	Body* b2 = body2;
-
 	for (int i = 0; i < numContacts; i++)
 	{
 		Contact* c = contacts + i;
 
-		Vec2 r1 = c->position - b1->position;
-		Vec2 r2 = c->position - b2->position;
+		Vec2 r1 = c->position - body1->position;
+		Vec2 r2 = c->position - body2->position;
 
         {
-            Vec2 vr = CalcRelativeVelocity(b1, b2, r1, r2);
-
+            Vec2 vr = CalcRelativeVelocity(body1, body2, r1, r2);
             Vec2 normal = c->normal;
-            float dPn = c->massNormal * (-Dot(vr, normal) + c->bias);
-
-            float Pn_old = c->Pn;
-            float Pn_new = Max(c->Pn + dPn, 0.0f);
-
-            c->Pn = Pn_new;
-            dPn = Pn_new - Pn_old;
-
-            ApplyImpulse2(b1, b2, r1, r2, dPn * normal);
+            float impInit = c->massNormal * (-Dot(vr, normal) + c->bias);
+            float impOld = c->Pn;
+            float impNew = Max(impOld + impInit, 0.0f);
+            float impDiff = impNew - impOld;
+            ApplyImpulse2(body1, body2, r1, r2, impDiff * normal);
+            c->Pn = impNew;
         }
 
+        float maxFriction = friction * c->Pn;
+
         {
-            Vec2 vr = CalcRelativeVelocity(b1, b2, r1, r2);
-
+            Vec2 vr = CalcRelativeVelocity(body1, body2, r1, r2);
             Vec2 tangent = Cross(c->normal, 1.0f);
-            float dPt = c->massTangent * -Dot(vr, tangent);
-
-            float Ptl_max = friction * c->Pn;
-
-            float Pt_old = c->Pt;
-            float Pt_new = Clamp(c->Pt + dPt, -Ptl_max, +Ptl_max);
-
-            c->Pt = Pt_new;
-            dPt = Pt_new - Pt_old;
-
-            ApplyImpulse2(b1, b2, r1, r2, dPt * tangent);
+            float impInit = c->massTangent * -Dot(vr, tangent);
+            float impOld = c->Pt;
+            float impNew = Clamp(impOld + impInit, -maxFriction, +maxFriction);
+            float impDiff = impNew - impOld;
+            ApplyImpulse2(body1, body2, r1, r2, impDiff * tangent);
+            c->Pt = impNew;
         }
 	}
 }
