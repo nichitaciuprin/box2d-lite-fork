@@ -61,11 +61,14 @@ void World::BroadPhase()
         }
 
         auto iter = arbiters.find(key);
-        bool found = iter != arbiters.end();
-        if (!found)
+
+        if (iter == arbiters.end())
+        {
             arbiters.insert(ArbPair(key, newArb));
-        else
-            iter->second.Update(newArb.contacts, newArb.numContacts);
+            continue;
+        }
+
+        iter->second.Update(newArb.contacts, newArb.numContacts);
 	}
 }
 
