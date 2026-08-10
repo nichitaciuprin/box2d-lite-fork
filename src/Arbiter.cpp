@@ -4,8 +4,8 @@
 * Permission to use, copy, modify, distribute and sell this software
 * and its documentation for any purpose is hereby granted without fee,
 * provided that the above copyright notice appear in all copies.
-* Erin Catto makes no representations about the suitability 
-* of this software for any purpose.  
+* Erin Catto makes no representations about the suitability
+* of this software for any purpose.
 * It is provided "as is" without express or implied warranty.
 */
 
@@ -85,7 +85,7 @@ void Arbiter::PreStep(float inv_dt)
 	const float k_allowedPenetration = 0.01f;
 	float k_biasFactor = World::positionCorrection ? 0.2f : 0.0f;
 
-	for (int i = 0; i < numContacts; ++i)
+	for (int i = 0; i < numContacts; i++)
 	{
 		Contact* c = contacts + i;
 
@@ -108,17 +108,16 @@ void Arbiter::PreStep(float inv_dt)
 
 		c->bias = -k_biasFactor * inv_dt * Min(0.0f, c->separation + k_allowedPenetration);
 
-		if (World::accumulateImpulses)
-		{
-			// Apply normal + friction impulse
-			Vec2 P = c->Pn * c->normal + c->Pt * tangent;
+		if (!World::accumulateImpulses) continue;
 
-			body1->velocity -= body1->invMass * P;
-			body1->angularVelocity -= body1->invI * Cross(r1, P);
+        // Apply normal + friction impulse
+        Vec2 P = c->Pn * c->normal + c->Pt * tangent;
 
-			body2->velocity += body2->invMass * P;
-			body2->angularVelocity += body2->invI * Cross(r2, P);
-		}
+        body1->velocity -= body1->invMass * P;
+        body1->angularVelocity -= body1->invI * Cross(r1, P);
+
+        body2->velocity += body2->invMass * P;
+        body2->angularVelocity += body2->invI * Cross(r2, P);
 	}
 }
 
@@ -127,9 +126,10 @@ void Arbiter::ApplyImpulse()
 	Body* b1 = body1;
 	Body* b2 = body2;
 
-	for (int i = 0; i < numContacts; ++i)
+	for (int i = 0; i < numContacts; i++)
 	{
 		Contact* c = contacts + i;
+
 		c->r1 = c->position - b1->position;
 		c->r2 = c->position - b2->position;
 
