@@ -158,10 +158,11 @@ void Arbiter::ApplyImpulse()
 
             if (World::accumulateImpulses)
             {
-                // clamp the accumulated impulse
-                float Pn_ = c->Pn;
-                c->Pn = Max(c->Pn + dPn, 0.0f);
-                dPn = c->Pn - Pn_;
+                float Pn_old = c->Pn;
+                float Pn_new = Max(c->Pn + dPn, 0.0f);
+                c->Pn = Pn_new;
+
+                dPn = Pn_new - Pn_old;
             }
             else
             {
@@ -184,13 +185,13 @@ void Arbiter::ApplyImpulse()
 
             if (World::accumulateImpulses)
             {
-                // compute friction impulse
                 float maxPt = friction * c->Pn;
 
-                // clamp friction
-                float Pt_ = c->Pt;
-                c->Pt = Clamp(c->Pt + dPt, -maxPt, +maxPt);
-                dPt = c->Pt - Pt_;
+                float Pt_old = c->Pt;
+                float Pt_new = Clamp(c->Pt + dPt, -maxPt, +maxPt);
+                c->Pt = Pt_new;
+
+                dPt = Pt_new - Pt_old;
             }
             else
             {
