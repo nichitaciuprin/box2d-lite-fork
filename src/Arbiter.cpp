@@ -189,7 +189,7 @@ void Arbiter::ApplyImpulse()
 
                 // clamp friction
                 float Pt_ = c->Pt;
-                c->Pt = Clamp(c->Pt + dPt, -maxPt, maxPt);
+                c->Pt = Clamp(c->Pt + dPt, -maxPt, +maxPt);
                 dPt = c->Pt - Pt_;
             }
             else
