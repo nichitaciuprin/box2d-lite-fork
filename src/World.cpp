@@ -17,7 +17,6 @@ using std::vector;
 using std::map;
 using std::pair;
 
-typedef map<ArbiterKey, Arbiter>::iterator ArbIter;
 typedef pair<ArbiterKey, Arbiter> ArbPair;
 
 bool World::accumulateImpulses = true;
