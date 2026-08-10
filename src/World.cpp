@@ -85,10 +85,10 @@ void World::Step(float dt)
 	{
 		if (body->massInv == 0.0f) continue;
 
-        body->velocity += gravity * dt;
+        body->velocityLinear += gravity * dt;
 
-        body->velocity        += body->force  * body->massInv    * dt;
-		body->angularVelocity += body->torque * body->inertiaInv * dt;
+        body->velocityLinear        += body->force  * body->massInv    * dt;
+		body->velocityAngular += body->torque * body->inertiaInv * dt;
 	}
 
     // perform pre-steps
@@ -106,8 +106,8 @@ void World::Step(float dt)
 	// integrate Velocities
     for (auto& body : bodies)
 	{
-		body->position += dt * body->velocity;
-		body->rotation += dt * body->angularVelocity;
+		body->position += dt * body->velocityLinear;
+		body->rotation += dt * body->velocityAngular;
 		body->force.Set(0.0f, 0.0f);
 		body->torque = 0.0f;
 	}

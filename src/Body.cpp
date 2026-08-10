@@ -15,8 +15,8 @@ Body::Body()
 {
 	position.Set(0.0f, 0.0f);
 	rotation = 0.0f;
-	velocity.Set(0.0f, 0.0f);
-	angularVelocity = 0.0f;
+	velocityLinear.Set(0.0f, 0.0f);
+	velocityAngular = 0.0f;
 	force.Set(0.0f, 0.0f);
 	torque = 0.0f;
 	friction = 0.2f;
@@ -32,8 +32,8 @@ void Body::Set(const Vec2& w, float m)
 {
 	position.Set(0.0f, 0.0f);
 	rotation = 0.0f;
-	velocity.Set(0.0f, 0.0f);
-	angularVelocity = 0.0f;
+	velocityLinear.Set(0.0f, 0.0f);
+	velocityAngular = 0.0f;
 	force.Set(0.0f, 0.0f);
 	torque = 0.0f;
 	friction = 0.2f;

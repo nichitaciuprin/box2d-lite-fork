@@ -27,8 +27,8 @@ struct Body
 	Vec2 position;
 	float rotation;
 
-	Vec2 velocity;
-	float angularVelocity;
+	Vec2 velocityLinear;
+	float velocityAngular;
 
 	Vec2 force;
 	float torque;

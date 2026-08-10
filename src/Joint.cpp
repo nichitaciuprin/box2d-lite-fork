@@ -79,11 +79,11 @@ void Joint::PreStep(float inv_dt)
 	if (World::warmStarting)
 	{
 		// Apply accumulated impulse.
-		body1->velocity -= body1->massInv * P;
-		body1->angularVelocity -= body1->inertiaInv * Cross(r1, P);
+		body1->velocityLinear -= body1->massInv * P;
+		body1->velocityAngular -= body1->inertiaInv * Cross(r1, P);
 
-		body2->velocity += body2->massInv * P;
-		body2->angularVelocity += body2->inertiaInv * Cross(r2, P);
+		body2->velocityLinear += body2->massInv * P;
+		body2->velocityAngular += body2->inertiaInv * Cross(r2, P);
 	}
 	else
 	{
@@ -93,17 +93,17 @@ void Joint::PreStep(float inv_dt)
 
 void Joint::ApplyImpulse()
 {
-    Vec2 dv = body2->velocity + Cross(body2->angularVelocity, r2) - body1->velocity - Cross(body1->angularVelocity, r1);
+    Vec2 dv = body2->velocityLinear + Cross(body2->velocityAngular, r2) - body1->velocityLinear - Cross(body1->velocityAngular, r1);
 
 	Vec2 impulse;
 
 	impulse = M * (bias - dv - softness * P);
 
-	body1->velocity -= body1->massInv * impulse;
-	body1->angularVelocity -= body1->inertiaInv * Cross(r1, impulse);
+	body1->velocityLinear -= body1->massInv * impulse;
+	body1->velocityAngular -= body1->inertiaInv * Cross(r1, impulse);
 
-	body2->velocity += body2->massInv * impulse;
-	body2->angularVelocity += body2->inertiaInv * Cross(r2, impulse);
+	body2->velocityLinear += body2->massInv * impulse;
+	body2->velocityAngular += body2->inertiaInv * Cross(r2, impulse);
 
 	P += impulse;
 }

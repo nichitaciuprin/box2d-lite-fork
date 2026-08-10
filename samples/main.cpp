@@ -126,8 +126,8 @@ static void LaunchBomb()
 
 	bomb->position.Set(Random(-15.0f, 15.0f), 15.0f);
 	bomb->rotation = Random(-1.5f, 1.5f);
-	bomb->velocity = -1.5f * bomb->position;
-	bomb->angularVelocity = Random(-20.0f, 20.0f);
+	bomb->velocityLinear = -1.5f * bomb->position;
+	bomb->velocityAngular = Random(-20.0f, 20.0f);
 }
 
 // Single box
