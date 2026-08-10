@@ -21,10 +21,10 @@ static inline Vec2 CalcRelativeVelocity(Contact* c, Body* b1, Body* b2)
 }
 static inline void ApplyImpulse2(Contact* c, Body* b1, Body* b2, Vec2 impulse)
 {
-    b1->velocity -= b1->invMass * impulse;
-    b2->velocity += b2->invMass * impulse;
-    b1->angularVelocity -= b1->invI * Cross(c->r1, impulse);
-    b2->angularVelocity += b2->invI * Cross(c->r2, impulse);
+    b1->velocity -= b1->massInv * impulse;
+    b2->velocity += b2->massInv * impulse;
+    b1->angularVelocity -= b1->inertiaInv * Cross(c->r1, impulse);
+    b2->angularVelocity += b2->inertiaInv * Cross(c->r2, impulse);
 }
 
 Arbiter::Arbiter(Body* b1, Body* b2)
@@ -119,9 +119,10 @@ void Arbiter::PreStep(float dti)
         float rnls2 = rnl2 * rnl2;
         float rtls1 = rtl1 * rtl1;
         float rtls2 = rtl2 * rtl2;
-        float massSum = body1->invMass + body2->invMass;
-		float massNormal  = massSum + body1->invI * (rls1 - rnls1) + body2->invI * (rls2 - rnls2);
-		float massTangent = massSum + body1->invI * (rls1 - rtls1) + body2->invI * (rls2 - rtls2);
+
+        float massSum = body1->massInv + body2->massInv;
+		float massNormal  = massSum + body1->inertiaInv * (rls1 - rnls1) + body2->inertiaInv * (rls2 - rnls2);
+		float massTangent = massSum + body1->inertiaInv * (rls1 - rtls1) + body2->inertiaInv * (rls2 - rtls2);
 
 		c->massNormal  = 1.0f / massNormal;
 		c->massTangent = 1.0f / massTangent;

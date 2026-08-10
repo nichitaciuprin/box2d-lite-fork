@@ -50,7 +50,7 @@ void World::BroadPhase()
 		Body* bi = bodies[i];
         Body* bj = bodies[j];
 
-        if (bi->invMass == 0.0f && bj->invMass == 0.0f) continue;
+        if (bi->massInv == 0.0f && bj->massInv == 0.0f) continue;
 
         Arbiter newArb(bi, bj);
         ArbiterKey key(bi, bj);
@@ -83,12 +83,12 @@ void World::Step(float dt)
 	// integrate forces
     for (auto& body : bodies)
 	{
-		if (body->invMass == 0.0f) continue;
+		if (body->massInv == 0.0f) continue;
 
         body->velocity += gravity * dt;
 
-        body->velocity        += body->force  * body->invMass * dt;
-		body->angularVelocity += body->torque * body->invI    * dt;
+        body->velocity        += body->force  * body->massInv    * dt;
+		body->angularVelocity += body->torque * body->inertiaInv * dt;
 	}
 
     // perform pre-steps

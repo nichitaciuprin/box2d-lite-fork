@@ -46,16 +46,16 @@ void Joint::PreStep(float inv_dt)
 	//      = [1/m1+1/m2     0    ] + invI1 * [r1.y*r1.y -r1.x*r1.y] + invI2 * [r1.y*r1.y -r1.x*r1.y]
 	//        [    0     1/m1+1/m2]           [-r1.x*r1.y r1.x*r1.x]           [-r1.x*r1.y r1.x*r1.x]
 	Mat22 K1;
-	K1.col1.x = body1->invMass + body2->invMass;	K1.col2.x = 0.0f;
-	K1.col1.y = 0.0f;								K1.col2.y = body1->invMass + body2->invMass;
+	K1.col1.x = body1->massInv + body2->massInv;	K1.col2.x = 0.0f;
+	K1.col1.y = 0.0f;								K1.col2.y = body1->massInv + body2->massInv;
 
 	Mat22 K2;
-	K2.col1.x =  body1->invI * r1.y * r1.y;		K2.col2.x = -body1->invI * r1.x * r1.y;
-	K2.col1.y = -body1->invI * r1.x * r1.y;		K2.col2.y =  body1->invI * r1.x * r1.x;
+	K2.col1.x =  body1->inertiaInv * r1.y * r1.y;		K2.col2.x = -body1->inertiaInv * r1.x * r1.y;
+	K2.col1.y = -body1->inertiaInv * r1.x * r1.y;		K2.col2.y =  body1->inertiaInv * r1.x * r1.x;
 
 	Mat22 K3;
-	K3.col1.x =  body2->invI * r2.y * r2.y;		K3.col2.x = -body2->invI * r2.x * r2.y;
-	K3.col1.y = -body2->invI * r2.x * r2.y;		K3.col2.y =  body2->invI * r2.x * r2.x;
+	K3.col1.x =  body2->inertiaInv * r2.y * r2.y;		K3.col2.x = -body2->inertiaInv * r2.x * r2.y;
+	K3.col1.y = -body2->inertiaInv * r2.x * r2.y;		K3.col2.y =  body2->inertiaInv * r2.x * r2.x;
 
 	Mat22 K = K1 + K2 + K3;
 	K.col1.x += softness;
@@ -79,11 +79,11 @@ void Joint::PreStep(float inv_dt)
 	if (World::warmStarting)
 	{
 		// Apply accumulated impulse.
-		body1->velocity -= body1->invMass * P;
-		body1->angularVelocity -= body1->invI * Cross(r1, P);
+		body1->velocity -= body1->massInv * P;
+		body1->angularVelocity -= body1->inertiaInv * Cross(r1, P);
 
-		body2->velocity += body2->invMass * P;
-		body2->angularVelocity += body2->invI * Cross(r2, P);
+		body2->velocity += body2->massInv * P;
+		body2->angularVelocity += body2->inertiaInv * Cross(r2, P);
 	}
 	else
 	{
@@ -99,11 +99,11 @@ void Joint::ApplyImpulse()
 
 	impulse = M * (bias - dv - softness * P);
 
-	body1->velocity -= body1->invMass * impulse;
-	body1->angularVelocity -= body1->invI * Cross(r1, impulse);
+	body1->velocity -= body1->massInv * impulse;
+	body1->angularVelocity -= body1->inertiaInv * Cross(r1, impulse);
 
-	body2->velocity += body2->invMass * impulse;
-	body2->angularVelocity += body2->invI * Cross(r2, impulse);
+	body2->velocity += body2->massInv * impulse;
+	body2->angularVelocity += body2->inertiaInv * Cross(r2, impulse);
 
 	P += impulse;
 }

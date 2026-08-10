@@ -23,9 +23,9 @@ Body::Body()
 
 	width.Set(1.0f, 1.0f);
 	mass = FLT_MAX;
-	invMass = 0.0f;
-	I = FLT_MAX;
-	invI = 0.0f;
+	massInv = 0.0f;
+	inertia = FLT_MAX;
+	inertiaInv = 0.0f;
 }
 
 void Body::Set(const Vec2& w, float m)
@@ -43,14 +43,14 @@ void Body::Set(const Vec2& w, float m)
 
 	if (mass < FLT_MAX)
 	{
-		invMass = 1.0f / mass;
-		I = mass * (width.x * width.x + width.y * width.y) / 12.0f;
-		invI = 1.0f / I;
+		massInv = 1.0f / mass;
+		inertia = mass * (width.x * width.x + width.y * width.y) / 12.0f;
+		inertiaInv = 1.0f / inertia;
 	}
 	else
 	{
-		invMass = 0.0f;
-		I = FLT_MAX;
-		invI = 0.0f;
+		massInv = 0.0f;
+		inertia = FLT_MAX;
+		inertiaInv = 0.0f;
 	}
 }

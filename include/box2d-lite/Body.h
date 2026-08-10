@@ -36,8 +36,8 @@ struct Body
 	Vec2 width;
 
 	float friction;
-	float mass, invMass;
-	float I, invI;
+	float mass, massInv;
+	float inertia, inertiaInv;
 };
 
 #endif
