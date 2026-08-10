@@ -34,6 +34,7 @@ struct Contact
 
 	Vec2 position;
 	Vec2 normal;
+    Vec2 r1, r2;
 	float separation;
 	float Pn;	// accumulated normal impulse
 	float Pt;	// accumulated tangent impulse

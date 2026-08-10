@@ -309,16 +309,21 @@ int Collide(Contact* contacts, Body* bodyA, Body* bodyB)
 		float separation = Dot(frontNormal, clipPoints2[i].v) - front;
 		if (separation > 0) continue;
 
-        contacts[numContacts].separation = separation;
-        contacts[numContacts].normal = normal;
-        // slide contact point onto reference face (easy to cull)
-        contacts[numContacts].position = clipPoints2[i].v - separation * frontNormal;
-        contacts[numContacts].feature = clipPoints2[i].fp;
+        auto& contact = contacts[numContacts];
 
-        // contacts[numContacts].bias
+        contact.separation = separation;
+        contact.normal = normal;
+        // slide contact point onto reference face (easy to cull)
+        contact.position = clipPoints2[i].v - separation * frontNormal;
+        contact.feature = clipPoints2[i].fp;
+
+        contact.r1 = contact.position - bodyA->position;
+        contact.r2 = contact.position - bodyB->position;
+
+        // contact.bias
 
         if (axis == FACE_B_X || axis == FACE_B_Y)
-            Flip(contacts[numContacts].feature);
+            Flip(contact.feature);
 
         ++numContacts;
 	}

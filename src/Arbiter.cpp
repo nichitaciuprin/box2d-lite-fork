@@ -110,8 +110,10 @@ void Arbiter::PreStep(float dti)
 
         Vec2 normal = c->normal;
 		Vec2 tangent = Cross(c->normal, 1.0f);
-		Vec2 r1 = c->position - body1->position;
-		Vec2 r2 = c->position - body2->position;
+		// Vec2 r1 = c->position - body1->position;
+		// Vec2 r2 = c->position - body2->position;
+        Vec2 r1 = c->r1;
+		Vec2 r2 = c->r2;
 
         float rls1 = Dot(r1, r1);
         float rls2 = Dot(r2, r2);
@@ -147,8 +149,10 @@ void Arbiter::ApplyImpulse()
 	{
 		Contact* c = contacts + i;
 
-		Vec2 r1 = c->position - body1->position;
-		Vec2 r2 = c->position - body2->position;
+		// Vec2 r1 = c->position - body1->position;
+		// Vec2 r2 = c->position - body2->position;
+        Vec2 r1 = c->r1;
+		Vec2 r2 = c->r2;
 
         {
             Vec2 vr = CalcRelativeVelocity(body1, body2, r1, r2);
