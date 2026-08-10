@@ -93,28 +93,33 @@ void Arbiter::PreStep(float inv_dt)
 	{
 		Contact* c = contacts + i;
 
-		Vec2 r1 = c->position - body1->position;
-		Vec2 r2 = c->position - body2->position;
-
-		// Precompute normal mass, tangent mass, and bias.
         Vec2 normal = c->normal;
 		Vec2 tangent = Cross(c->normal, 1.0f);
-		float rn1 = Dot(r1, normal);
-		float rn2 = Dot(r2, normal);
-		float rt1 = Dot(r1, tangent);
-		float rt2 = Dot(r2, tangent);
+		Vec2 r1 = c->position - body1->position;
+		Vec2 r2 = c->position - body2->position;
+        float rls1 = Dot(r1, r1);
+        float rls2 = Dot(r2, r2);
+		float rnl1 = Dot(r1, normal);
+		float rnl2 = Dot(r2, normal);
+		float rtl1 = Dot(r1, tangent);
+		float rtl2 = Dot(r2, tangent);
+        float rnls1 = rnl1 * rnl1;
+        float rnls2 = rnl2 * rnl2;
+        float rtls1 = rtl1 * rtl1;
+        float rtls2 = rtl2 * rtl2;
         float massSum = body1->invMass + body2->invMass;
-		float massNormal  = massSum + body1->invI * (Dot(r1, r1) - rn1 * rn1) + body2->invI * (Dot(r2, r2) - rn2 * rn2);
-		float massTangent = massSum + body1->invI * (Dot(r1, r1) - rt1 * rt1) + body2->invI * (Dot(r2, r2) - rt2 * rt2);
+		float massNormal  = massSum + body1->invI * (rls1 - rnls1) + body2->invI * (rls2 - rnls2);
+		float massTangent = massSum + body1->invI * (rls1 - rtls1) + body2->invI * (rls2 - rtls2);
 		c->massNormal  = 1.0f / massNormal;
-		c->massTangent = 1.0f /  massTangent;
-
+		c->massTangent = 1.0f / massTangent;
 		c->bias = Min(0.0f, c->separation + k_allowedPenetration) * -k_biasFactor * inv_dt;
 
 		if (!World::accumulateImpulses) continue;
 
         // Apply normal + friction impulse
-        Vec2 P = c->Pn * c->normal + c->Pt * tangent;
+        Vec2 P =
+        c->Pn * normal +
+        c->Pt * tangent;
 
         body1->velocity -= body1->invMass * P;
         body2->velocity += body2->invMass * P;
