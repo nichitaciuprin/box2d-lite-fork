@@ -149,6 +149,7 @@ void Arbiter::ApplyImpulse()
         Vec2 normal = c->normal;
         Vec2 tangent = Cross(c->normal, 1.0f);
 
+        Vec2 Pn, Pt;
         float dPn, dPt;
 
         {
@@ -168,13 +169,14 @@ void Arbiter::ApplyImpulse()
             }
 
             // apply contact impulse
-            Vec2 Pn = dPn * normal;
-
-            b1->velocity -= b1->invMass * Pn;
-		    b2->velocity += b2->invMass * Pn;
-            b1->angularVelocity -= b1->invI * Cross(c->r1, Pn);
-            b2->angularVelocity += b2->invI * Cross(c->r2, Pn);
+            Pn = dPn * normal;
         }
+
+        b1->velocity -= b1->invMass * Pn;
+        b2->velocity += b2->invMass * Pn;
+        b1->angularVelocity -= b1->invI * Cross(c->r1, Pn);
+        b2->angularVelocity += b2->invI * Cross(c->r2, Pn);
+
         {
             // relative velocity at contact
             Vec2 vr = CalcRelativeVelocity(c, b1, b2);
@@ -196,13 +198,12 @@ void Arbiter::ApplyImpulse()
                 dPt = Clamp(dPt, -maxPt, maxPt);
             }
 
-            // Apply contact impulse
-            Vec2 Pt = dPt * tangent;
-
-            b1->velocity -= b1->invMass * Pt;
-            b2->velocity += b2->invMass * Pt;
-            b1->angularVelocity -= b1->invI * Cross(c->r1, Pt);
-            b2->angularVelocity += b2->invI * Cross(c->r2, Pt);
+            Pt = dPt * tangent;
         }
+
+        b1->velocity -= b1->invMass * Pt;
+        b2->velocity += b2->invMass * Pt;
+        b1->angularVelocity -= b1->invI * Cross(c->r1, Pt);
+        b2->angularVelocity += b2->invI * Cross(c->r2, Pt);
 	}
 }
