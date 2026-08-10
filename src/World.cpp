@@ -43,6 +43,7 @@ void World::Clear()
 void World::BroadPhase()
 {
 	// O(n^2) broad-phase
+
 	for (int i =   0; i < (int)bodies.size(); i++)
     for (int j = i+1; j < (int)bodies.size(); j++)
 	{
