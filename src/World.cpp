@@ -44,8 +44,8 @@ void World::Clear()
 void World::BroadPhase()
 {
 	// O(n^2) broad-phase
-	for (int i =     0; i < (int)bodies.size(); ++i)
-    for (int j = i + 1; j < (int)bodies.size(); ++j)
+	for (int i =   0; i < (int)bodies.size(); ++i)
+    for (int j = i+1; j < (int)bodies.size(); ++j)
 	{
 		Body* bi = bodies[i];
         Body* bj = bodies[j];
@@ -61,7 +61,7 @@ void World::BroadPhase()
             continue;
         }
 
-        ArbIter iter = arbiters.find(key);
+        auto iter = arbiters.find(key);
         bool found = iter != arbiters.end();
         if (!found)
             arbiters.insert(ArbPair(key, newArb));
@@ -72,7 +72,10 @@ void World::BroadPhase()
 
 void World::Step(float dt)
 {
-	float inv_dt = dt > 0.0f ? 1.0f / dt : 0.0f;
+    // float dti = dt > 0.0f ? 1.0f / dt : 0.0f;
+
+    assert(dt >= 0.0f);
+	float dti = 1.0f / dt;
 
 	// determine overlapping bodies and update contact points
 	BroadPhase();
@@ -82,14 +85,16 @@ void World::Step(float dt)
 	{
 		if (b->invMass == 0.0f) continue;
 
-		b->velocity += dt * (gravity + b->invMass * b->force);
+        b->velocity += dt * gravity;
+        b->velocity += dt * b->invMass * b->force;
+		// b->velocity += dt * (gravity + b->invMass * b->force);
 		b->angularVelocity += dt * b->invI * b->torque;
 	}
 
     // perform pre-steps
     {
-        for (auto& arb : arbiters) arb.second.PreStep(inv_dt);
-        for (auto& joint : joints) joint->PreStep(inv_dt);
+        for (auto& arb : arbiters) arb.second.PreStep(dti);
+        for (auto& joint : joints) joint->PreStep(dti);
     }
     // perform iterations
 	for (int i = 0; i < iterations; i++)
