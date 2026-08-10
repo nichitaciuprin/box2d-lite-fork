@@ -44,8 +44,8 @@ void World::Clear()
 void World::BroadPhase()
 {
 	// O(n^2) broad-phase
-	for (int i =   0; i < (int)bodies.size(); ++i)
-    for (int j = i+1; j < (int)bodies.size(); ++j)
+	for (int i =   0; i < (int)bodies.size(); i++)
+    for (int j = i+1; j < (int)bodies.size(); j++)
 	{
 		Body* bi = bodies[i];
         Body* bj = bodies[j];
@@ -87,8 +87,10 @@ void World::Step(float dt)
 
         b->velocity += dt * gravity;
         b->velocity += dt * b->invMass * b->force;
-		// b->velocity += dt * (gravity + b->invMass * b->force);
 		b->angularVelocity += dt * b->invI * b->torque;
+
+        // b->velocity += dt * (gravity + b->invMass * b->force);
+        // b->angularVelocity += dt * b->invI * b->torque;
 	}
 
     // perform pre-steps
