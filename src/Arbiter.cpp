@@ -150,27 +150,27 @@ void Arbiter::ApplyImpulse()
         Vec2 tangent = Cross(c->normal, 1.0f);
 
         Vec2 Pn, Pt;
-        float dPn, dPt;
+        float Pnl, Ptl;
 
         {
             Vec2 vr = CalcRelativeVelocity(c, b1, b2);
-            dPn = c->massNormal * (-Dot(vr, normal) + c->bias);
+            Pnl = c->massNormal * (-Dot(vr, normal) + c->bias);
 
             if (World::accumulateImpulses)
             {
                 float Pn_old = c->Pn;
-                float Pn_new = Max(c->Pn + dPn, 0.0f);
+                float Pn_new = Max(c->Pn + Pnl, 0.0f);
                 c->Pn = Pn_new;
 
-                dPn = Pn_new - Pn_old;
+                Pnl = Pn_new - Pn_old;
             }
             else
             {
-                dPn = Max(dPn, 0.0f);
+                Pnl = Max(Pnl, 0.0f);
             }
 
             // apply contact impulse
-            Pn = dPn * normal;
+            Pn = Pnl * normal;
         }
 
         b1->velocity -= b1->invMass * Pn;
@@ -181,25 +181,25 @@ void Arbiter::ApplyImpulse()
         {
             // relative velocity at contact
             Vec2 vr = CalcRelativeVelocity(c, b1, b2);
-            dPt = c->massTangent * (-Dot(vr, tangent));
+            Ptl = c->massTangent * (-Dot(vr, tangent));
 
             if (World::accumulateImpulses)
             {
                 float maxPt = friction * c->Pn;
 
                 float Pt_old = c->Pt;
-                float Pt_new = Clamp(c->Pt + dPt, -maxPt, +maxPt);
+                float Pt_new = Clamp(c->Pt + Ptl, -maxPt, +maxPt);
                 c->Pt = Pt_new;
 
-                dPt = Pt_new - Pt_old;
+                Ptl = Pt_new - Pt_old;
             }
             else
             {
-                float maxPt = friction * dPn;
-                dPt = Clamp(dPt, -maxPt, maxPt);
+                float maxPt = friction * Pnl;
+                Ptl = Clamp(Ptl, -maxPt, maxPt);
             }
 
-            Pt = dPt * tangent;
+            Pt = Ptl * tangent;
         }
 
         b1->velocity -= b1->invMass * Pt;
