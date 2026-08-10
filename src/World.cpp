@@ -86,6 +86,7 @@ void World::Step(float dt)
 		if (b->invMass == 0.0f) continue;
 
         b->velocity += dt * gravity;
+
         b->velocity += dt * b->invMass * b->force;
 		b->angularVelocity += dt * b->invI * b->torque;
 
