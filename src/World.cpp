@@ -75,10 +75,7 @@ void World::BroadPhase()
 
 void World::Step(float dt)
 {
-    // float dti = dt > 0.0f ? 1.0f / dt : 0.0f;
-
-    assert(dt >= 0.0f);
-	float dti = 1.0f / dt;
+    float dti = dt > 0.0f ? 1.0f / dt : 0.0f;
 
 	// determine overlapping bodies and update contact points
 	BroadPhase();
@@ -88,10 +85,10 @@ void World::Step(float dt)
 	{
 		if (body->invMass == 0.0f) continue;
 
-        body->velocity += dt * gravity;
+        body->velocity += gravity * dt;
 
-        body->velocity        += dt * body->invMass * body->force;
-		body->angularVelocity += dt * body->invI    * body->torque;
+        body->velocity        += body->force  * body->invMass * dt;
+		body->angularVelocity += body->torque * body->invI    * dt;
 	}
 
     // perform pre-steps
