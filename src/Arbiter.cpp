@@ -126,6 +126,13 @@ void Arbiter::PreStep(float inv_dt)
 	}
 }
 
+Vec2 CalcRelativeVelocity(Contact* c, Body* b1, Body* b2)
+{
+    return
+    b2->velocity + Cross(b2->angularVelocity, c->r2) -
+    b1->velocity - Cross(b1->angularVelocity, c->r1);
+}
+
 void Arbiter::ApplyImpulse()
 {
 	Body* b1 = body1;
@@ -145,12 +152,8 @@ void Arbiter::ApplyImpulse()
         float dPn, dPt;
 
         {
-            // relative velocity at contact
-            Vec2 dv =
-            b2->velocity + Cross(b2->angularVelocity, c->r2) -
-            b1->velocity - Cross(b1->angularVelocity, c->r1);
-
-            dPn = c->massNormal * (-Dot(dv, normal) + c->bias);
+            Vec2 vr = CalcRelativeVelocity(c, b1, b2);
+            dPn = c->massNormal * (-Dot(vr, normal) + c->bias);
 
             if (World::accumulateImpulses)
             {
@@ -174,11 +177,8 @@ void Arbiter::ApplyImpulse()
         }
         {
             // relative velocity at contact
-            Vec2 dv =
-            b2->velocity + Cross(b2->angularVelocity, c->r2) -
-            b1->velocity - Cross(b1->angularVelocity, c->r1);
-
-            dPt = c->massTangent * (-Dot(dv, tangent));
+            Vec2 vr = CalcRelativeVelocity(c, b1, b2);
+            dPt = c->massTangent * (-Dot(vr, tangent));
 
             if (World::accumulateImpulses)
             {
