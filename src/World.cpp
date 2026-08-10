@@ -81,17 +81,17 @@ void World::Step(float dt)
 	BroadPhase();
 
 	// integrate forces
-    for (auto& b : bodies)
+    for (auto& body : bodies)
 	{
-		if (b->invMass == 0.0f) continue;
+		if (body->invMass == 0.0f) continue;
 
-        b->velocity += dt * gravity;
+        body->velocity += dt * gravity;
 
-        b->velocity        += dt * b->invMass * b->force;
-		b->angularVelocity += dt * b->invI    * b->torque;
+        body->velocity        += dt * body->invMass * body->force;
+		body->angularVelocity += dt * body->invI    * body->torque;
 
-        // b->velocity += dt * (gravity + b->invMass * b->force);
-        // b->angularVelocity += dt * b->invI * b->torque;
+        // body->velocity += dt * (gravity + body->invMass * body->force);
+        // body->angularVelocity += dt * body->invI * body->torque;
 	}
 
     // perform pre-steps
@@ -107,11 +107,11 @@ void World::Step(float dt)
 	}
 
 	// integrate Velocities
-    for (auto& b : bodies)
+    for (auto& body : bodies)
 	{
-		b->position += dt * b->velocity;
-		b->rotation += dt * b->angularVelocity;
-		b->force.Set(0.0f, 0.0f);
-		b->torque = 0.0f;
+		body->position += dt * body->velocity;
+		body->rotation += dt * body->angularVelocity;
+		body->force.Set(0.0f, 0.0f);
+		body->torque = 0.0f;
 	}
 }
