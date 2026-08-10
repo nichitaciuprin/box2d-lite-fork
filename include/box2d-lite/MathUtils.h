@@ -133,6 +133,11 @@ inline Vec2 operator * (float s, const Vec2& v)
 	return Vec2(s * v.x, s * v.y);
 }
 
+inline Vec2 operator * (const Vec2& v, float s)
+{
+	return Vec2(v.x * s, v.y * s);
+}
+
 inline Mat22 operator + (const Mat22& A, const Mat22& B)
 {
 	return Mat22(A.col1 + B.col1, A.col2 + B.col2);
