@@ -4,8 +4,8 @@
 * Permission to use, copy, modify, distribute and sell this software
 * and its documentation for any purpose is hereby granted without fee,
 * provided that the above copyright notice appear in all copies.
-* Erin Catto makes no representations about the suitability 
-* of this software for any purpose.  
+* Erin Catto makes no representations about the suitability
+* of this software for any purpose.
 * It is provided "as is" without express or implied warranty.
 */
 
@@ -21,34 +21,44 @@ const float k_pi = 3.14159265358979323846264f;
 
 struct Vec2
 {
+	float x, y;
+
 	Vec2() {}
 	Vec2(float x, float y) : x(x), y(y) {}
 
-	void Set(float x_, float y_) { x = x_; y = y_; }
+	void Set(float x_, float y_)
+    {
+        x = x_;
+        y = y_;
+    }
 
-	Vec2 operator -() { return Vec2(-x, -y); }
-	
+	Vec2 operator -()
+    {
+        return Vec2(-x, -y);
+    }
+
 	void operator += (const Vec2& v)
 	{
-		x += v.x; y += v.y;
+		x += v.x;
+        y += v.y;
 	}
-	
+
 	void operator -= (const Vec2& v)
 	{
-		x -= v.x; y -= v.y;
+		x -= v.x;
+        y -= v.y;
 	}
 
 	void operator *= (float a)
 	{
-		x *= a; y *= a;
+		x *= a;
+        y *= a;
 	}
 
 	float Length() const
 	{
 		return sqrtf(x * x + y * y);
 	}
-
-	float x, y;
 };
 
 struct Mat22
