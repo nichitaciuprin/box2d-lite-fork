@@ -139,68 +139,76 @@ void Arbiter::ApplyImpulse()
 		c->r1 = c->position - b1->position;
 		c->r2 = c->position - b2->position;
 
-		// relative velocity at contact
-		Vec2 dv =
-        b2->velocity + Cross(b2->angularVelocity, c->r2) -
-        b1->velocity - Cross(b1->angularVelocity, c->r1);
+        Vec2 dv;
 
-		// compute normal impulse
-		float vn = Dot(dv, c->normal);
+        Vec2 Pn;
+        float dPn;
+        {
+            // relative velocity at contact
+            dv =
+            b2->velocity + Cross(b2->angularVelocity, c->r2) -
+            b1->velocity - Cross(b1->angularVelocity, c->r1);
 
-		float dPn = c->massNormal * (-vn + c->bias);
+            // compute normal impulse
+            float vn = Dot(dv, c->normal);
 
-		if (World::accumulateImpulses)
-		{
-			// clamp the accumulated impulse
-			float Pn0 = c->Pn;
-			c->Pn = Max(Pn0 + dPn, 0.0f);
-			dPn = c->Pn - Pn0;
-		}
-		else
-		{
-			dPn = Max(dPn, 0.0f);
-		}
+            dPn = c->massNormal * (-vn + c->bias);
 
-		// apply contact impulse
-		Vec2 Pn = dPn * c->normal;
+            if (World::accumulateImpulses)
+            {
+                // clamp the accumulated impulse
+                float Pn0 = c->Pn;
+                c->Pn = Max(Pn0 + dPn, 0.0f);
+                dPn = c->Pn - Pn0;
+            }
+            else
+            {
+                dPn = Max(dPn, 0.0f);
+            }
+
+            // apply contact impulse
+            Pn = dPn * c->normal;
+        }
 
 		b1->velocity -= b1->invMass * Pn;
 		b2->velocity += b2->invMass * Pn;
-
 		b1->angularVelocity -= b1->invI * Cross(c->r1, Pn);
 		b2->angularVelocity += b2->invI * Cross(c->r2, Pn);
 
-		// relative velocity at contact
-		dv =
-        b2->velocity + Cross(b2->angularVelocity, c->r2) -
-        b1->velocity - Cross(b1->angularVelocity, c->r1);
+        Vec2 Pt;
+        float dPt;
+        {
+            // relative velocity at contact
+            dv =
+            b2->velocity + Cross(b2->angularVelocity, c->r2) -
+            b1->velocity - Cross(b1->angularVelocity, c->r1);
 
-		Vec2 tangent = Cross(c->normal, 1.0f);
-		float vt = Dot(dv, tangent);
-		float dPt = c->massTangent * (-vt);
+            Vec2 tangent = Cross(c->normal, 1.0f);
+            float vt = Dot(dv, tangent);
+            dPt = c->massTangent * (-vt);
 
-		if (World::accumulateImpulses)
-		{
-			// compute friction impulse
-			float maxPt = friction * c->Pn;
+            if (World::accumulateImpulses)
+            {
+                // compute friction impulse
+                float maxPt = friction * c->Pn;
 
-			// clamp friction
-			float oldTangentImpulse = c->Pt;
-			c->Pt = Clamp(oldTangentImpulse + dPt, -maxPt, maxPt);
-			dPt = c->Pt - oldTangentImpulse;
-		}
-		else
-		{
-			float maxPt = friction * dPn;
-			dPt = Clamp(dPt, -maxPt, maxPt);
-		}
+                // clamp friction
+                float oldTangentImpulse = c->Pt;
+                c->Pt = Clamp(oldTangentImpulse + dPt, -maxPt, maxPt);
+                dPt = c->Pt - oldTangentImpulse;
+            }
+            else
+            {
+                float maxPt = friction * dPn;
+                dPt = Clamp(dPt, -maxPt, maxPt);
+            }
 
-		// Apply contact impulse
-		Vec2 Pt = dPt * tangent;
+            // Apply contact impulse
+            Pt = dPt * tangent;
+        }
 
 		b1->velocity -= b1->invMass * Pt;
 		b2->velocity += b2->invMass * Pt;
-
 		b1->angularVelocity -= b1->invI * Cross(c->r1, Pt);
 		b2->angularVelocity += b2->invI * Cross(c->r2, Pt);
 	}
