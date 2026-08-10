@@ -13,7 +13,19 @@
 #include "box2d-lite/Body.h"
 #include "box2d-lite/World.h"
 
-// #include <cstdio>
+static inline Vec2 CalcRelativeVelocity(Body* b1, Body* b2, Vec2 r1, Vec2 r2)
+{
+    return
+    b2->velocity + Cross(b2->angularVelocity, r2) -
+    b1->velocity - Cross(b1->angularVelocity, r1);
+}
+static inline void ApplyImpulse2(Body* b1, Body* b2, Vec2 r1, Vec2 r2, Vec2 impulse)
+{
+    b1->velocity -= b1->invMass * impulse;
+    b2->velocity += b2->invMass * impulse;
+    b1->angularVelocity -= b1->invI * Cross(r1, impulse);
+    b2->angularVelocity += b2->invI * Cross(r2, impulse);
+}
 
 Arbiter::Arbiter(Body* b1, Body* b2)
 {
@@ -32,7 +44,6 @@ Arbiter::Arbiter(Body* b1, Body* b2)
 
 	friction = sqrtf(body1->friction * body2->friction);
 }
-
 void Arbiter::Update(Contact* newContacts, int numNewContacts)
 {
 	Contact mergedContacts[2];
@@ -84,21 +95,6 @@ void Arbiter::Update(Contact* newContacts, int numNewContacts)
 
 	numContacts = numNewContacts;
 }
-
-static inline Vec2 CalcRelativeVelocity(Body* b1, Body* b2, Vec2 r1, Vec2 r2)
-{
-    return
-    b2->velocity + Cross(b2->angularVelocity, r2) -
-    b1->velocity - Cross(b1->angularVelocity, r1);
-}
-static inline void ApplyImpulse2(Body* b1, Body* b2, Vec2 r1, Vec2 r2, Vec2 impulse)
-{
-    b1->velocity -= b1->invMass * impulse;
-    b2->velocity += b2->invMass * impulse;
-    b1->angularVelocity -= b1->invI * Cross(r1, impulse);
-    b2->angularVelocity += b2->invI * Cross(r2, impulse);
-}
-
 void Arbiter::PreStep(float dti)
 {
 	const float k_allowedPenetration = 0.01f;
@@ -142,7 +138,6 @@ void Arbiter::PreStep(float dti)
         body2->angularVelocity += body2->invI * Cross(r2, impulse);
 	}
 }
-
 void Arbiter::ApplyImpulse()
 {
 	for (int i = 0; i < numContacts; i++)
