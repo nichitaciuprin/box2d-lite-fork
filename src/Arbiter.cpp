@@ -139,6 +139,9 @@ void Arbiter::ApplyImpulse()
 		c->r1 = c->position - b1->position;
 		c->r2 = c->position - b2->position;
 
+        Vec2 normal = c->normal;
+        Vec2 tangent = Cross(c->normal, 1.0f);
+
         float dPn, dPt;
 
         {
@@ -147,9 +150,7 @@ void Arbiter::ApplyImpulse()
             b2->velocity + Cross(b2->angularVelocity, c->r2) -
             b1->velocity - Cross(b1->angularVelocity, c->r1);
 
-            Vec2 normal = c->normal;
-            float vn = Dot(dv, normal);
-            dPn = c->massNormal * (-vn + c->bias);
+            dPn = c->massNormal * (-Dot(dv, normal) + c->bias);
 
             if (World::accumulateImpulses)
             {
@@ -177,9 +178,7 @@ void Arbiter::ApplyImpulse()
             b2->velocity + Cross(b2->angularVelocity, c->r2) -
             b1->velocity - Cross(b1->angularVelocity, c->r1);
 
-            Vec2 tangent = Cross(c->normal, 1.0f);
-            float vt = Dot(dv, tangent);
-            dPt = c->massTangent * (-vt);
+            dPt = c->massTangent * (-Dot(dv, tangent));
 
             if (World::accumulateImpulses)
             {
