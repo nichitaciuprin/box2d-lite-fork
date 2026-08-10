@@ -44,37 +44,34 @@ void World::Clear()
 void World::BroadPhase()
 {
 	// O(n^2) broad-phase
-	for (int i = 0; i < (int)bodies.size(); ++i)
+	for (int i =     0; i < (int)bodies.size(); ++i)
+    for (int j = i + 1; j < (int)bodies.size(); ++j)
 	{
 		Body* bi = bodies[i];
+        Body* bj = bodies[j];
 
-		for (int j = i + 1; j < (int)bodies.size(); ++j)
-		{
-			Body* bj = bodies[j];
+        if (bi->invMass == 0.0f && bj->invMass == 0.0f) continue;
 
-			if (bi->invMass == 0.0f && bj->invMass == 0.0f)
-				continue;
+        Arbiter newArb(bi, bj);
+        ArbiterKey key(bi, bj);
 
-			Arbiter newArb(bi, bj);
-			ArbiterKey key(bi, bj);
+        if (newArb.numContacts > 0)
+        {
+            ArbIter iter = arbiters.find(key);
 
-			if (newArb.numContacts > 0)
-			{
-				ArbIter iter = arbiters.find(key);
-				if (iter == arbiters.end())
-				{
-					arbiters.insert(ArbPair(key, newArb));
-				}
-				else
-				{
-					iter->second.Update(newArb.contacts, newArb.numContacts);
-				}
-			}
-			else
-			{
-				arbiters.erase(key);
-			}
-		}
+            if (iter == arbiters.end())
+            {
+                arbiters.insert(ArbPair(key, newArb));
+            }
+            else
+            {
+                iter->second.Update(newArb.contacts, newArb.numContacts);
+            }
+        }
+        else
+        {
+            arbiters.erase(key);
+        }
 	}
 }
 
