@@ -66,23 +66,18 @@ struct ArbiterKey
 
 struct Arbiter
 {
-	enum {MAX_POINTS = 2};
+    static constexpr int MAX_POINTS = 2;
 
-	Arbiter(Body* b1, Body* b2);
-
-	void Update(Contact* contacts, int numContacts);
-
-	void PreStep(float inv_dt);
-	void ApplyImpulse();
-
-	Contact contacts[MAX_POINTS];
+    Contact contacts[MAX_POINTS];
 	int numContacts;
-
 	Body* body1;
 	Body* body2;
+	float friction; // Combined friction
 
-	// Combined friction
-	float friction;
+	Arbiter(Body* b1, Body* b2);
+	void Update(Contact* contacts, int numContacts);
+	void PreStep(float inv_dt);
+	void ApplyImpulse();
 };
 
 // This is used by std::set
