@@ -15,9 +15,13 @@
 
 static inline Vec2 CalcRelativeVelocity(Contact* c, Body* b1, Body* b2)
 {
+    // return
+    // b2->velocity + Cross(b2->angularVelocity, c->r2) -
+    // b1->velocity - Cross(b1->angularVelocity, c->r1);
+
     return
-    b2->velocity + Cross(b2->angularVelocity, c->r2) -
-    b1->velocity - Cross(b1->angularVelocity, c->r1);
+    b2->velocity + RotateLeft(c->r2) * b2->angularVelocity -
+    b1->velocity - RotateLeft(c->r1) * b1->angularVelocity;
 }
 static inline void ApplyImpulse2(Contact* c, Body* b1, Body* b2, Vec2 impulse)
 {
@@ -105,7 +109,7 @@ void Arbiter::PreStep(float dti)
 		Contact* c = contacts + i;
 
         Vec2 normal = c->normal;
-		Vec2 tangent = Cross(c->normal, 1.0f);
+		Vec2 tangent = RotateRight(c->normal);
         Vec2 r1 = c->r1;
 		Vec2 r2 = c->r2;
 
@@ -126,7 +130,7 @@ void Arbiter::PreStep(float dti)
 
 		c->massNormal  = 1.0f / massNormal;
 		c->massTangent = 1.0f / massTangent;
-		c->bias = Min(0.0f, c->separation + k_allowedPenetration) * -k_biasFactor * dti;
+		c->bias = Min(c->separation + k_allowedPenetration, 0.0f) * -k_biasFactor * dti;
 
         // apply normal and friction impulse
         Vec2 impulse = normal * c->Pn + tangent * c->Pt;
@@ -154,7 +158,7 @@ void Arbiter::ApplyImpulse()
 
         {
             Vec2 vr = CalcRelativeVelocity(c, body1, body2);
-            Vec2 tangent = Cross(c->normal, 1.0f);
+            Vec2 tangent = RotateRight(c->normal);
             float impInit = c->massTangent * -Dot(vr, tangent);
             float impOld = c->Pt;
             float impNew = Clamp(impOld + impInit, -maxFriction, +maxFriction);

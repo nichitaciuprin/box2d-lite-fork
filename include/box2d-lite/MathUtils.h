@@ -113,6 +113,9 @@ inline Vec2 Cross(float s, const Vec2& a)
 	return Vec2(-s * a.y, s * a.x);
 }
 
+inline Vec2 RotateLeft(const Vec2& a)  { return Vec2(-a.y, +a.x); }
+inline Vec2 RotateRight(const Vec2& a) { return Vec2(+a.y, -a.x); }
+
 inline Vec2 operator * (const Mat22& A, const Vec2& v)
 {
 	return Vec2(A.col1.x * v.x + A.col2.x * v.y, A.col1.y * v.x + A.col2.y * v.y);
