@@ -501,8 +501,8 @@ static void Demo9(Body* b, Joint* j)
 	}
 }
 
-void (*demos[])(Body* b, Joint* j) = {Demo1, Demo2, Demo3, Demo4, Demo5, Demo6, Demo7, Demo8, Demo9};
-const char* demoStrings[] = {
+const char* demoStrings[] =
+{
 	"Demo 1: A Single Box",
 	"Demo 2: Simple Pendulum",
 	"Demo 3: Varying Friction Coefficients",
@@ -511,7 +511,9 @@ const char* demoStrings[] = {
 	"Demo 6: A Teeter",
 	"Demo 7: A Suspension Bridge",
 	"Demo 8: Dominos",
-	"Demo 9: Multi-pendulum"};
+	"Demo 9: Multi-pendulum"
+};
+void (*demos[])(Body* b, Joint* j) = { Demo1, Demo2, Demo3, Demo4, Demo5, Demo6, Demo7, Demo8, Demo9 };
 
 static void InitDemo(int index)
 {
