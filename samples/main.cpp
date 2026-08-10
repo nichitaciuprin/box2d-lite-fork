@@ -4,8 +4,8 @@
 * Permission to use, copy, modify, distribute and sell this software
 * and its documentation for any purpose is hereby granted without fee,
 * provided that the above copyright notice appear in all copies.
-* Erin Catto makes no representations about the suitability 
-* of this software for any purpose.  
+* Erin Catto makes no representations about the suitability
+* of this software for any purpose.
 * It is provided "as is" without express or implied warranty.
 */
 
@@ -30,7 +30,7 @@ namespace
 
 	Body bodies[200];
 	Joint joints[100];
-	
+
 	Body* bomb = NULL;
 
 	float timeStep = 1.0f / 60.0f;
@@ -632,7 +632,7 @@ int main(int, char**)
 	glViewport(0, 0, width, height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	
+
 	float aspect = float(width) / float(height);
 	if (width >= height)
 	{
@@ -645,7 +645,8 @@ int main(int, char**)
 		glOrtho(-zoom, zoom, -zoom / aspect + pan_y, zoom / aspect + pan_y, -1.0, 1.0);
 	}
 
-	InitDemo(0);
+	// InitDemo(0);
+    InitDemo(3);
 
 	while (!glfwWindowShouldClose(mainWindow))
 	{

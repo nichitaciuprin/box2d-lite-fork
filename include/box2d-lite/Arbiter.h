@@ -50,11 +50,13 @@ struct ArbiterKey
 	{
 		if (b1 < b2)
 		{
-			body1 = b1; body2 = b2;
+			body1 = b1;
+            body2 = b2;
 		}
 		else
 		{
-			body1 = b2; body2 = b1;
+			body1 = b2;
+            body2 = b1;
 		}
 	}
 
