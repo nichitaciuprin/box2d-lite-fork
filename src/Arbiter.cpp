@@ -139,19 +139,16 @@ void Arbiter::ApplyImpulse()
 		c->r1 = c->position - b1->position;
 		c->r2 = c->position - b2->position;
 
-        Vec2 dv;
+        float dPn, dPt;
 
-        Vec2 Pn;
-        float dPn;
         {
             // relative velocity at contact
-            dv =
+            Vec2 dv =
             b2->velocity + Cross(b2->angularVelocity, c->r2) -
             b1->velocity - Cross(b1->angularVelocity, c->r1);
 
-            // compute normal impulse
-            float vn = Dot(dv, c->normal);
-
+            Vec2 normal = c->normal;
+            float vn = Dot(dv, normal);
             dPn = c->massNormal * (-vn + c->bias);
 
             if (World::accumulateImpulses)
@@ -167,19 +164,16 @@ void Arbiter::ApplyImpulse()
             }
 
             // apply contact impulse
-            Pn = dPn * c->normal;
+            Vec2 Pn = dPn * normal;
+
+            b1->velocity -= b1->invMass * Pn;
+		    b2->velocity += b2->invMass * Pn;
+            b1->angularVelocity -= b1->invI * Cross(c->r1, Pn);
+            b2->angularVelocity += b2->invI * Cross(c->r2, Pn);
         }
-
-		b1->velocity -= b1->invMass * Pn;
-		b2->velocity += b2->invMass * Pn;
-		b1->angularVelocity -= b1->invI * Cross(c->r1, Pn);
-		b2->angularVelocity += b2->invI * Cross(c->r2, Pn);
-
-        Vec2 Pt;
-        float dPt;
         {
             // relative velocity at contact
-            dv =
+            Vec2 dv =
             b2->velocity + Cross(b2->angularVelocity, c->r2) -
             b1->velocity - Cross(b1->angularVelocity, c->r1);
 
@@ -204,12 +198,12 @@ void Arbiter::ApplyImpulse()
             }
 
             // Apply contact impulse
-            Pt = dPt * tangent;
-        }
+            Vec2 Pt = dPt * tangent;
 
-		b1->velocity -= b1->invMass * Pt;
-		b2->velocity += b2->invMass * Pt;
-		b1->angularVelocity -= b1->invI * Cross(c->r1, Pt);
-		b2->angularVelocity += b2->invI * Cross(c->r2, Pt);
+            b1->velocity -= b1->invMass * Pt;
+            b2->velocity += b2->invMass * Pt;
+            b1->angularVelocity -= b1->invI * Cross(c->r1, Pt);
+            b2->angularVelocity += b2->invI * Cross(c->r2, Pt);
+        }
 	}
 }
