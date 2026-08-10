@@ -13,18 +13,18 @@
 #include "box2d-lite/Body.h"
 #include "box2d-lite/World.h"
 
-static inline Vec2 CalcRelativeVelocity(Body* b1, Body* b2, Vec2 r1, Vec2 r2)
+static inline Vec2 CalcRelativeVelocity(Contact* c, Body* b1, Body* b2)
 {
     return
-    b2->velocity + Cross(b2->angularVelocity, r2) -
-    b1->velocity - Cross(b1->angularVelocity, r1);
+    b2->velocity + Cross(b2->angularVelocity, c->r2) -
+    b1->velocity - Cross(b1->angularVelocity, c->r1);
 }
-static inline void ApplyImpulse2(Body* b1, Body* b2, Vec2 r1, Vec2 r2, Vec2 impulse)
+static inline void ApplyImpulse2(Contact* c, Body* b1, Body* b2, Vec2 impulse)
 {
     b1->velocity -= b1->invMass * impulse;
     b2->velocity += b2->invMass * impulse;
-    b1->angularVelocity -= b1->invI * Cross(r1, impulse);
-    b2->angularVelocity += b2->invI * Cross(r2, impulse);
+    b1->angularVelocity -= b1->invI * Cross(c->r1, impulse);
+    b2->angularVelocity += b2->invI * Cross(c->r2, impulse);
 }
 
 Arbiter::Arbiter(Body* b1, Body* b2)
@@ -131,11 +131,7 @@ void Arbiter::PreStep(float dti)
 
         // Apply normal + friction impulse
         Vec2 impulse = c->Pn * normal + c->Pt * tangent;
-
-        body1->velocity -= body1->invMass * impulse;
-        body2->velocity += body2->invMass * impulse;
-        body1->angularVelocity -= body1->invI * Cross(r1, impulse);
-        body2->angularVelocity += body2->invI * Cross(r2, impulse);
+        ApplyImpulse2(c, body1, body2, impulse);
 	}
 }
 void Arbiter::ApplyImpulse()
@@ -144,32 +140,30 @@ void Arbiter::ApplyImpulse()
 	{
 		Contact* c = contacts + i;
 
-		// Vec2 r1 = c->position - body1->position;
-		// Vec2 r2 = c->position - body2->position;
         Vec2 r1 = c->r1;
 		Vec2 r2 = c->r2;
 
         {
-            Vec2 vr = CalcRelativeVelocity(body1, body2, r1, r2);
+            Vec2 vr = CalcRelativeVelocity(c, body1, body2);
             Vec2 normal = c->normal;
             float impInit = c->massNormal * (-Dot(vr, normal) + c->bias);
             float impOld = c->Pn;
             float impNew = Max(impOld + impInit, 0.0f);
             float impDiff = impNew - impOld;
-            ApplyImpulse2(body1, body2, r1, r2, impDiff * normal);
+            ApplyImpulse2(c, body1, body2, impDiff * normal);
             c->Pn = impNew;
         }
 
         float maxFriction = friction * c->Pn;
 
         {
-            Vec2 vr = CalcRelativeVelocity(body1, body2, r1, r2);
+            Vec2 vr = CalcRelativeVelocity(c, body1, body2);
             Vec2 tangent = Cross(c->normal, 1.0f);
             float impInit = c->massTangent * -Dot(vr, tangent);
             float impOld = c->Pt;
             float impNew = Clamp(impOld + impInit, -maxFriction, +maxFriction);
             float impDiff = impNew - impOld;
-            ApplyImpulse2(body1, body2, r1, r2, impDiff * tangent);
+            ApplyImpulse2(c, body1, body2, impDiff * tangent);
             c->Pt = impNew;
         }
 	}
