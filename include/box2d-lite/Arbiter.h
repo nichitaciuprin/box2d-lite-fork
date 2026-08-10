@@ -77,7 +77,6 @@ struct Arbiter
 	void Update(Contact* contacts, int numContacts);
 	void PreStep(float inv_dt);
 	void ApplyImpulse();
-    void ApplyImpulse2();
 };
 
 // This is used by std::set
