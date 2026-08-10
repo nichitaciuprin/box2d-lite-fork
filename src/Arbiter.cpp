@@ -83,11 +83,10 @@ void Arbiter::Update(Contact* newContacts, int numNewContacts)
 	numContacts = numNewContacts;
 }
 
-
 void Arbiter::PreStep(float inv_dt)
 {
 	const float k_allowedPenetration = 0.01f;
-	float k_biasFactor = World::positionCorrection ? 0.2f : 0.0f;
+	const float k_biasFactor = World::positionCorrection ? 0.2f : 0.0f;
 
 	for (int i = 0; i < numContacts; i++)
 	{
@@ -110,6 +109,7 @@ void Arbiter::PreStep(float inv_dt)
         float massSum = body1->invMass + body2->invMass;
 		float massNormal  = massSum + body1->invI * (rls1 - rnls1) + body2->invI * (rls2 - rnls2);
 		float massTangent = massSum + body1->invI * (rls1 - rtls1) + body2->invI * (rls2 - rtls2);
+
 		c->massNormal  = 1.0f / massNormal;
 		c->massTangent = 1.0f / massTangent;
 		c->bias = Min(0.0f, c->separation + k_allowedPenetration) * -k_biasFactor * inv_dt;
@@ -117,9 +117,7 @@ void Arbiter::PreStep(float inv_dt)
 		if (!World::accumulateImpulses) continue;
 
         // Apply normal + friction impulse
-        Vec2 P =
-        c->Pn * normal +
-        c->Pt * tangent;
+        Vec2 P = c->Pn * normal + c->Pt * tangent;
 
         body1->velocity -= body1->invMass * P;
         body2->velocity += body2->invMass * P;
