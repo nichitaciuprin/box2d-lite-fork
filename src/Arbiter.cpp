@@ -19,9 +19,13 @@ static inline Vec2 CalcRelativeVelocity(Contact* c, Body* b1, Body* b2)
     // b2->velocity + Cross(b2->velocityAngular, c->r2) -
     // b1->velocity - Cross(b1->velocityAngular, c->r1);
 
-    return
-    b2->velocityLinear + RotateLeft(c->r2) * b2->velocityAngular -
-    b1->velocityLinear - RotateLeft(c->r1) * b1->velocityAngular;
+    // return
+    // b2->velocityLinear + RotateLeft(c->r2) * b2->velocityAngular -
+    // b1->velocityLinear - RotateLeft(c->r1) * b1->velocityAngular;
+
+    Vec2 vel1 = b1->velocityLinear + RotateLeft(c->r1) * b1->velocityAngular;
+    Vec2 vel2 = b2->velocityLinear + RotateLeft(c->r2) * b2->velocityAngular;
+    return vel2 - vel1;
 }
 static inline void UpdateVelocity(Contact* c, Body* b1, Body* b2, Vec2 impulse)
 {
