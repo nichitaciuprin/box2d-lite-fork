@@ -73,6 +73,7 @@ int ClipSegmentToLine(ClipVertex vOut[2], ClipVertex vIn[2], const Vec2& normal,
 		// Find intersection point of edge and plane
 		float interp = distance0 / (distance0 - distance1);
 		vOut[numOut].v = vIn[0].v + interp * (vIn[1].v - vIn[0].v);
+
 		if (distance0 > 0.0f)
 		{
 			vOut[numOut].fp = vIn[0].fp;
@@ -85,7 +86,8 @@ int ClipSegmentToLine(ClipVertex vOut[2], ClipVertex vIn[2], const Vec2& normal,
 			vOut[numOut].fp.e.outEdge1 = clipEdge;
 			vOut[numOut].fp.e.outEdge2 = NO_EDGE;
 		}
-		++numOut;
+
+		numOut++;
 	}
 
 	return numOut;

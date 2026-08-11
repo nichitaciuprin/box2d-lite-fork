@@ -87,28 +87,29 @@ void World::Step(float dt)
 
         body->velocityLinear += gravity * dt;
 
-        body->velocityLinear        += body->force  * body->massInv    * dt;
+        body->velocityLinear  += body->force  * body->massInv    * dt;
 		body->velocityAngular += body->torque * body->inertiaInv * dt;
+
+        body->force.Set(0.0f, 0.0f);
+		body->torque = 0.0f;
 	}
 
-    // perform pre-steps
     {
         for (auto& arb : arbiters) arb.second.PreStep(dti);
         for (auto& joint : joints) joint->PreStep(dti);
     }
-    // perform iterations
 	for (int i = 0; i < iterations; i++)
 	{
         for (auto& arb : arbiters) arb.second.ApplyImpulse();
         for (auto& joint : joints) joint->ApplyImpulse();
 	}
 
-	// integrate Velocities
+	// integrate velocities
     for (auto& body : bodies)
 	{
-		body->position += dt * body->velocityLinear;
-		body->rotation += dt * body->velocityAngular;
-		body->force.Set(0.0f, 0.0f);
-		body->torque = 0.0f;
+        if (body->massInv == 0.0f) continue;
+
+		body->position += body->velocityLinear  * dt;
+		body->rotation += body->velocityAngular * dt;
 	}
 }
