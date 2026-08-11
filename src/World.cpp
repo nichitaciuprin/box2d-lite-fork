@@ -90,7 +90,7 @@ void World::Step(float dt)
         body->velocityLinear  += body->force  * body->massInv    * dt;
 		body->velocityAngular += body->torque * body->inertiaInv * dt;
 
-        body->force.Set(0.0f, 0.0f);
+        body->force = Vec2(0.0f, 0.0f);
 		body->torque = 0.0f;
 	}
 
