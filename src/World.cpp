@@ -95,12 +95,12 @@ void World::Step(float dt)
 	}
 
     {
-        for (auto& arb : arbiters) arb.second.PreStep(dti);
+        for (auto& arbiter : arbiters) arbiter.second.PreStep(dti);
         for (auto& joint : joints) joint->PreStep(dti);
     }
 	for (int i = 0; i < iterations; i++)
 	{
-        for (auto& arb : arbiters) arb.second.ApplyImpulse();
+        for (auto& arbiter : arbiters) arbiter.second.ApplyImpulse();
         for (auto& joint : joints) joint->ApplyImpulse();
 	}
 
