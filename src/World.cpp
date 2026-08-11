@@ -47,13 +47,13 @@ void World::BroadPhase()
 	for (int i =   0; i < (int)bodies.size(); i++)
     for (int j = i+1; j < (int)bodies.size(); j++)
 	{
-		Body* bi = bodies[i];
-        Body* bj = bodies[j];
+		Body* b1 = bodies[i];
+        Body* b2 = bodies[j];
 
-        if (bi->massInv == 0.0f && bj->massInv == 0.0f) continue;
+        if (b1->massInv == 0.0f && b2->massInv == 0.0f) continue;
 
-        Arbiter newArb(bi, bj);
-        ArbiterKey key(bi, bj);
+        Arbiter newArb(b1, b2);
+        ArbiterKey key(b1, b2);
 
         if (newArb.numContacts == 0)
         {

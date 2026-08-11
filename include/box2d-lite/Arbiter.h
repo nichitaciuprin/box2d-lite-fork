@@ -4,8 +4,8 @@
 * Permission to use, copy, modify, distribute and sell this software
 * and its documentation for any purpose is hereby granted without fee,
 * provided that the above copyright notice appear in all copies.
-* Erin Catto makes no representations about the suitability 
-* of this software for any purpose.  
+* Erin Catto makes no representations about the suitability
+* of this software for any purpose.
 * It is provided "as is" without express or implied warranty.
 */
 
@@ -46,6 +46,9 @@ struct Contact
 
 struct ArbiterKey
 {
+    Body* body1;
+	Body* body2;
+
 	ArbiterKey(Body* b1, Body* b2)
 	{
 		if (b1 < b2)
@@ -59,9 +62,6 @@ struct ArbiterKey
             body2 = b1;
 		}
 	}
-
-	Body* body1;
-	Body* body2;
 };
 
 struct Arbiter
