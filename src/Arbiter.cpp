@@ -149,7 +149,7 @@ void Arbiter::ApplyImpulse()
         {
             Vec2 vr = CalcRelativeVelocity(c, body1, body2);
             Vec2 normal = c->normal;
-            float impInit = c->massNormal * (-Dot(vr, normal) + c->bias);
+            float impInit = (-Dot(normal, vr) + c->bias) * c->massNormal;
             float impOld = c->Pn;
             float impNew = Max(impOld + impInit, 0.0f);
             float impDiff = impNew - impOld;
@@ -163,7 +163,7 @@ void Arbiter::ApplyImpulse()
         {
             Vec2 vr = CalcRelativeVelocity(c, body1, body2);
             Vec2 tangent = RotateRight(c->normal);
-            float impInit = c->massTangent * -Dot(vr, tangent);
+            float impInit = -Dot(tangent, vr) * c->massTangent;
             float impOld = c->Pt;
             float impNew = Clamp(impOld + impInit, -maxFriction, +maxFriction);
             float impDiff = impNew - impOld;
