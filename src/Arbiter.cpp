@@ -57,6 +57,8 @@ void Arbiter::Update(Contact* newContacts, int numNewContacts)
 {
 	Contact mergedContacts[2];
 
+    Contact* oldContacts = contacts;
+
 	for (int i = 0; i < numNewContacts; i++)
 	{
 		Contact* cNew = newContacts + i;
@@ -65,7 +67,7 @@ void Arbiter::Update(Contact* newContacts, int numNewContacts)
 
 		for (int j = 0; j < numContacts; j++)
 		{
-			Contact* cOld = contacts + j;
+			Contact* cOld = oldContacts + j;
 
 			if (cNew->feature.value == cOld->feature.value)
 			{
@@ -95,7 +97,7 @@ void Arbiter::Update(Contact* newContacts, int numNewContacts)
 	}
 
 	for (int i = 0; i < numNewContacts; i++)
-		contacts[i] = mergedContacts[i];
+		oldContacts[i] = mergedContacts[i];
 
 	numContacts = numNewContacts;
 }
