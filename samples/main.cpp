@@ -51,6 +51,8 @@ namespace
     int body_s_count = 0;
     int joint_s_count = 0;
 	Body* bomb = NULL;
+    Vec2 contactPoint;
+    bool contactPointExists = false;
 
 	World world(gravity, iterations);
 }
@@ -566,8 +568,17 @@ static void Mouse(GLFWwindow* window, int button, int action, int mods)
 
     // AddBox(coord);
 
-    Impulse impulse = { pos, { 0.0f, 1000.0f } };
-    world.Add(impulse);
+    if (contactPointExists)
+    {
+        contactPointExists = false;
+        Impulse impulse = { contactPoint, pos - contactPoint };
+        world.Add(impulse);
+    }
+    else
+    {
+        contactPointExists = true;
+        contactPoint = pos;
+    }
 }
 static void DrawText(int x, int y, const char* string)
 {
@@ -639,6 +650,14 @@ static void DrawArbiter(Arbiter* arbiter)
     glEnd();
     glPointSize(1.0f);
 }
+static void DrawLine(Vec2 p0, Vec2 p1)
+{
+    glColor3f(0.8f, 0.8f, 0.9f);
+	glBegin(GL_LINES);
+	glVertex2f(p0.x, p0.y);
+	glVertex2f(p1.x, p1.y);
+	glEnd();
+}
 static void Draw()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -676,6 +695,14 @@ static void Draw()
 
     for (auto& i : world.arbiters)
         DrawArbiter(&i.second);
+
+    if (contactPointExists)
+    {
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        auto pos = ScreenToWorld(xpos, ypos);
+        DrawLine(pos, contactPoint);
+    }
 
     ImGui::Render();
     ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
