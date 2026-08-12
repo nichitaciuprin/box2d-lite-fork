@@ -156,8 +156,8 @@ static void ComputeIncidentEdge(ClipVertex c[2], const Vec2& h, const Vec2& pos,
 int Collide(Contact* contacts, Body* bodyA, Body* bodyB)
 {
 	// Setup
-	Vec2 hA = 0.5f * bodyA->width;
-	Vec2 hB = 0.5f * bodyB->width;
+	Vec2 hA = 0.5f * bodyA->scale;
+	Vec2 hB = 0.5f * bodyB->scale;
 
 	Vec2 posA = bodyA->position;
 	Vec2 posB = bodyB->position;

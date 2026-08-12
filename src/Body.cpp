@@ -21,7 +21,7 @@ Body::Body()
 	torque = 0.0f;
 	friction = 0.2f;
 
-	width.Set(1.0f, 1.0f);
+	scale.Set(1.0f, 1.0f);
 	mass = FLT_MAX;
 	massInv = 0.0f;
 	inertia = FLT_MAX;
@@ -38,13 +38,13 @@ void Body::Set(const Vec2& w, float m)
 	torque = 0.0f;
 	friction = 0.2f;
 
-	width = w;
+	scale = w;
 	mass = m;
 
 	if (mass < FLT_MAX)
 	{
 		massInv = 1.0f / mass;
-		inertia = mass * (width.x * width.x + width.y * width.y) / 12.0f;
+		inertia = mass * (scale.x * scale.x + scale.y * scale.y) / 12.0f;
 		inertiaInv = 1.0f / inertia;
 	}
 	else

@@ -25,7 +25,7 @@ struct Body
 	Vec2 force;
 	float torque;
 
-	Vec2 width;
+	Vec2 scale;
 
 	float friction;
 	float mass, massInv;

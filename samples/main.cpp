@@ -77,7 +77,7 @@ static void LaunchBomb()
 static void AddGround(Body* b)
 {
     b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
-	b->position = { 0.0f, b->width.y * -0.5f };
+	b->position = { 0.0f, b->scale.y * -0.5f };
 	world.Add(b);
 }
 static void AddBox(Vec2 coord)
@@ -594,7 +594,7 @@ static void DrawBody(Body* body)
 {
 	Mat22 R(body->rotation);
 	Vec2 p = body->position;
-	Vec2 h = 0.5f * body->width;
+	Vec2 h = 0.5f * body->scale;
 
 	Vec2 v1 = p + R * Vec2(-h.x, -h.y);
 	Vec2 v2 = p + R * Vec2(+h.x, -h.y);
