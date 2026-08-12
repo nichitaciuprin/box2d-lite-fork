@@ -31,14 +31,14 @@ static inline void UpdateVelocity(Body* body, Vec2 contactPoint, Vec2 impulse)
 {
     Vec2 r = body->position - contactPoint;
     body->velocityLinear  += impulse * body->massInv;
-    body->velocityAngular += Cross(impulse, r) * body->inertiaInv;
+    body->velocityAngular += Cross(r, impulse) * body->inertiaInv;
 }
 static inline void UpdateVelocity(Contact* c, Body* b1, Body* b2, Vec2 impulse)
 {
-    b1->velocityLinear -= b1->massInv * impulse;
-    b2->velocityLinear += b2->massInv * impulse;
-    b1->velocityAngular -= b1->inertiaInv * Cross(c->r1, impulse);
-    b2->velocityAngular += b2->inertiaInv * Cross(c->r2, impulse);
+    b1->velocityLinear -= impulse * b1->massInv;
+    b2->velocityLinear += impulse * b2->massInv;
+    b1->velocityAngular -= Cross(c->r1, impulse) * b1->inertiaInv;
+    b2->velocityAngular += Cross(c->r2, impulse) * b2->inertiaInv;
 }
 
 Arbiter::Arbiter(Body* b1, Body* b2)
