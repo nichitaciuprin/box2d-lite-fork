@@ -27,50 +27,15 @@ void World::Add(Body* body)
 {
 	bodies.push_back(body);
 }
-
 void World::Add(Joint* joint)
 {
 	joints.push_back(joint);
 }
-
 void World::Clear()
 {
 	bodies.clear();
 	joints.clear();
 	arbiters.clear();
-}
-
-void World::BroadPhase()
-{
-	// O(n^2) broad-phase
-
-	for (int i =   0; i < (int)bodies.size(); i++)
-    for (int j = i+1; j < (int)bodies.size(); j++)
-	{
-		Body* b1 = bodies[i];
-        Body* b2 = bodies[j];
-
-        if (b1->massInv == 0.0f && b2->massInv == 0.0f) continue;
-
-        Arbiter newArb(b1, b2);
-        ArbiterKey key(b1, b2);
-
-        if (newArb.numContacts == 0)
-        {
-            arbiters.erase(key);
-            continue;
-        }
-
-        auto iter = arbiters.find(key);
-
-        if (iter == arbiters.end())
-        {
-            arbiters.insert(ArbPair(key, newArb));
-            continue;
-        }
-
-        iter->second.Update(newArb.contacts, newArb.numContacts);
-	}
 }
 
 void World::Step(float dt)
@@ -111,5 +76,38 @@ void World::Step(float dt)
 
 		body->position += body->velocityLinear  * dt;
 		body->rotation += body->velocityAngular * dt;
+	}
+}
+
+void World::BroadPhase()
+{
+	// O(n^2) broad-phase
+
+	for (int i =   0; i < (int)bodies.size(); i++)
+    for (int j = i+1; j < (int)bodies.size(); j++)
+	{
+		Body* b1 = bodies[i];
+        Body* b2 = bodies[j];
+
+        if (b1->massInv == 0.0f && b2->massInv == 0.0f) continue;
+
+        Arbiter newArb(b1, b2);
+        ArbiterKey key(b1, b2);
+
+        if (newArb.numContacts == 0)
+        {
+            arbiters.erase(key);
+            continue;
+        }
+
+        auto iter = arbiters.find(key);
+
+        if (iter == arbiters.end())
+        {
+            arbiters.insert(ArbPair(key, newArb));
+            continue;
+        }
+
+        iter->second.Update(newArb.contacts, newArb.numContacts);
 	}
 }
