@@ -32,7 +32,9 @@ namespace
     int width = 1280;
 	int height = 720;
 	float zoom = 10.0f;
+    // float zoom = 1.0f;
 	float pan_y = 8.0f;
+    // float pan_y = 0.0f;
 	GLFWwindow* window = NULL;
 
     float timestep = 1.0f / 60.0f;
@@ -74,6 +76,15 @@ static void AddGround(Body* b)
     b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
 	b->position = { 0.0f, b->width.y * -0.5f };
 	world.Add(b);
+}
+static void AddBox(Vec2 coord)
+{
+    auto b = &body_s[body_s_count];
+    // b->Set(Vec2(1.0f, 1.0f), 200.0f);
+    b->Set(Vec2(1.0f, 1.0f), 10.0f);
+	b->position = coord;
+	world.Add(b);
+    body_s_count++;
 }
 
 static void Demo1(Body* b, Joint* j)
@@ -436,6 +447,43 @@ static void InitDemo(int index)
 	demos[index](body_s, joint_s);
 }
 
+// static inline Vec2 MatrixProjOrthographic(float width, float height)
+// {
+//     float w = 2.0f / width;
+//     float h = 2.0f / height;
+// }
+
+Vec2 ScreenToWorld(float x, float y)
+{
+    Vec2 result;
+
+    Vec2 ndc;
+    ndc.x = x / width;
+    ndc.y = y / height;
+    ndc.y = 1.0f - ndc.y;
+    ndc.x = ndc.x * 2.0f - 1.0f;
+    ndc.y = ndc.y * 2.0f - 1.0f;
+
+    if (width > height)
+    {
+        float aspect = float(width) / float(height);
+        result.x = ndc.x * aspect;
+        result.y = ndc.y;
+    }
+    else
+    {
+        float aspect = float(height) / float(width);
+        result.x = ndc.x;
+        result.y = ndc.y * aspect;
+    }
+
+    result.x *= zoom;
+    result.y *= zoom;
+
+    result.y += pan_y;
+
+    return result;
+}
 static void ErrorCallback(int error, const char* description)
 {
 	printf("GLFW error %d: %s\n", error, description);
@@ -515,9 +563,11 @@ static void Mouse(GLFWwindow* window, int button, int action, int mods)
 {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
     {
-        double xpos, ypos;
-        glfwGetCursorPos(window, &xpos, &ypos);
-        printf("%f, %f\n", xpos, ypos);
+        double x, y;
+        glfwGetCursorPos(window, &x, &y);
+
+        auto coord = ScreenToWorld(x, y);
+        AddBox(coord);
     }
 }
 static void DrawText(int x, int y, const char* string)
