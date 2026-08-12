@@ -448,12 +448,6 @@ static void InitDemo(int index)
 	demos[index](body_s, joint_s);
 }
 
-// static inline Vec2 MatrixProjOrthographic(float width, float height)
-// {
-//     float w = 2.0f / width;
-//     float h = 2.0f / height;
-// }
-
 Vec2 ScreenToWorld(float x, float y)
 {
     Vec2 result;
