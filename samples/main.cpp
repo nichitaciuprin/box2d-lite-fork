@@ -436,9 +436,89 @@ static void InitDemo(int index)
 	demos[index](body_s, joint_s);
 }
 
-static void glfwErrorCallback(int error, const char* description)
+static void ErrorCallback(int error, const char* description)
 {
 	printf("GLFW error %d: %s\n", error, description);
+}
+static void SetProj()
+{
+    glViewport(0, 0, width, height);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+    float aspect = float(width) / float(height);
+	if (width >= height)
+	{
+		// aspect >= 1, set the height from -1 to 1, with larger width
+		glOrtho(-zoom * aspect, zoom * aspect, -zoom + pan_y, zoom + pan_y, -1.0, 1.0);
+	}
+	else
+	{
+		// aspect < 1, set the width to -1 to 1, with larger height
+		glOrtho(-zoom, zoom, -zoom / aspect + pan_y, zoom / aspect + pan_y, -1.0, 1.0);
+	}
+}
+static void Reshape(GLFWwindow*, int w, int h)
+{
+	width = w;
+	height = h > 0 ? h : 1;
+    SetProj();
+}
+static void Keyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	if (action != GLFW_PRESS) return;
+
+	switch (key)
+	{
+        case GLFW_KEY_ESCAPE:
+            glfwSetWindowShouldClose(window, GL_TRUE);
+            break;
+
+        case GLFW_KEY_P:
+            pause = !pause;
+            break;
+
+        case GLFW_KEY_RIGHT_BRACKET:
+            forward = true;
+            break;
+
+        case GLFW_KEY_A:
+            World::accumulateImpulses = !World::accumulateImpulses;
+            break;
+
+        case GLFW_KEY_S:
+            World::positionCorrection = !World::positionCorrection;
+            break;
+
+        case GLFW_KEY_D:
+            World::warmStarting = !World::warmStarting;
+            break;
+
+        case GLFW_KEY_SPACE:
+            LaunchBomb();
+            break;
+
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+            InitDemo(key - GLFW_KEY_1);
+            break;
+	}
+}
+static void Mouse(GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+    {
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        printf("%f, %f\n", xpos, ypos);
+    }
 }
 static void DrawText(int x, int y, const char* string)
 {
@@ -528,86 +608,6 @@ static void DrawArbiters()
     glEnd();
     glPointSize(1.0f);
 }
-static void Keyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-	if (action != GLFW_PRESS) return;
-
-	switch (key)
-	{
-        case GLFW_KEY_ESCAPE:
-            glfwSetWindowShouldClose(window, GL_TRUE);
-            break;
-
-        case GLFW_KEY_P:
-            pause = !pause;
-            break;
-
-        case GLFW_KEY_RIGHT_BRACKET:
-            forward = true;
-            break;
-
-        case GLFW_KEY_A:
-            World::accumulateImpulses = !World::accumulateImpulses;
-            break;
-
-        case GLFW_KEY_S:
-            World::positionCorrection = !World::positionCorrection;
-            break;
-
-        case GLFW_KEY_D:
-            World::warmStarting = !World::warmStarting;
-            break;
-
-        case GLFW_KEY_SPACE:
-            LaunchBomb();
-            break;
-
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-            InitDemo(key - GLFW_KEY_1);
-            break;
-	}
-}
-static void SetProj()
-{
-    glViewport(0, 0, width, height);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
-    float aspect = float(width) / float(height);
-	if (width >= height)
-	{
-		// aspect >= 1, set the height from -1 to 1, with larger width
-		glOrtho(-zoom * aspect, zoom * aspect, -zoom + pan_y, zoom + pan_y, -1.0, 1.0);
-	}
-	else
-	{
-		// aspect < 1, set the width to -1 to 1, with larger height
-		glOrtho(-zoom, zoom, -zoom / aspect + pan_y, zoom / aspect + pan_y, -1.0, 1.0);
-	}
-}
-static void Reshape(GLFWwindow*, int w, int h)
-{
-	width = w;
-	height = h > 0 ? h : 1;
-    SetProj();
-}
-static void Mouse(GLFWwindow* window, int button, int action, int mods)
-{
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-    {
-        double xpos, ypos;
-        glfwGetCursorPos(window, &xpos, &ypos);
-        printf("%f, %f\n", xpos, ypos);
-    }
-}
 static void Draw()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -651,7 +651,7 @@ static void Draw()
 }
 static void InitWindow()
 {
-    glfwSetErrorCallback(glfwErrorCallback);
+    glfwSetErrorCallback(ErrorCallback);
 
 	if (glfwInit() == 0)
 	{
