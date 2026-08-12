@@ -167,14 +167,13 @@ static void Demo5(Body* b, Joint* j)
 	AddGround(b);
 	++b; ++numBodies;
 
-	Vec2 x(-6.0f, 0.75f);
-	Vec2 y;
+    Vec2 x = { -6.0f, 0.75f };
 
 	for (int i = 0; i < 12; ++i)
 	{
-		y = x;
+		Vec2 y = x;
 
-		for (int j = i; j < 12; ++j)
+		for (int j = i; j < 12; j++)
 		{
 			b->Set(Vec2(1.0f, 1.0f), 10.0f);
 			b->friction = 0.2f;
@@ -185,7 +184,6 @@ static void Demo5(Body* b, Joint* j)
 			y += Vec2(1.125f, 0.0f);
 		}
 
-		//x += Vec2(0.5625f, 1.125f);
 		x += Vec2(0.5625f, 2.0f);
 	}
 }
