@@ -30,7 +30,7 @@ union FeaturePair
 
 struct Contact
 {
-	Contact() : Pn(0.0f), Pt(0.0f), Pnb(0.0f) {}
+	Contact() : Pn(0.0f), Pt(0.0f) {}
 
 	Vec2 position;
 	Vec2 normal;
@@ -38,7 +38,6 @@ struct Contact
 	float separation;
 	float Pn;	// accumulated normal impulse
 	float Pt;	// accumulated tangent impulse
-	float Pnb;	// accumulated normal impulse for position bias
 	float massNormal, massTangent;
 	float bias;
 	FeaturePair feature;

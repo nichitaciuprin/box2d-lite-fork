@@ -87,13 +87,11 @@ void Arbiter::Update(Contact* newContacts, int numNewContacts)
         {
             c->Pn = cOld->Pn;
             c->Pt = cOld->Pt;
-            c->Pnb = cOld->Pnb;
         }
         else
         {
             c->Pn = 0.0f;
             c->Pt = 0.0f;
-            c->Pnb = 0.0f;
         }
 	}
 
