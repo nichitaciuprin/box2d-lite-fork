@@ -591,7 +591,7 @@ static void Mouse(GLFWwindow* window, int button, int action, int mods)
     }
 }
 
-int main(int, char**)
+int main()
 {
 	glfwSetErrorCallback(glfwErrorCallback);
 
