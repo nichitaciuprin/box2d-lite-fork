@@ -63,11 +63,16 @@ static void LaunchBomb()
 	bomb->velocityAngular = Random(-20.0f, 20.0f);
 }
 
+static void AddGround(Body* b)
+{
+    b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
+	b->position = { 0.0f, b->width.y * -0.5f };
+	world.Add(b);
+}
+
 static void Demo1(Body* b, Joint* j)
 {
-	b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
-	b->position.Set(0.0f, -0.5f * b->width.y);
-	world.Add(b);
+    AddGround(b);
 	b++; numBodies++;
 
 	b->Set(Vec2(1.0f, 1.0f), 200.0f);
@@ -78,9 +83,7 @@ static void Demo1(Body* b, Joint* j)
 static void Demo2(Body* b, Joint* j)
 {
     auto b1 = b;
-	b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
-	b->position.Set(0.0f, -0.5f * b->width.y);
-	world.Add(b);
+	AddGround(b);
     b++; numBodies++;
 
 	auto b2 = b;
@@ -97,9 +100,7 @@ static void Demo2(Body* b, Joint* j)
 }
 static void Demo3(Body* b, Joint* j)
 {
-	b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
-	b->position.Set(0.0f, -0.5f * b->width.y);
-	world.Add(b);
+	AddGround(b);
 	++b; ++numBodies;
 
 	b->Set(Vec2(13.0f, 0.25f), FLT_MAX);
@@ -148,9 +149,7 @@ static void Demo3(Body* b, Joint* j)
 }
 static void Demo4(Body* b, Joint* j)
 {
-	b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
-	b->position.Set(0.0f, -0.5f * b->width.y);
-	world.Add(b);
+	AddGround(b);
 	++b; ++numBodies;
 
 	for (int i = 0; i < 10; ++i)
@@ -165,9 +164,7 @@ static void Demo4(Body* b, Joint* j)
 }
 static void Demo5(Body* b, Joint* j)
 {
-	b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
-	b->position.Set(0.0f, -0.5f * b->width.y);
-	world.Add(b);
+	AddGround(b);
 	++b; ++numBodies;
 
 	Vec2 x(-6.0f, 0.75f);
@@ -194,32 +191,33 @@ static void Demo5(Body* b, Joint* j)
 }
 static void Demo6(Body* b, Joint* j)
 {
-	Body* b1 = b + 0;
-	b1->Set(Vec2(100.0f, 20.0f), FLT_MAX);
-	b1->position.Set(0.0f, -0.5f * b1->width.y);
-	world.Add(b1);
+	Body* b1 = b;
+	AddGround(b);
+    ++b; ++numBodies;
 
-	Body* b2 = b + 1;
+	Body* b2 = b;
 	b2->Set(Vec2(12.0f, 0.25f), 100.0f);
 	b2->position.Set(0.0f, 1.0f);
 	world.Add(b2);
+    ++b; ++numBodies;
 
-	Body* b3 = b + 2;
+	Body* b3 = b;
 	b3->Set(Vec2(0.5f, 0.5f), 25.0f);
 	b3->position.Set(-5.0f, 2.0f);
 	world.Add(b3);
+    ++b; ++numBodies;
 
-	Body* b4 = b + 3;
+	Body* b4 = b;
 	b4->Set(Vec2(0.5f, 0.5f), 25.0f);
 	b4->position.Set(-5.5f, 2.0f);
 	world.Add(b4);
+    ++b; ++numBodies;
 
-	Body* b5 = b + 4;
+	Body* b5 = b;
 	b5->Set(Vec2(1.0f, 1.0f), 100.0f);
 	b5->position.Set(5.5f, 15.0f);
 	world.Add(b5);
-
-	numBodies += 5;
+    ++b; ++numBodies;
 
 	j->Set(b1, b2, Vec2(0.0f, 1.0f));
 	world.Add(j);
@@ -228,9 +226,7 @@ static void Demo6(Body* b, Joint* j)
 }
 static void Demo7(Body* b, Joint* j)
 {
-	b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
-	b->position.Set(0.0f, -0.5f * b->width.y);
-	world.Add(b);
+	AddGround(b);
 	++b; ++numBodies;
 
 	const int numPlanks = 15;
@@ -281,9 +277,7 @@ static void Demo7(Body* b, Joint* j)
 static void Demo8(Body* b, Joint* j)
 {
 	Body* b1 = b;
-	b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
-	b->position.Set(0.0f, -0.5f * b->width.y);
-	world.Add(b);
+	AddGround(b);
 	++b; ++numBodies;
 
 	b->Set(Vec2(12.0f, 0.5f), FLT_MAX);
@@ -355,13 +349,9 @@ static void Demo8(Body* b, Joint* j)
 }
 static void Demo9(Body* b, Joint* j)
 {
-	b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
-	b->position.Set(0.0f, -0.5f * b->width.y);
-	world.Add(b);
-
-	Body * b1 = b;
-	++b;
-	++numBodies;
+	Body* b1 = b;
+	AddGround(b);
+	++b; ++numBodies;
 
 	float mass = 10.0f;
 
