@@ -590,24 +590,6 @@ static void DrawArbiter(Arbiter* arbiter)
     glEnd();
     glPointSize(1.0f);
 }
-static void DrawArbiters()
-{
-    glPointSize(4.0f);
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glBegin(GL_POINTS);
-    for (auto& i : world.arbiters)
-    {
-        auto& arbiter = i.second;
-
-        for (int i = 0; i < arbiter.numContacts; i++)
-        {
-            Vec2 p = arbiter.contacts[i].position;
-            glVertex2f(p.x, p.y);
-        }
-    }
-    glEnd();
-    glPointSize(1.0f);
-}
 static void Draw()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
