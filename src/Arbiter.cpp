@@ -55,28 +55,26 @@ Arbiter::Arbiter(Body* b1, Body* b2)
 
 void Arbiter::Update(Contact* newContacts, int numNewContacts)
 {
-	Contact mergedContacts[2];
-
-    Contact* oldContacts = contacts;
+	Contact result[2];
 
     for (int i = 0; i < numNewContacts; i++)
-        mergedContacts[i] = newContacts[i];
+        result[i] = newContacts[i];
 
 	for (int i = 0; i < numNewContacts; i++)
 	{
 		for (int j = 0; j < numContacts; j++)
 		{
-			if (newContacts[i].feature.value != oldContacts[j].feature.value) continue;
+			if (newContacts[i].feature.value != contacts[j].feature.value) continue;
 
             if (World::warmStarting)
             {
-                mergedContacts[i].Pn = oldContacts[j].Pn;
-                mergedContacts[i].Pt = oldContacts[j].Pt;
+                result[i].Pn = contacts[j].Pn;
+                result[i].Pt = contacts[j].Pt;
             }
             else
             {
-                mergedContacts[i].Pn = 0.0f;
-                mergedContacts[i].Pt = 0.0f;
+                result[i].Pn = 0.0f;
+                result[i].Pt = 0.0f;
             }
 
             break;
@@ -84,7 +82,7 @@ void Arbiter::Update(Contact* newContacts, int numNewContacts)
 	}
 
 	for (int i = 0; i < numNewContacts; i++)
-		oldContacts[i] = mergedContacts[i];
+		contacts[i] = result[i];
 
 	numContacts = numNewContacts;
 }
