@@ -122,16 +122,16 @@ void World::BroadPhase()
             continue;
         }
 
-        auto old_ = &iter->second;
-        auto new_ = &newArb;
+        auto a_old = &iter->second;
+        auto a_new = &newArb;
 
         if (World::warmStarting)
         {
-            for (int i = 0; i < new_->numContacts; i++)
-            for (int j = 0; j < old_->numContacts; j++)
+            for (int i = 0; i < a_new->numContacts; i++)
+            for (int j = 0; j < a_old->numContacts; j++)
             {
-                auto& c_new = new_->contacts[i];
-                auto& c_old = old_->contacts[j];
+                auto& c_new = a_new->contacts[i];
+                auto& c_old = a_old->contacts[j];
 
                 if (c_new.feature.value != c_old.feature.value) continue;
 
@@ -142,6 +142,6 @@ void World::BroadPhase()
             }
         }
 
-        *old_ = *new_;
+        *a_old = *a_new;
 	}
 }
