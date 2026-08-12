@@ -564,9 +564,10 @@ static void Mouse(GLFWwindow* window, int button, int action, int mods)
 
     auto pos = ScreenToWorld(x, y);
 
-    world.Add({ pos, { 0.0f, 1000.0f } });
-
     // AddBox(coord);
+
+    Impulse impulse = { pos, { 0.0f, 1000.0f } };
+    world.Add(impulse);
 }
 static void DrawText(int x, int y, const char* string)
 {
