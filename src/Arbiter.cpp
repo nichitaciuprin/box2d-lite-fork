@@ -27,6 +27,12 @@ static inline Vec2 CalcRelativeVelocity(Contact* c, Body* b1, Body* b2)
     Vec2 vel2 = b2->velocityLinear + RotateLeft(c->r2) * b2->velocityAngular;
     return vel2 - vel1;
 }
+static inline void UpdateVelocity(Body* body, Vec2 contactPoint, Vec2 impulse)
+{
+    Vec2 r = body->position - contactPoint;
+    body->velocityLinear  += impulse * body->massInv;
+    body->velocityAngular += Cross(impulse, r) * body->inertiaInv;
+}
 static inline void UpdateVelocity(Contact* c, Body* b1, Body* b2, Vec2 impulse)
 {
     b1->velocityLinear -= b1->massInv * impulse;
@@ -129,5 +135,9 @@ void Arbiter::ApplyImpulse()
             UpdateVelocity(c, body1, body2, impulse);
             c->Pt = impNew;
         }
+
+        // {
+        //     Vec2 vel1 = body1->velocityLinear + RotateLeft(c->r1) * body1->velocityAngular;
+        // }
 	}
 }

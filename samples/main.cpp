@@ -564,7 +564,7 @@ static void Mouse(GLFWwindow* window, int button, int action, int mods)
 
     auto pos = ScreenToWorld(x, y);
 
-    world.Add({ pos, { 0.0f, 1.0f } });
+    world.Add({ pos, { 0.0f, 1000.0f } });
 
     // AddBox(coord);
 }

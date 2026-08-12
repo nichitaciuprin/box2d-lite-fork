@@ -67,15 +67,18 @@ void World::Step(float dt)
         body->velocityLinear  += body->force  * body->massInv    * dt;
 		body->velocityAngular += body->torque * body->inertiaInv * dt;
 
-        for (auto& imp : impulse_s)
-        {
-            // printf("%f %f\n", imp->position.x, )
-            printf("applied impulse\n");
-        }
-        impulse_s.clear();
-
         body->force = { 0.0f, 0.0f };
 		body->torque = 0.0f;
+
+        for (auto& imp : impulse_s)
+        {
+            auto contactPoint = imp.position;
+            auto impulse = imp.velocity;
+            Vec2 r = body->position - contactPoint;
+            body->velocityLinear  += impulse * body->massInv;
+            body->velocityAngular += Cross(impulse, r) * body->inertiaInv;
+        }
+        impulse_s.clear();
 	}
 
     {
