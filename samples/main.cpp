@@ -44,6 +44,7 @@ namespace
 	int demoIndex = 0;
 
 	Vec2 gravity = { 0.0f, -10.0f };
+    // Vec2 gravity = { 0.0f, -10.0f };
 	int iterations = 10;
 	Body body_s[200];
 	Joint joint_s[100];
@@ -561,14 +562,14 @@ static void Keyboard(GLFWwindow* window, int key, int scancode, int action, int 
 }
 static void Mouse(GLFWwindow* window, int button, int action, int mods)
 {
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-    {
-        double x, y;
-        glfwGetCursorPos(window, &x, &y);
+    if (action != GLFW_PRESS) return;
+    if (button != GLFW_MOUSE_BUTTON_LEFT) return;
 
-        auto coord = ScreenToWorld(x, y);
-        AddBox(coord);
-    }
+    double x, y;
+    glfwGetCursorPos(window, &x, &y);
+
+    auto coord = ScreenToWorld(x, y);
+    AddBox(coord);
 }
 static void DrawText(int x, int y, const char* string)
 {
