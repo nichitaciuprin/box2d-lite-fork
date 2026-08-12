@@ -650,6 +650,15 @@ static void DrawArbiter(Arbiter* arbiter)
     glEnd();
     glPointSize(1.0f);
 }
+static void DrawPoint(Vec2 p)
+{
+    glPointSize(4.0f);
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glBegin(GL_POINTS);
+    glVertex2f(p.x, p.y);
+    glEnd();
+    glPointSize(1.0f);
+}
 static void DrawLine(Vec2 p0, Vec2 p1)
 {
     glColor3f(0.8f, 0.8f, 0.9f);
