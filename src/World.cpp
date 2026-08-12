@@ -122,6 +122,6 @@ void World::BroadPhase()
             continue;
         }
 
-        UpdateArb(iter->second, &newArb);
+        UpdateArb(&iter->second, &newArb);
 	}
 }

@@ -53,7 +53,7 @@ Arbiter::Arbiter(Body* b1, Body* b2)
 	friction = sqrtf(body1->friction * body2->friction);
 }
 
-void Arbiter::UpdateArb(Arbiter* old_, Arbiter* new_)
+void UpdateArb(Arbiter* old_, Arbiter* new_)
 {
     Contact result[2];
 

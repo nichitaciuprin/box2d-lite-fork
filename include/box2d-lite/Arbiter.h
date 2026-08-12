@@ -78,10 +78,9 @@ public:
     void Update(Arbiter* arbNew);
 	void PreStep(float inv_dt);
 	void ApplyImpulse();
-
-private:
-    void Arbiter::UpdateArb(Arbiter* arbOld, Arbiter* arbNew);
 };
+
+void UpdateArb(Arbiter* old_, Arbiter* new_);
 
 // This is used by std::set
 inline bool operator < (const ArbiterKey& a1, const ArbiterKey& a2)
