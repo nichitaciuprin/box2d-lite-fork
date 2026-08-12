@@ -36,9 +36,10 @@ public:
 
 	World(Vec2 gravity, int iterations) : gravity(gravity), iterations(iterations) {}
 
+	void Clear();
 	void Add(Body* body);
 	void Add(Joint* joint);
-	void Clear();
+
 	void Step(float dt);
 
 private:
