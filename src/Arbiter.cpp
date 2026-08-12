@@ -55,9 +55,6 @@ Arbiter::Arbiter(Body* b1, Body* b2)
 
 void Arbiter::PreStep(float dti)
 {
-	const float k_allowedPenetration = 0.01f;
-	const float k_biasFactor = World::positionCorrection ? 0.2f : 0.0f;
-
 	for (int i = 0; i < numContacts; i++)
 	{
 		Contact* c = contacts + i;
@@ -84,7 +81,17 @@ void Arbiter::PreStep(float dti)
 
 		c->massNormal  = 1.0f / massNormal;
 		c->massTangent = 1.0f / massTangent;
-		c->bias = Min(c->separation + k_allowedPenetration, 0.0f) * -k_biasFactor * dti;
+
+        if (World::positionCorrection)
+        {
+            const float k_allowedPenetration = 0.01f;
+	        const float k_biasFactor = 0.2f;
+		    c->bias = -Min(c->separation + k_allowedPenetration, 0.0f) * k_biasFactor * dti;
+        }
+        else
+        {
+            c->bias = 0.0f;
+        }
 
         // apply normal and friction impulse
         Vec2 impulse = normal * c->Pn + tangent * c->Pt;

@@ -52,6 +52,11 @@ void World::Step(float dt)
 	// determine overlapping bodies and update contact points
 	BroadPhase();
 
+    // for (auto& a : arbiters)
+    // for (auto& c : a.second.contacts)
+    //     printf("%f\n", c.separation);
+    // printf("===========\n");
+
 	// integrate forces
     for (auto& body : bodies)
 	{

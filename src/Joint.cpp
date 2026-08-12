@@ -68,13 +68,9 @@ void Joint::PreStep(float inv_dt)
 	Vec2 dp = p2 - p1;
 
 	if (World::positionCorrection)
-	{
 		bias = -biasFactor * inv_dt * dp;
-	}
 	else
-	{
-		bias.Set(0.0f, 0.0f);
-	}
+		bias = { 0.0f, 0.0f };
 
 	if (World::warmStarting)
 	{
