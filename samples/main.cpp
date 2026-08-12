@@ -32,17 +32,18 @@ namespace
 	float pan_y = 8.0f;
 	GLFWwindow* window = NULL;
 
-    float timeStep = 1.0f / 60.0f;
-	int iterations = 10;
-	Vec2 gravity = { 0.0f, -10.0f };
+    float timestep = 1.0f / 60.0f;
     bool pause = false;
     bool forward = false;
+
 	int demoIndex = 0;
 
-	Body bodies[200];
-	Joint joints[100];
-    int numBodies = 0;
-    int numJoints = 0;
+	Vec2 gravity = { 0.0f, -10.0f };
+	int iterations = 10;
+	Body body_s[200];
+	Joint joint_s[100];
+    int body_s_count = 0;
+    int joint_s_count = 0;
 	Body* bomb = NULL;
 
 	World world(gravity, iterations);
@@ -52,11 +53,11 @@ static void LaunchBomb()
 {
 	if (!bomb)
 	{
-		bomb = bodies + numBodies;
+		bomb = body_s + body_s_count;
 		bomb->Set(Vec2(1.0f, 1.0f), 50.0f);
 		bomb->friction = 0.2f;
 		world.Add(bomb);
-		++numBodies;
+		body_s_count++;
 	}
 
 	bomb->position.Set(Random(-15.0f, 15.0f), 15.0f);
@@ -75,18 +76,18 @@ static void AddGround(Body* b)
 static void Demo1(Body* b, Joint* j)
 {
     AddGround(b);
-	b++; numBodies++;
+	b++; body_s_count++;
 
 	b->Set(Vec2(1.0f, 1.0f), 200.0f);
 	b->position.Set(0.0f, 4.0f);
 	world.Add(b);
-	b++; numBodies++;
+	b++; body_s_count++;
 }
 static void Demo2(Body* b, Joint* j)
 {
     auto b1 = b;
 	AddGround(b);
-    b++; numBodies++;
+    b++; body_s_count++;
 
 	auto b2 = b;
 	b2->Set(Vec2(1.0f, 1.0f), 100.0f);
@@ -94,44 +95,44 @@ static void Demo2(Body* b, Joint* j)
 	b2->position.Set(9.0f, 11.0f);
 	b2->rotation = 0.0f;
 	world.Add(b2);
-    b++; numBodies++;
+    b++; body_s_count++;
 
     j->Set(b1, b2, Vec2(0.0f, 11.0f));
 	world.Add(j);
-	numJoints++;
+	joint_s_count++;
 }
 static void Demo3(Body* b, Joint* j)
 {
 	AddGround(b);
-	++b; ++numBodies;
+	++b; ++body_s_count;
 
 	b->Set(Vec2(13.0f, 0.25f), FLT_MAX);
 	b->position.Set(-2.0f, 11.0f);
 	b->rotation = -0.25f;
 	world.Add(b);
-	++b; ++numBodies;
+	++b; ++body_s_count;
 
 	b->Set(Vec2(0.25f, 1.0f), FLT_MAX);
 	b->position.Set(5.25f, 9.5f);
 	world.Add(b);
-	++b; ++numBodies;
+	++b; ++body_s_count;
 
 	b->Set(Vec2(13.0f, 0.25f), FLT_MAX);
 	b->position.Set(2.0f, 7.0f);
 	b->rotation = 0.25f;
 	world.Add(b);
-	++b; ++numBodies;
+	++b; ++body_s_count;
 
 	b->Set(Vec2(0.25f, 1.0f), FLT_MAX);
 	b->position.Set(-5.25f, 5.5f);
 	world.Add(b);
-	++b; ++numBodies;
+	++b; ++body_s_count;
 
 	b->Set(Vec2(13.0f, 0.25f), FLT_MAX);
 	b->position.Set(-2.0f, 3.0f);
 	b->rotation = -0.25f;
 	world.Add(b);
-	++b; ++numBodies;
+	++b; ++body_s_count;
 
 	float friction[5] = {0.75f, 0.5f, 0.35f, 0.1f, 0.0f};
 	for (int i = 0; i < 5; ++i)
@@ -140,19 +141,19 @@ static void Demo3(Body* b, Joint* j)
 		b->friction = friction[i];
 		b->position.Set(-7.5f + 2.0f * i, 14.0f);
 		world.Add(b);
-		++b; ++numBodies;
+		++b; ++body_s_count;
 	}
 
     // b->Set(Vec2(0.5f, 0.5f), 25.0f);
     // b->friction = 100.75f;
     // b->position.Set(-7.5f + 2.0f, 14.0f);
     // world.Add(b);
-    // ++b; ++numBodies;
+    // ++b; ++body_s_count;
 }
 static void Demo4(Body* b, Joint* j)
 {
 	AddGround(b);
-	++b; ++numBodies;
+	++b; ++body_s_count;
 
 	for (int i = 0; i < 10; ++i)
 	{
@@ -161,13 +162,13 @@ static void Demo4(Body* b, Joint* j)
 		float x = Random(-0.1f, 0.1f);
 		b->position.Set(x, 0.51f + 1.05f * i);
 		world.Add(b);
-		++b; ++numBodies;
+		++b; ++body_s_count;
 	}
 }
 static void Demo5(Body* b, Joint* j)
 {
 	AddGround(b);
-	++b; ++numBodies;
+	++b; ++body_s_count;
 
     Vec2 x = { -6.0f, 0.75f };
 
@@ -181,7 +182,7 @@ static void Demo5(Body* b, Joint* j)
 			b->friction = 0.2f;
 			b->position = y;
 			world.Add(b);
-			++b; ++numBodies;
+			++b; ++body_s_count;
 
 			y += Vec2(1.125f, 0.0f);
 		}
@@ -193,41 +194,41 @@ static void Demo6(Body* b, Joint* j)
 {
 	Body* b1 = b;
 	AddGround(b);
-    ++b; ++numBodies;
+    ++b; ++body_s_count;
 
 	Body* b2 = b;
 	b2->Set(Vec2(12.0f, 0.25f), 100.0f);
 	b2->position.Set(0.0f, 1.0f);
 	world.Add(b2);
-    ++b; ++numBodies;
+    ++b; ++body_s_count;
 
 	Body* b3 = b;
 	b3->Set(Vec2(0.5f, 0.5f), 25.0f);
 	b3->position.Set(-5.0f, 2.0f);
 	world.Add(b3);
-    ++b; ++numBodies;
+    ++b; ++body_s_count;
 
 	Body* b4 = b;
 	b4->Set(Vec2(0.5f, 0.5f), 25.0f);
 	b4->position.Set(-5.5f, 2.0f);
 	world.Add(b4);
-    ++b; ++numBodies;
+    ++b; ++body_s_count;
 
 	Body* b5 = b;
 	b5->Set(Vec2(1.0f, 1.0f), 100.0f);
 	b5->position.Set(5.5f, 15.0f);
 	world.Add(b5);
-    ++b; ++numBodies;
+    ++b; ++body_s_count;
 
 	j->Set(b1, b2, Vec2(0.0f, 1.0f));
 	world.Add(j);
 
-	numJoints += 1;
+	joint_s_count += 1;
 }
 static void Demo7(Body* b, Joint* j)
 {
 	AddGround(b);
-	++b; ++numBodies;
+	++b; ++body_s_count;
 
 	const int numPlanks = 15;
 	float mass = 50.0f;
@@ -238,7 +239,7 @@ static void Demo7(Body* b, Joint* j)
 		b->friction = 0.2f;
 		b->position.Set(-8.5f + 1.25f * i, 5.0f);
 		world.Add(b);
-		++b; ++numBodies;
+		++b; ++body_s_count;
 	}
 
 	// Tuning
@@ -255,35 +256,35 @@ static void Demo7(Body* b, Joint* j)
 	float k = mass * omega * omega;
 
 	// magic formulas
-	float softness = 1.0f / (d + timeStep * k);
-	float biasFactor = timeStep * k / (d + timeStep * k);
+	float softness = 1.0f / (d + timestep * k);
+	float biasFactor = timestep * k / (d + timestep * k);
 
 	for (int i = 0; i < numPlanks; ++i)
 	{
-		j->Set(bodies+i, bodies+i+1, Vec2(-9.125f + 1.25f * i, 5.0f));
+		j->Set(body_s+i, body_s+i+1, Vec2(-9.125f + 1.25f * i, 5.0f));
 		j->softness = softness;
 		j->biasFactor = biasFactor;
 
 		world.Add(j);
-		++j; ++numJoints;
+		++j; ++joint_s_count;
 	}
 
-	j->Set(bodies + numPlanks, bodies, Vec2(-9.125f + 1.25f * numPlanks, 5.0f));
+	j->Set(body_s + numPlanks, body_s, Vec2(-9.125f + 1.25f * numPlanks, 5.0f));
 	j->softness = softness;
 	j->biasFactor = biasFactor;
 	world.Add(j);
-	++j; ++numJoints;
+	++j; ++joint_s_count;
 }
 static void Demo8(Body* b, Joint* j)
 {
 	Body* b1 = b;
 	AddGround(b);
-	++b; ++numBodies;
+	++b; ++body_s_count;
 
 	b->Set(Vec2(12.0f, 0.5f), FLT_MAX);
 	b->position.Set(-1.5f, 10.0f);
 	world.Add(b);
-	++b; ++numBodies;
+	++b; ++body_s_count;
 
 	for (int i = 0; i < 10; ++i)
 	{
@@ -291,67 +292,67 @@ static void Demo8(Body* b, Joint* j)
 		b->position.Set(-6.0f + 1.0f * i, 11.125f);
 		b->friction = 0.1f;
 		world.Add(b);
-		++b; ++numBodies;
+		++b; ++body_s_count;
 	}
 
 	b->Set(Vec2(14.0f, 0.5f), FLT_MAX);
 	b->position.Set(1.0f, 6.0f);
 	b->rotation = 0.3f;
 	world.Add(b);
-	++b; ++numBodies;
+	++b; ++body_s_count;
 
 	Body* b2 = b;
 	b->Set(Vec2(0.5f, 3.0f), FLT_MAX);
 	b->position.Set(-7.0f, 4.0f);
 	world.Add(b);
-	++b; ++numBodies;
+	++b; ++body_s_count;
 
 	Body* b3 = b;
 	b->Set(Vec2(12.0f, 0.25f), 20.0f);
 	b->position.Set(-0.9f, 1.0f);
 	world.Add(b);
-	++b; ++numBodies;
+	++b; ++body_s_count;
 
 	j->Set(b1, b3, Vec2(-2.0f, 1.0f));
 	world.Add(j);
-	++j; ++numJoints;
+	++j; ++joint_s_count;
 
 	Body* b4 = b;
 	b->Set(Vec2(0.5f, 0.5f), 10.0f);
 	b->position.Set(-10.0f, 15.0f);
 	world.Add(b);
-	++b; ++numBodies;
+	++b; ++body_s_count;
 
 	j->Set(b2, b4, Vec2(-7.0f, 15.0f));
 	world.Add(j);
-	++j; ++numJoints;
+	++j; ++joint_s_count;
 
 	Body* b5 = b;
 	b->Set(Vec2(2.0f, 2.0f), 20.0f);
 	b->position.Set(6.0f, 2.5f);
 	b->friction = 0.1f;
 	world.Add(b);
-	++b; ++numBodies;
+	++b; ++body_s_count;
 
 	j->Set(b1, b5, Vec2(6.0f, 2.6f));
 	world.Add(j);
-	++j; ++numJoints;
+	++j; ++joint_s_count;
 
 	Body* b6 = b;
 	b->Set(Vec2(2.0f, 0.2f), 10.0f);
 	b->position.Set(6.0f, 3.6f);
 	world.Add(b);
-	++b; ++numBodies;
+	++b; ++body_s_count;
 
 	j->Set(b5, b6, Vec2(7.0f, 3.5f));
 	world.Add(j);
-	++j; ++numJoints;
+	++j; ++joint_s_count;
 }
 static void Demo9(Body* b, Joint* j)
 {
 	Body* b1 = b;
 	AddGround(b);
-	++b; ++numBodies;
+	++b; ++body_s_count;
 
 	float mass = 10.0f;
 
@@ -369,8 +370,8 @@ static void Demo9(Body* b, Joint* j)
 	float k = mass * omega * omega;
 
 	// magic formulas
-	float softness = 1.0f / (d + timeStep * k);
-	float biasFactor = timeStep * k / (d + timeStep * k);
+	float softness = 1.0f / (d + timestep * k);
+	float biasFactor = timestep * k / (d + timestep * k);
 
 	const float y = 12.0f;
 
@@ -390,9 +391,9 @@ static void Demo9(Body* b, Joint* j)
 
 		b1 = b;
 		++b;
-		++numBodies;
+		++body_s_count;
 		++j;
-		++numJoints;
+		++joint_s_count;
 	}
 }
 
@@ -424,12 +425,12 @@ void (*demos[])(Body* b, Joint* j) =
 static void InitDemo(int index)
 {
 	world.Clear();
-	numBodies = 0;
-	numJoints = 0;
+	body_s_count = 0;
+	joint_s_count = 0;
 	bomb = NULL;
 
 	demoIndex = index;
-	demos[index](bodies, joints);
+	demos[index](body_s, joint_s);
 }
 
 static void glfwErrorCallback(int error, const char* description)
@@ -639,7 +640,7 @@ int main(int, char**)
         auto update = !pause || forward;
         forward = false;
         if (update)
-            world.Step(timeStep);
+            world.Step(timestep);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -668,11 +669,11 @@ int main(int, char**)
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
-        for (int i = 0; i < numBodies; i++)
-            DrawBody(bodies + i);
+        for (int i = 0; i < body_s_count; i++)
+            DrawBody(body_s + i);
 
-        for (int i = 0; i < numJoints; i++)
-            DrawJoint(joints + i);
+        for (int i = 0; i < joint_s_count; i++)
+            DrawJoint(joint_s + i);
 
         glPointSize(4.0f);
         glColor3f(1.0f, 0.0f, 0.0f);
