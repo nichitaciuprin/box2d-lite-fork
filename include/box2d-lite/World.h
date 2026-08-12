@@ -20,6 +20,12 @@
 struct Body;
 struct Joint;
 
+struct Impulse
+{
+    Vec2 position;
+    Vec2 velocity;
+};
+
 struct World
 {
 public:
@@ -33,12 +39,14 @@ public:
     std::vector<Body*> bodies;
 	std::vector<Joint*> joints;
 	std::map<ArbiterKey, Arbiter> arbiters;
+    std::vector<Impulse> impulse_s;
 
 	World(Vec2 gravity, int iterations) : gravity(gravity), iterations(iterations) {}
 
 	void Clear();
 	void Add(Body* body);
 	void Add(Joint* joint);
+    void Add(Impulse impulse);
 
 	void Step(float dt);
 

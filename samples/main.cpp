@@ -562,8 +562,11 @@ static void Mouse(GLFWwindow* window, int button, int action, int mods)
     double x, y;
     glfwGetCursorPos(window, &x, &y);
 
-    auto coord = ScreenToWorld(x, y);
-    AddBox(coord);
+    auto pos = ScreenToWorld(x, y);
+
+    world.Add({ pos, { 0.0f, 1.0f } });
+
+    // AddBox(coord);
 }
 static void DrawText(int x, int y, const char* string)
 {

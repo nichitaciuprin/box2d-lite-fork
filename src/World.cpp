@@ -9,6 +9,9 @@
 * It is provided "as is" without express or implied warranty.
 */
 
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+
 #include "box2d-lite/World.h"
 #include "box2d-lite/Body.h"
 #include "box2d-lite/Joint.h"
@@ -30,6 +33,10 @@ void World::Add(Body* body)
 void World::Add(Joint* joint)
 {
 	joints.push_back(joint);
+}
+void World::Add(Impulse impulse)
+{
+	impulse_s.push_back(impulse);
 }
 void World::Clear()
 {
@@ -54,6 +61,13 @@ void World::Step(float dt)
 
         body->velocityLinear  += body->force  * body->massInv    * dt;
 		body->velocityAngular += body->torque * body->inertiaInv * dt;
+
+        for (auto& imp : impulse_s)
+        {
+            // printf("%f %f\n", imp->position.x, )
+            printf("applied impulse\n");
+        }
+        impulse_s.clear();
 
         body->force = { 0.0f, 0.0f };
 		body->torque = 0.0f;

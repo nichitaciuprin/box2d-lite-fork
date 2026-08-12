@@ -16,15 +16,7 @@
 
 struct Body
 {
-	Body();
-	void Set(const Vec2& w, float m);
-
-	void AddForce(const Vec2& f)
-	{
-		force += f;
-	}
-
-	Vec2 position;
+    Vec2 position;
 	float rotation;
 
 	Vec2 velocityLinear;
@@ -38,6 +30,14 @@ struct Body
 	float friction;
 	float mass, massInv;
 	float inertia, inertiaInv;
+
+	Body();
+
+	void Set(const Vec2& w, float m);
+	void AddForce(const Vec2& f)
+	{
+		force += f;
+	}
 };
 
 #endif
