@@ -71,17 +71,17 @@ void Arbiter::Update(Contact* newContacts, int numNewContacts)
 			{
                 Contact* c = mergedContacts + i;
 
-                *c = *cNew;
+                mergedContacts[i] = newContacts[i];
 
                 if (World::warmStarting)
                 {
-                    c->Pn = cOld->Pn;
-                    c->Pt = cOld->Pt;
+                    mergedContacts[i].Pn = cOld->Pn;
+                    mergedContacts[i].Pt = cOld->Pt;
                 }
                 else
                 {
-                    c->Pn = 0.0f;
-                    c->Pt = 0.0f;
+                    mergedContacts[i].Pn = 0.0f;
+                    mergedContacts[i].Pt = 0.0f;
                 }
 
                 found = true;
