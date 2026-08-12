@@ -30,11 +30,13 @@ namespace
 	int height = 720;
 	float zoom = 10.0f;
 	float pan_y = 8.0f;
-	GLFWwindow* mainWindow = NULL;
+	GLFWwindow* window = NULL;
 
     float timeStep = 1.0f / 60.0f;
 	int iterations = 10;
 	Vec2 gravity = { 0.0f, -10.0f };
+    bool pause = false;
+    bool forward = false;
 	int demoIndex = 0;
 
 	Body bodies[200];
@@ -496,18 +498,26 @@ static void Keyboard(GLFWwindow* window, int key, int scancode, int action, int 
 	switch (key)
 	{
         case GLFW_KEY_ESCAPE:
-            glfwSetWindowShouldClose(mainWindow, GL_TRUE);
+            glfwSetWindowShouldClose(window, GL_TRUE);
+            break;
+
+        case GLFW_KEY_P:
+            pause = !pause;
+            break;
+
+        case GLFW_KEY_RIGHT_BRACKET:
+            forward = true;
             break;
 
         case GLFW_KEY_A:
             World::accumulateImpulses = !World::accumulateImpulses;
             break;
 
-        case GLFW_KEY_P:
+        case GLFW_KEY_S:
             World::positionCorrection = !World::positionCorrection;
             break;
 
-        case GLFW_KEY_W:
+        case GLFW_KEY_D:
             World::warmStarting = !World::warmStarting;
             break;
 
@@ -549,6 +559,15 @@ static void Reshape(GLFWwindow*, int w, int h)
 		glOrtho(-zoom, zoom, -zoom / aspect + pan_y, zoom / aspect + pan_y, -1.0, 1.0);
 	}
 }
+static void Mouse(GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+    {
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        printf("%f, %f\n", xpos, ypos);
+    }
+}
 
 int main(int, char**)
 {
@@ -560,15 +579,17 @@ int main(int, char**)
 		return -1;
 	}
 
-	mainWindow = glfwCreateWindow(width, height, "box2d-lite", NULL, NULL);
-	if (mainWindow == NULL)
+	window = glfwCreateWindow(width, height, "box2d-lite", NULL, NULL);
+	if (window == NULL)
 	{
-		fprintf(stderr, "Failed to open GLFW mainWindow.\n");
+		fprintf(stderr, "Failed to open GLFW window.\n");
 		glfwTerminate();
 		return -1;
 	}
 
-	glfwMakeContextCurrent(mainWindow);
+	glfwMakeContextCurrent(window);
+
+    glfwSetMouseButtonCallback(window, Mouse);
 
 	int gladStatus = gladLoadGL();
 	if (gladStatus == 0)
@@ -579,17 +600,17 @@ int main(int, char**)
 	}
 
 	glfwSwapInterval(1);
-	glfwSetWindowSizeCallback(mainWindow, Reshape);
-	glfwSetKeyCallback(mainWindow, Keyboard);
+	glfwSetWindowSizeCallback(window, Reshape);
+	glfwSetKeyCallback(window, Keyboard);
 
 	float xscale, yscale;
-	glfwGetWindowContentScale(mainWindow, &xscale, &yscale);
+	glfwGetWindowContentScale(window, &xscale, &yscale);
 	float uiScale = xscale;
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGui::StyleColorsClassic();
-	ImGui_ImplGlfw_InitForOpenGL(mainWindow, true);
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL2_Init();
 	ImGuiIO& io = ImGui::GetIO();
 	io.FontGlobalScale = uiScale;
@@ -613,9 +634,12 @@ int main(int, char**)
 	// InitDemo(0);
     InitDemo(3);
 
-	while (!glfwWindowShouldClose(mainWindow))
+	while (!glfwWindowShouldClose(window))
 	{
-		world.Step(timeStep);
+        auto update = !pause || forward;
+        forward = false;
+        if (update)
+            world.Step(timeStep);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -632,13 +656,13 @@ int main(int, char**)
 		DrawText(5, 35, "Keys: 1-9 Demos, Space to Launch the Bomb");
 
 		char buffer[64];
-		sprintf(buffer, "(A)ccumulation %s", World::accumulateImpulses ? "ON" : "OFF");
+		sprintf(buffer, "(A) Accumulation %s", World::accumulateImpulses ? "ON" : "OFF");
 		DrawText(5, 65, buffer);
 
-		sprintf(buffer, "(P)osition Correction %s", World::positionCorrection ? "ON" : "OFF");
+		sprintf(buffer, "(S) Position Correction %s", World::positionCorrection ? "ON" : "OFF");
 		DrawText(5, 95, buffer);
 
-		sprintf(buffer, "(W)arm Starting %s", World::warmStarting ? "ON" : "OFF");
+		sprintf(buffer, "(D) Warm Starting %s", World::warmStarting ? "ON" : "OFF");
 		DrawText(5, 125, buffer);
 
 		glMatrixMode(GL_MODELVIEW);
@@ -670,7 +694,7 @@ int main(int, char**)
 		ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 
 		glfwPollEvents();
-		glfwSwapBuffers(mainWindow);
+		glfwSwapBuffers(window);
 	}
 
 	glfwTerminate();
