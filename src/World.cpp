@@ -69,17 +69,18 @@ void World::Step(float dt)
 
         body->force = { 0.0f, 0.0f };
 		body->torque = 0.0f;
-
-        for (auto& imp : impulse_s)
-        {
-            auto contactPoint = imp.position;
-            auto impulse = imp.velocity;
-            Vec2 r = body->position - contactPoint;
-            body->velocityLinear  += impulse * body->massInv;
-            body->velocityAngular += Cross(impulse, r) * body->inertiaInv;
-        }
-        impulse_s.clear();
 	}
+
+    for (auto& body : bodies)
+    for (auto& imp : impulse_s)
+    {
+        auto contactPoint = imp.position;
+        auto impulse = imp.velocity;
+        Vec2 r = body->position - contactPoint;
+        body->velocityLinear  += impulse * body->massInv;
+        body->velocityAngular += Cross(impulse, r) * body->inertiaInv;
+    }
+    impulse_s.clear();
 
     {
         for (auto& arbiter : arbiters) arbiter.second.PreStep(dti);
