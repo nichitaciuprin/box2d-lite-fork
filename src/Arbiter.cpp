@@ -71,8 +71,6 @@ void Arbiter::Update(Contact* newContacts, int numNewContacts)
 
 			if (cNew->feature.value == cOld->feature.value)
 			{
-                Contact* c = mergedContacts + i;
-
                 mergedContacts[i] = newContacts[i];
 
                 if (World::warmStarting)
