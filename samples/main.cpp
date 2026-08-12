@@ -559,6 +559,10 @@ static void Keyboard(GLFWwindow* window, int key, int scancode, int action, int 
 }
 static void SetProj()
 {
+    glViewport(0, 0, width, height);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
     float aspect = float(width) / float(height);
 	if (width >= height)
 	{
@@ -575,11 +579,6 @@ static void Reshape(GLFWwindow*, int w, int h)
 {
 	width = w;
 	height = h > 0 ? h : 1;
-
-	glViewport(0, 0, width, height);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
     SetProj();
 }
 static void Mouse(GLFWwindow* window, int button, int action, int mods)
@@ -637,10 +636,6 @@ int main(int, char**)
 	ImGui_ImplOpenGL2_Init();
 	ImGuiIO& io = ImGui::GetIO();
 	io.FontGlobalScale = uiScale;
-
-	glViewport(0, 0, width, height);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
 
 	SetProj();
 
