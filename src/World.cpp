@@ -122,6 +122,26 @@ void World::BroadPhase()
             continue;
         }
 
-        UpdateArb(&iter->second, &newArb);
+        auto old_ = &iter->second;
+        auto new_ = &newArb;
+
+        if (World::warmStarting)
+        {
+            for (int i = 0; i < new_->numContacts; i++)
+            for (int j = 0; j < old_->numContacts; j++)
+            {
+                auto& c_new = new_->contacts[i];
+                auto& c_old = old_->contacts[j];
+
+                if (c_new.feature.value != c_old.feature.value) continue;
+
+                c_new.Pn = c_old.Pn;
+                c_new.Pt = c_old.Pt;
+
+                break;
+            }
+        }
+
+        *old_ = *new_;
 	}
 }

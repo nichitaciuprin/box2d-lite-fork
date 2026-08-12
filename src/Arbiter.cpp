@@ -53,44 +53,6 @@ Arbiter::Arbiter(Body* b1, Body* b2)
 	friction = sqrtf(body1->friction * body2->friction);
 }
 
-void UpdateArb(Arbiter* old_, Arbiter* new_)
-{
-    Contact result[2];
-
-    for (int i = 0; i < new_->numContacts; i++)
-        result[i] = new_->contacts[i];
-
-	for (int i = 0; i < new_->numContacts; i++)
-	{
-		for (int j = 0; j < old_->numContacts; j++)
-		{
-			if (new_->contacts[i].feature.value != old_->contacts[j].feature.value) continue;
-
-            if (World::warmStarting)
-            {
-                result[i].Pn = old_->contacts[j].Pn;
-                result[i].Pt = old_->contacts[j].Pt;
-            }
-            else
-            {
-                result[i].Pn = 0.0f;
-                result[i].Pt = 0.0f;
-            }
-
-            break;
-		}
-	}
-
-	for (int i = 0; i < new_->numContacts; i++)
-		old_->contacts[i] = result[i];
-
-	old_->numContacts = new_->numContacts;
-}
-
-void Arbiter::Update(Arbiter* arbNew)
-{
-    UpdateArb(this, arbNew);
-}
 void Arbiter::PreStep(float dti)
 {
 	const float k_allowedPenetration = 0.01f;

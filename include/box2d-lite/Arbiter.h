@@ -75,12 +75,9 @@ public:
 	float friction; // Combined friction
 
 	Arbiter(Body* b1, Body* b2);
-    void Update(Arbiter* arbNew);
 	void PreStep(float inv_dt);
 	void ApplyImpulse();
 };
-
-void UpdateArb(Arbiter* old_, Arbiter* new_);
 
 // This is used by std::set
 inline bool operator < (const ArbiterKey& a1, const ArbiterKey& a2)
