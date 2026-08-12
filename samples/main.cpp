@@ -433,6 +433,9 @@ static void InitDemo(int index)
 	demos[index](body_s, joint_s);
 }
 
+#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+#define PANIC { fprintf(stderr, "\033[91mPANIC %s:%d \n\033[0m" , __FILENAME__, __LINE__); _Exit(-1); }
+
 static void glfwErrorCallback(int error, const char* description)
 {
 	printf("GLFW error %d: %s\n", error, description);
@@ -491,6 +494,21 @@ static void DrawJoint(Joint* joint)
 	glVertex2f(x2.x, x2.y);
 	glVertex2f(p2.x, p2.y);
 	glEnd();
+}
+static void DrawArbiter(Arbiter* arbiter)
+{
+    glPointSize(4.0f);
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glBegin(GL_POINTS);
+
+    for (int i = 0; i < arbiter->numContacts; i++)
+    {
+        Vec2 p = arbiter->contacts[i].position;
+        glVertex2f(p.x, p.y);
+    }
+
+    glEnd();
+    glPointSize(1.0f);
 }
 static void DrawArbiters()
 {
@@ -590,15 +608,55 @@ static void Mouse(GLFWwindow* window, int button, int action, int mods)
         printf("%f, %f\n", xpos, ypos);
     }
 }
-
-int main()
+static void Draw()
 {
-	glfwSetErrorCallback(glfwErrorCallback);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    ImGui_ImplOpenGL2_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    // Globally position text
+    ImGui::SetNextWindowPos(ImVec2(10.0f, 10.0f));
+    ImGui::Begin("Overlay", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar);
+    ImGui::End();
+
+    DrawText(5, 5, demoNames[demoIndex]);
+    DrawText(5, 35, "Keys: 1-9 Demos, Space to Launch the Bomb");
+
+    char buffer[64];
+    sprintf(buffer, "(A) Accumulation %s", World::accumulateImpulses ? "ON" : "OFF");
+    DrawText(5, 65, buffer);
+
+    sprintf(buffer, "(S) Position Correction %s", World::positionCorrection ? "ON" : "OFF");
+    DrawText(5, 95, buffer);
+
+    sprintf(buffer, "(D) Warm Starting %s", World::warmStarting ? "ON" : "OFF");
+    DrawText(5, 125, buffer);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    for (int i = 0; i < body_s_count; i++)
+        DrawBody(body_s + i);
+
+    for (int i = 0; i < joint_s_count; i++)
+        DrawJoint(joint_s + i);
+
+    for (auto& i : world.arbiters)
+        DrawArbiter(&i.second);
+
+    ImGui::Render();
+    ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+}
+static void InitWindow()
+{
+    glfwSetErrorCallback(glfwErrorCallback);
 
 	if (glfwInit() == 0)
 	{
 		fprintf(stderr, "Failed to initialize GLFW\n");
-		return -1;
+        PANIC;
 	}
 
 	window = glfwCreateWindow(width, height, "box2d-lite", NULL, NULL);
@@ -606,11 +664,10 @@ int main()
 	{
 		fprintf(stderr, "Failed to open GLFW window.\n");
 		glfwTerminate();
-		return -1;
+		PANIC;
 	}
 
 	glfwMakeContextCurrent(window);
-
     glfwSetMouseButtonCallback(window, Mouse);
 
 	int gladStatus = gladLoadGL();
@@ -618,7 +675,7 @@ int main()
 	{
 		fprintf(stderr, "Failed to load OpenGL.\n");
 		glfwTerminate();
-		return -1;
+		PANIC;
 	}
 
 	glfwSwapInterval(1);
@@ -638,8 +695,12 @@ int main()
 	io.FontGlobalScale = uiScale;
 
 	SetProj();
+}
 
-	// InitDemo(0);
+int main()
+{
+    InitWindow();
+
     InitDemo(3);
 
 	while (!glfwWindowShouldClose(window))
@@ -648,48 +709,13 @@ int main()
         if (update)
             world.Step(timestep);
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		ImGui_ImplOpenGL2_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-
-		// Globally position text
-		ImGui::SetNextWindowPos(ImVec2(10.0f, 10.0f));
-		ImGui::Begin("Overlay", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar);
-		ImGui::End();
-
-		DrawText(5, 5, demoNames[demoIndex]);
-		DrawText(5, 35, "Keys: 1-9 Demos, Space to Launch the Bomb");
-
-		char buffer[64];
-		sprintf(buffer, "(A) Accumulation %s", World::accumulateImpulses ? "ON" : "OFF");
-		DrawText(5, 65, buffer);
-
-		sprintf(buffer, "(S) Position Correction %s", World::positionCorrection ? "ON" : "OFF");
-		DrawText(5, 95, buffer);
-
-		sprintf(buffer, "(D) Warm Starting %s", World::warmStarting ? "ON" : "OFF");
-		DrawText(5, 125, buffer);
-
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-
-        for (int i = 0; i < body_s_count; i++)
-            DrawBody(body_s + i);
-
-        for (int i = 0; i < joint_s_count; i++)
-            DrawJoint(joint_s + i);
-
-        DrawArbiters();
-
-		ImGui::Render();
-		ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+		Draw();
 
 		glfwPollEvents();
 		glfwSwapBuffers(window);
 	}
 
 	glfwTerminate();
+
 	return 0;
 }
