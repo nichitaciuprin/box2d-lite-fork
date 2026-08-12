@@ -26,26 +26,22 @@
 
 namespace
 {
-	GLFWwindow* mainWindow = NULL;
-
-	Body bodies[200];
-	Joint joints[100];
-
-	Body* bomb = NULL;
-
-	float timeStep = 1.0f / 60.0f;
-	int iterations = 10;
-	Vec2 gravity(0.0f, -10.0f);
-
-	int numBodies = 0;
-	int numJoints = 0;
-
-	int demoIndex = 0;
-
-	int width = 1280;
+    int width = 1280;
 	int height = 720;
 	float zoom = 10.0f;
 	float pan_y = 8.0f;
+	GLFWwindow* mainWindow = NULL;
+
+    float timeStep = 1.0f / 60.0f;
+	int iterations = 10;
+	Vec2 gravity = { 0.0f, -10.0f };
+	int demoIndex = 0;
+
+	Body bodies[200];
+	Joint joints[100];
+    int numBodies = 0;
+    int numJoints = 0;
+	Body* bomb = NULL;
 
 	World world(gravity, iterations);
 }
@@ -65,7 +61,6 @@ static void DrawText(int x, int y, const char* string)
 	ImGui::TextColored(ImColor(230, 153, 153, 255), "%s", string);
 	ImGui::End();
 }
-
 static void DrawBody(Body* body)
 {
 	Mat22 R(body->rotation);
@@ -89,7 +84,6 @@ static void DrawBody(Body* body)
 	glVertex2f(v4.x, v4.y);
 	glEnd();
 }
-
 static void DrawJoint(Joint* joint)
 {
 	Body* b1 = joint->body1;
@@ -130,7 +124,6 @@ static void LaunchBomb()
 	bomb->velocityAngular = Random(-20.0f, 20.0f);
 }
 
-// Single box
 static void Demo1(Body* b, Joint* j)
 {
 	b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
@@ -143,8 +136,6 @@ static void Demo1(Body* b, Joint* j)
 	world.Add(b);
 	++b; ++numBodies;
 }
-
-// A simple pendulum
 static void Demo2(Body* b, Joint* j)
 {
 	Body* b1 = b + 0;
@@ -168,8 +159,6 @@ static void Demo2(Body* b, Joint* j)
 
 	numJoints += 1;
 }
-
-// Varying friction coefficients
 static void Demo3(Body* b, Joint* j)
 {
 	b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
@@ -221,8 +210,6 @@ static void Demo3(Body* b, Joint* j)
     // world.Add(b);
     // ++b; ++numBodies;
 }
-
-// A vertical stack
 static void Demo4(Body* b, Joint* j)
 {
 	b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
@@ -242,8 +229,6 @@ static void Demo4(Body* b, Joint* j)
 		++b; ++numBodies;
 	}
 }
-
-// A pyramid
 static void Demo5(Body* b, Joint* j)
 {
 	b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
@@ -275,8 +260,6 @@ static void Demo5(Body* b, Joint* j)
 		x += Vec2(0.5625f, 2.0f);
 	}
 }
-
-// A teeter
 static void Demo6(Body* b, Joint* j)
 {
 	Body* b1 = b + 0;
@@ -311,8 +294,6 @@ static void Demo6(Body* b, Joint* j)
 
 	numJoints += 1;
 }
-
-// A suspension bridge
 static void Demo7(Body* b, Joint* j)
 {
 	b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
@@ -367,8 +348,6 @@ static void Demo7(Body* b, Joint* j)
 	world.Add(j);
 	++j; ++numJoints;
 }
-
-// Dominos
 static void Demo8(Body* b, Joint* j)
 {
 	Body* b1 = b;
@@ -444,8 +423,6 @@ static void Demo8(Body* b, Joint* j)
 	world.Add(j);
 	++j; ++numJoints;
 }
-
-// A multi-pendulum
 static void Demo9(Body* b, Joint* j)
 {
 	b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
@@ -513,7 +490,18 @@ const char* demoStrings[] =
 	"Demo 8: Dominos",
 	"Demo 9: Multi-pendulum"
 };
-void (*demos[])(Body* b, Joint* j) = { Demo1, Demo2, Demo3, Demo4, Demo5, Demo6, Demo7, Demo8, Demo9 };
+void (*demos[])(Body* b, Joint* j) =
+{
+    Demo1,
+    Demo2,
+    Demo3,
+    Demo4,
+    Demo5,
+    Demo6,
+    Demo7,
+    Demo8,
+    Demo9
+};
 
 static void InitDemo(int index)
 {
@@ -528,45 +516,41 @@ static void InitDemo(int index)
 
 static void Keyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	if (action != GLFW_PRESS)
-	{
-		return;
-	}
+	if (action != GLFW_PRESS) return;
 
 	switch (key)
 	{
-	case GLFW_KEY_ESCAPE:
-		// Quit
-		glfwSetWindowShouldClose(mainWindow, GL_TRUE);
-		break;
+        case GLFW_KEY_ESCAPE:
+            glfwSetWindowShouldClose(mainWindow, GL_TRUE);
+            break;
 
-	case '1':
-	case '2':
-	case '3':
-	case '4':
-	case '5':
-	case '6':
-	case '7':
-	case '8':
-	case '9':
-		InitDemo(key - GLFW_KEY_1);
-		break;
+        case GLFW_KEY_A:
+            World::accumulateImpulses = !World::accumulateImpulses;
+            break;
 
-	case GLFW_KEY_A:
-		World::accumulateImpulses = !World::accumulateImpulses;
-		break;
+        case GLFW_KEY_P:
+            World::positionCorrection = !World::positionCorrection;
+            break;
 
-	case GLFW_KEY_P:
-		World::positionCorrection = !World::positionCorrection;
-		break;
+        case GLFW_KEY_W:
+            World::warmStarting = !World::warmStarting;
+            break;
 
-	case GLFW_KEY_W:
-		World::warmStarting = !World::warmStarting;
-		break;
+        case GLFW_KEY_SPACE:
+            LaunchBomb();
+            break;
 
-	case GLFW_KEY_SPACE:
-		LaunchBomb();
-		break;
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+            InitDemo(key - GLFW_KEY_1);
+            break;
 	}
 }
 
@@ -658,7 +642,34 @@ int main(int, char**)
 
 	while (!glfwWindowShouldClose(mainWindow))
 	{
+		world.Step(timeStep);
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+
+        for (int i = 0; i < numBodies; ++i)
+            DrawBody(bodies + i);
+
+        for (int i = 0; i < numJoints; ++i)
+            DrawJoint(joints + i);
+
+        glPointSize(4.0f);
+        glColor3f(1.0f, 0.0f, 0.0f);
+        glBegin(GL_POINTS);
+        for (auto& i : world.arbiters)
+        {
+            auto& arbiter = i.second;
+
+            for (int i = 0; i < arbiter.numContacts; ++i)
+            {
+                Vec2 p = arbiter.contacts[i].position;
+                glVertex2f(p.x, p.y);
+            }
+        }
+        glEnd();
+        glPointSize(1.0f);
 
 		ImGui_ImplOpenGL2_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -682,33 +693,6 @@ int main(int, char**)
 		sprintf(buffer, "(W)arm Starting %s", World::warmStarting ? "ON" : "OFF");
 		DrawText(5, 125, buffer);
 
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-
-		world.Step(timeStep);
-
-		for (int i = 0; i < numBodies; ++i)
-			DrawBody(bodies + i);
-
-		for (int i = 0; i < numJoints; ++i)
-			DrawJoint(joints + i);
-
-		glPointSize(4.0f);
-		glColor3f(1.0f, 0.0f, 0.0f);
-		glBegin(GL_POINTS);
-		std::map<ArbiterKey, Arbiter>::const_iterator iter;
-		for (iter = world.arbiters.begin(); iter != world.arbiters.end(); ++iter)
-		{
-			const Arbiter& arbiter = iter->second;
-			for (int i = 0; i < arbiter.numContacts; ++i)
-			{
-				Vec2 p = arbiter.contacts[i].position;
-				glVertex2f(p.x, p.y);
-			}
-		}
-		glEnd();
-		glPointSize(1.0f);
-
 		ImGui::Render();
 		ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 
@@ -717,5 +701,6 @@ int main(int, char**)
 	}
 
 	glfwTerminate();
+
 	return 0;
 }
