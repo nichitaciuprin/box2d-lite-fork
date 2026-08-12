@@ -24,6 +24,9 @@
 #include "box2d-lite/Body.h"
 #include "box2d-lite/Joint.h"
 
+#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+#define PANIC { fprintf(stderr, "\033[91mPANIC %s:%d \n\033[0m" , __FILENAME__, __LINE__); _Exit(-1); }
+
 namespace
 {
     int width = 1280;
@@ -432,9 +435,6 @@ static void InitDemo(int index)
 	demoIndex = index;
 	demos[index](body_s, joint_s);
 }
-
-#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
-#define PANIC { fprintf(stderr, "\033[91mPANIC %s:%d \n\033[0m" , __FILENAME__, __LINE__); _Exit(-1); }
 
 static void glfwErrorCallback(int error, const char* description)
 {
