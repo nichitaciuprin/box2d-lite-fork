@@ -52,6 +52,7 @@ Arbiter::Arbiter(Body* b1, Body* b2)
 
 	friction = sqrtf(body1->friction * body2->friction);
 }
+
 void Arbiter::Update(Contact* newContacts, int numNewContacts)
 {
 	Contact mergedContacts[2];
@@ -68,8 +69,6 @@ void Arbiter::Update(Contact* newContacts, int numNewContacts)
 
 			if (cNew->feature.value == cOld->feature.value)
 			{
-                found = true;
-
                 Contact* c = mergedContacts + i;
 
                 *c = *cNew;
@@ -84,6 +83,8 @@ void Arbiter::Update(Contact* newContacts, int numNewContacts)
                     c->Pn = 0.0f;
                     c->Pt = 0.0f;
                 }
+
+                found = true;
 
 				break;
 			}
