@@ -69,13 +69,13 @@ static void DrawText(int x, int y, const char* string)
 static void DrawBody(Body* body)
 {
 	Mat22 R(body->rotation);
-	Vec2 x = body->position;
+	Vec2 p = body->position;
 	Vec2 h = 0.5f * body->width;
 
-	Vec2 v1 = x + R * Vec2(-h.x, -h.y);
-	Vec2 v2 = x + R * Vec2( h.x, -h.y);
-	Vec2 v3 = x + R * Vec2( h.x,  h.y);
-	Vec2 v4 = x + R * Vec2(-h.x,  h.y);
+	Vec2 v1 = p + R * Vec2(-h.x, -h.y);
+	Vec2 v2 = p + R * Vec2(+h.x, -h.y);
+	Vec2 v3 = p + R * Vec2(+h.x, +h.y);
+	Vec2 v4 = p + R * Vec2(-h.x, +h.y);
 
 	if (body == bomb)
 		glColor3f(0.4f, 0.9f, 0.4f);
