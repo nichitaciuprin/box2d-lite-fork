@@ -122,6 +122,6 @@ void World::BroadPhase()
             continue;
         }
 
-        iter->second.Update(newArb.contacts, newArb.numContacts);
+        UpdateArb(iter->second, &newArb);
 	}
 }

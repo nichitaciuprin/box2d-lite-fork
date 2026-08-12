@@ -53,23 +53,23 @@ Arbiter::Arbiter(Body* b1, Body* b2)
 	friction = sqrtf(body1->friction * body2->friction);
 }
 
-void Arbiter::Update(Contact* newContacts, int numNewContacts)
+void Arbiter::UpdateArb(Arbiter* arbOld, Arbiter* arbNew)
 {
-	Contact result[2];
+    Contact result[2];
 
-    for (int i = 0; i < numNewContacts; i++)
-        result[i] = newContacts[i];
+    for (int i = 0; i < arbNew->numContacts; i++)
+        result[i] = arbNew->contacts[i];
 
-	for (int i = 0; i < numNewContacts; i++)
+	for (int i = 0; i < arbNew->numContacts; i++)
 	{
-		for (int j = 0; j < numContacts; j++)
+		for (int j = 0; j < arbOld->numContacts; j++)
 		{
-			if (newContacts[i].feature.value != contacts[j].feature.value) continue;
+			if (arbNew->contacts[i].feature.value != arbOld->contacts[j].feature.value) continue;
 
             if (World::warmStarting)
             {
-                result[i].Pn = contacts[j].Pn;
-                result[i].Pt = contacts[j].Pt;
+                result[i].Pn = arbOld->contacts[j].Pn;
+                result[i].Pt = arbOld->contacts[j].Pt;
             }
             else
             {
@@ -81,10 +81,15 @@ void Arbiter::Update(Contact* newContacts, int numNewContacts)
 		}
 	}
 
-	for (int i = 0; i < numNewContacts; i++)
-		contacts[i] = result[i];
+	for (int i = 0; i < arbNew->numContacts; i++)
+		arbOld->contacts[i] = result[i];
 
-	numContacts = numNewContacts;
+	arbOld->numContacts = arbNew->numContacts;
+}
+
+void Arbiter::Update(Arbiter* arbNew)
+{
+    UpdateArb(this, arbNew);
 }
 void Arbiter::PreStep(float dti)
 {

@@ -65,6 +65,7 @@ struct ArbiterKey
 
 struct Arbiter
 {
+public:
     static constexpr int MAX_POINTS = 2;
 
     Contact contacts[MAX_POINTS];
@@ -74,9 +75,12 @@ struct Arbiter
 	float friction; // Combined friction
 
 	Arbiter(Body* b1, Body* b2);
-	void Update(Contact* contacts, int numContacts);
+    void Update(Arbiter* arbNew);
 	void PreStep(float inv_dt);
 	void ApplyImpulse();
+
+private:
+    void Arbiter::UpdateArb(Arbiter* arbOld, Arbiter* arbNew);
 };
 
 // This is used by std::set
