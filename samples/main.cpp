@@ -80,7 +80,6 @@ static void Demo2(Body* b, Joint* j)
     auto b1 = b;
 	b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
 	b->position.Set(0.0f, -0.5f * b->width.y);
-	b->rotation = 0.0f;
 	world.Add(b);
     b++; numBodies++;
 
@@ -151,7 +150,6 @@ static void Demo4(Body* b, Joint* j)
 {
 	b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
 	b->position.Set(0.0f, -0.5f * b->width.y);
-	b->rotation = 0.0f;
 	world.Add(b);
 	++b; ++numBodies;
 
@@ -169,7 +167,6 @@ static void Demo5(Body* b, Joint* j)
 {
 	b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
 	b->position.Set(0.0f, -0.5f * b->width.y);
-	b->rotation = 0.0f;
 	world.Add(b);
 	++b; ++numBodies;
 
@@ -233,7 +230,6 @@ static void Demo7(Body* b, Joint* j)
 {
 	b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
 	b->position.Set(0.0f, -0.5f * b->width.y);
-	b->rotation = 0.0f;
 	world.Add(b);
 	++b; ++numBodies;
 
@@ -361,7 +357,6 @@ static void Demo9(Body* b, Joint* j)
 {
 	b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
 	b->position.Set(0.0f, -0.5f * b->width.y);
-	b->rotation = 0.0f;
 	world.Add(b);
 
 	Body * b1 = b;
