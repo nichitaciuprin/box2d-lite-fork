@@ -46,67 +46,6 @@ namespace
 	World world(gravity, iterations);
 }
 
-static void glfwErrorCallback(int error, const char* description)
-{
-	printf("GLFW error %d: %s\n", error, description);
-}
-
-static void DrawText(int x, int y, const char* string)
-{
-	ImVec2 p;
-	p.x = float(x);
-	p.y = float(y);
-	ImGui::Begin("Overlay", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar);
-	ImGui::SetCursorPos(p);
-	ImGui::TextColored(ImColor(230, 153, 153, 255), "%s", string);
-	ImGui::End();
-}
-static void DrawBody(Body* body)
-{
-	Mat22 R(body->rotation);
-	Vec2 p = body->position;
-	Vec2 h = 0.5f * body->width;
-
-	Vec2 v1 = p + R * Vec2(-h.x, -h.y);
-	Vec2 v2 = p + R * Vec2(+h.x, -h.y);
-	Vec2 v3 = p + R * Vec2(+h.x, +h.y);
-	Vec2 v4 = p + R * Vec2(-h.x, +h.y);
-
-	if (body == bomb)
-		glColor3f(0.4f, 0.9f, 0.4f);
-	else
-		glColor3f(0.8f, 0.8f, 0.9f);
-
-	glBegin(GL_LINE_LOOP);
-	glVertex2f(v1.x, v1.y);
-	glVertex2f(v2.x, v2.y);
-	glVertex2f(v3.x, v3.y);
-	glVertex2f(v4.x, v4.y);
-	glEnd();
-}
-static void DrawJoint(Joint* joint)
-{
-	Body* b1 = joint->body1;
-	Body* b2 = joint->body2;
-
-	Mat22 R1(b1->rotation);
-	Mat22 R2(b2->rotation);
-
-	Vec2 x1 = b1->position;
-	Vec2 p1 = x1 + R1 * joint->localAnchor1;
-
-	Vec2 x2 = b2->position;
-	Vec2 p2 = x2 + R2 * joint->localAnchor2;
-
-	glColor3f(0.5f, 0.5f, 0.8f);
-	glBegin(GL_LINES);
-	glVertex2f(x1.x, x1.y);
-	glVertex2f(p1.x, p1.y);
-	glVertex2f(x2.x, x2.y);
-	glVertex2f(p2.x, p2.y);
-	glEnd();
-}
-
 static void LaunchBomb()
 {
 	if (!bomb)
@@ -129,35 +68,33 @@ static void Demo1(Body* b, Joint* j)
 	b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
 	b->position.Set(0.0f, -0.5f * b->width.y);
 	world.Add(b);
-	++b; ++numBodies;
+	b++; numBodies++;
 
 	b->Set(Vec2(1.0f, 1.0f), 200.0f);
 	b->position.Set(0.0f, 4.0f);
 	world.Add(b);
-	++b; ++numBodies;
+	b++; numBodies++;
 }
 static void Demo2(Body* b, Joint* j)
 {
-	Body* b1 = b + 0;
-	b1->Set(Vec2(100.0f, 20.0f), FLT_MAX);
-	b1->friction = 0.2f;
-	b1->position.Set(0.0f, -0.5f * b1->width.y);
-	b1->rotation = 0.0f;
-	world.Add(b1);
+    auto b1 = b;
+	b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
+	b->position.Set(0.0f, -0.5f * b->width.y);
+	b->rotation = 0.0f;
+	world.Add(b);
+    b++; numBodies++;
 
-	Body* b2 = b + 1;
+	auto b2 = b;
 	b2->Set(Vec2(1.0f, 1.0f), 100.0f);
 	b2->friction = 0.2f;
 	b2->position.Set(9.0f, 11.0f);
 	b2->rotation = 0.0f;
 	world.Add(b2);
+    b++; numBodies++;
 
-	numBodies += 2;
-
-	j->Set(b1, b2, Vec2(0.0f, 11.0f));
+    j->Set(b1, b2, Vec2(0.0f, 11.0f));
 	world.Add(j);
-
-	numJoints += 1;
+	numJoints++;
 }
 static void Demo3(Body* b, Joint* j)
 {
@@ -213,7 +150,6 @@ static void Demo3(Body* b, Joint* j)
 static void Demo4(Body* b, Joint* j)
 {
 	b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
-	b->friction = 0.2f;
 	b->position.Set(0.0f, -0.5f * b->width.y);
 	b->rotation = 0.0f;
 	world.Add(b);
@@ -232,7 +168,6 @@ static void Demo4(Body* b, Joint* j)
 static void Demo5(Body* b, Joint* j)
 {
 	b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
-	b->friction = 0.2f;
 	b->position.Set(0.0f, -0.5f * b->width.y);
 	b->rotation = 0.0f;
 	world.Add(b);
@@ -297,7 +232,6 @@ static void Demo6(Body* b, Joint* j)
 static void Demo7(Body* b, Joint* j)
 {
 	b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
-	b->friction = 0.2f;
 	b->position.Set(0.0f, -0.5f * b->width.y);
 	b->rotation = 0.0f;
 	world.Add(b);
@@ -426,7 +360,6 @@ static void Demo8(Body* b, Joint* j)
 static void Demo9(Body* b, Joint* j)
 {
 	b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
-	b->friction = 0.2f;
 	b->position.Set(0.0f, -0.5f * b->width.y);
 	b->rotation = 0.0f;
 	world.Add(b);
@@ -514,6 +447,65 @@ static void InitDemo(int index)
 	demos[index](bodies, joints);
 }
 
+static void glfwErrorCallback(int error, const char* description)
+{
+	printf("GLFW error %d: %s\n", error, description);
+}
+static void DrawText(int x, int y, const char* string)
+{
+	ImVec2 p;
+	p.x = float(x);
+	p.y = float(y);
+	ImGui::Begin("Overlay", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar);
+	ImGui::SetCursorPos(p);
+	ImGui::TextColored(ImColor(230, 153, 153, 255), "%s", string);
+	ImGui::End();
+}
+static void DrawBody(Body* body)
+{
+	Mat22 R(body->rotation);
+	Vec2 p = body->position;
+	Vec2 h = 0.5f * body->width;
+
+	Vec2 v1 = p + R * Vec2(-h.x, -h.y);
+	Vec2 v2 = p + R * Vec2(+h.x, -h.y);
+	Vec2 v3 = p + R * Vec2(+h.x, +h.y);
+	Vec2 v4 = p + R * Vec2(-h.x, +h.y);
+
+	if (body == bomb)
+		glColor3f(0.4f, 0.9f, 0.4f);
+	else
+		glColor3f(0.8f, 0.8f, 0.9f);
+
+	glBegin(GL_LINE_LOOP);
+	glVertex2f(v1.x, v1.y);
+	glVertex2f(v2.x, v2.y);
+	glVertex2f(v3.x, v3.y);
+	glVertex2f(v4.x, v4.y);
+	glEnd();
+}
+static void DrawJoint(Joint* joint)
+{
+	Body* b1 = joint->body1;
+	Body* b2 = joint->body2;
+
+	Mat22 R1(b1->rotation);
+	Mat22 R2(b2->rotation);
+
+	Vec2 x1 = b1->position;
+	Vec2 p1 = x1 + R1 * joint->localAnchor1;
+
+	Vec2 x2 = b2->position;
+	Vec2 p2 = x2 + R2 * joint->localAnchor2;
+
+	glColor3f(0.5f, 0.5f, 0.8f);
+	glBegin(GL_LINES);
+	glVertex2f(x1.x, x1.y);
+	glVertex2f(p1.x, p1.y);
+	glVertex2f(x2.x, x2.y);
+	glVertex2f(p2.x, p2.y);
+	glEnd();
+}
 static void Keyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	if (action != GLFW_PRESS) return;
@@ -553,7 +545,6 @@ static void Keyboard(GLFWwindow* window, int key, int scancode, int action, int 
             break;
 	}
 }
-
 static void Reshape(GLFWwindow*, int w, int h)
 {
 	width = w;
@@ -596,7 +587,6 @@ int main(int, char**)
 
 	glfwMakeContextCurrent(mainWindow);
 
-	// Load OpenGL functions using glad
 	int gladStatus = gladLoadGL();
 	if (gladStatus == 0)
 	{
@@ -646,31 +636,6 @@ int main(int, char**)
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-
-        for (int i = 0; i < numBodies; ++i)
-            DrawBody(bodies + i);
-
-        for (int i = 0; i < numJoints; ++i)
-            DrawJoint(joints + i);
-
-        glPointSize(4.0f);
-        glColor3f(1.0f, 0.0f, 0.0f);
-        glBegin(GL_POINTS);
-        for (auto& i : world.arbiters)
-        {
-            auto& arbiter = i.second;
-
-            for (int i = 0; i < arbiter.numContacts; ++i)
-            {
-                Vec2 p = arbiter.contacts[i].position;
-                glVertex2f(p.x, p.y);
-            }
-        }
-        glEnd();
-        glPointSize(1.0f);
-
 		ImGui_ImplOpenGL2_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
@@ -693,6 +658,31 @@ int main(int, char**)
 		sprintf(buffer, "(W)arm Starting %s", World::warmStarting ? "ON" : "OFF");
 		DrawText(5, 125, buffer);
 
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+
+        for (int i = 0; i < numBodies; i++)
+            DrawBody(bodies + i);
+
+        for (int i = 0; i < numJoints; i++)
+            DrawJoint(joints + i);
+
+        glPointSize(4.0f);
+        glColor3f(1.0f, 0.0f, 0.0f);
+        glBegin(GL_POINTS);
+        for (auto& i : world.arbiters)
+        {
+            auto& arbiter = i.second;
+
+            for (int i = 0; i < arbiter.numContacts; i++)
+            {
+                Vec2 p = arbiter.contacts[i].position;
+                glVertex2f(p.x, p.y);
+            }
+        }
+        glEnd();
+        glPointSize(1.0f);
+
 		ImGui::Render();
 		ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 
@@ -701,6 +691,5 @@ int main(int, char**)
 	}
 
 	glfwTerminate();
-
 	return 0;
 }
