@@ -492,6 +492,24 @@ static void DrawJoint(Joint* joint)
 	glVertex2f(p2.x, p2.y);
 	glEnd();
 }
+static void DrawArbiters()
+{
+    glPointSize(4.0f);
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glBegin(GL_POINTS);
+    for (auto& i : world.arbiters)
+    {
+        auto& arbiter = i.second;
+
+        for (int i = 0; i < arbiter.numContacts; i++)
+        {
+            Vec2 p = arbiter.contacts[i].position;
+            glVertex2f(p.x, p.y);
+        }
+    }
+    glEnd();
+    glPointSize(1.0f);
+}
 static void Keyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	if (action != GLFW_PRESS) return;
@@ -637,8 +655,7 @@ int main(int, char**)
 
 	while (!glfwWindowShouldClose(window))
 	{
-        auto update = !pause || forward;
-        forward = false;
+        auto update = !pause || forward; forward = false;
         if (update)
             world.Step(timestep);
 
@@ -675,21 +692,7 @@ int main(int, char**)
         for (int i = 0; i < joint_s_count; i++)
             DrawJoint(joint_s + i);
 
-        glPointSize(4.0f);
-        glColor3f(1.0f, 0.0f, 0.0f);
-        glBegin(GL_POINTS);
-        for (auto& i : world.arbiters)
-        {
-            auto& arbiter = i.second;
-
-            for (int i = 0; i < arbiter.numContacts; i++)
-            {
-                Vec2 p = arbiter.contacts[i].position;
-                glVertex2f(p.x, p.y);
-            }
-        }
-        glEnd();
-        glPointSize(1.0f);
+        DrawArbiters();
 
 		ImGui::Render();
 		ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
