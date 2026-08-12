@@ -394,7 +394,7 @@ static void Demo9(Body* b, Joint* j)
 	}
 }
 
-const char* demoStrings[] =
+const char* demoNames[] =
 {
 	"Demo 1: A Single Box",
 	"Demo 2: Simple Pendulum",
@@ -628,7 +628,7 @@ int main(int, char**)
 		ImGui::Begin("Overlay", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar);
 		ImGui::End();
 
-		DrawText(5, 5, demoStrings[demoIndex]);
+		DrawText(5, 5, demoNames[demoIndex]);
 		DrawText(5, 35, "Keys: 1-9 Demos, Space to Launch the Bomb");
 
 		char buffer[64];
