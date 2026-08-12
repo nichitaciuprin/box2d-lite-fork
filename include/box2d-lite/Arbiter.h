@@ -34,11 +34,13 @@ struct Contact
 
 	Vec2 position;
 	Vec2 normal;
-    Vec2 r1, r2;
+    Vec2 r1;
+    Vec2 r2;
 	float separation;
 	float Pn;	// accumulated normal impulse
 	float Pt;	// accumulated tangent impulse
-	float massNormal, massTangent;
+	float massNormal;
+    float massTangent;
 	float bias;
 	FeaturePair feature;
 };
