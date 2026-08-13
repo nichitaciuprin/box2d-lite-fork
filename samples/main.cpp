@@ -24,13 +24,11 @@
 #include "box2d-lite/Body.h"
 #include "box2d-lite/Joint.h"
 
-#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
-#define PANIC { fprintf(stderr, "\033[91mPANIC %s:%d \n\033[0m" , __FILENAME__, __LINE__); _Exit(-1); }
-
 namespace
 {
     int width = 1280;
 	int height = 720;
+    // float zoom = 1.0f;
 	float zoom = 10.0f;
     // float zoom = 100.0f;
 	float pan_y = 8.0f;
@@ -604,13 +602,13 @@ static void DrawPoint(Vec2 p)
 }
 static void DrawLine(Vec2 p0, Vec2 p1)
 {
-    glColor3f(0.8f, 0.8f, 0.9f);
+    glColor3f(0.0f, 1.0f, 0.0f);
 	glBegin(GL_LINES);
 	glVertex2f(p0.x, p0.y);
 	glVertex2f(p1.x, p1.y);
 	glEnd();
 }
-static void DrawBody(Body* body)
+static void DrawBody(Body* body, bool selected)
 {
 	Mat22 R(body->rotation);
 	Vec2 p = body->position;
@@ -621,16 +619,7 @@ static void DrawBody(Body* body)
 	Vec2 v3 = p + R * Vec2(+h.x, +h.y);
 	Vec2 v4 = p + R * Vec2(-h.x, +h.y);
 
-    auto pos = GetMousePosition();
-
-    auto inside = IsPointInsideBox(pos, body->position, body->rotation, body->scale + (Vec2){ 1.00f, 1.00f });
-    if (inside)
-    {
-        auto path = ShortPathToSurface(pos, body->position, body->rotation, body->scale);
-        DrawPoint(pos + path);
-    }
-
-    if (inside)            glColor3f(1.0f, 0.0f, 0.0f);
+    if (selected)          glColor3f(1.0f, 0.0f, 0.0f);
     else if (body == bomb) glColor3f(0.4f, 0.9f, 0.4f);
     else                   glColor3f(0.8f, 0.8f, 0.9f);
 
@@ -680,6 +669,8 @@ static void DrawArbiter(Arbiter* arbiter)
 }
 static void Draw()
 {
+    auto mousePos = GetMousePosition();
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     ImGui_ImplOpenGL2_NewFrame();
@@ -707,8 +698,15 @@ static void Draw()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
+    DrawPoint(world.selectedBodyPoint);
+    DrawLine(mousePos, mousePos + world.selectedBodyOffset);
+
     for (int i = 0; i < body_s_count; i++)
-        DrawBody(body_s + i);
+    {
+        // auto selected = world.selectedBodyIndex == i;
+        // DrawBody(body_s + i, selected);
+        DrawBody(body_s + i, false);
+    }
 
     for (int i = 0; i < joint_s_count; i++)
         DrawJoint(joint_s + i);
@@ -783,6 +781,10 @@ int main()
 
 	while (!glfwWindowShouldClose(window))
 	{
+        auto mousePos = GetMousePosition();
+
+        world.SelectBody(mousePos);
+
         auto update = !pause || forward; forward = false;
         if (update)
             world.Step(timestep);

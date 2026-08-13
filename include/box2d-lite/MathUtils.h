@@ -17,6 +17,19 @@
 #include <assert.h>
 #include <stdlib.h>
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+#include <memory.h>
+#include <time.h>
+#include <math.h>
+#include <assert.h>
+
+#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+#define PANIC { fprintf(stderr, "\033[91mPANIC %s:%d \n\033[0m" , __FILENAME__, __LINE__); _Exit(-1); }
+
 const float k_pi = 3.14159265358979323846264f;
 
 struct Vec2
@@ -221,8 +234,12 @@ inline Vec2 ShortPathToSurface(Vec2 point, Vec2 boxPosition, float boxRotation, 
 
     point -= boxPosition;
 
-    float sin = sinf(-boxRotation);
-    float cos = cosf(-boxRotation);
+    // float sin = sinf(-boxRotation);
+    // float cos = cosf(-boxRotation);
+
+    // TODO opengl assumed
+    float sin = sinf(boxRotation);
+    float cos = cosf(boxRotation);
 
     auto pointOld = point;
 

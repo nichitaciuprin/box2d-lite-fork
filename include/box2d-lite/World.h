@@ -41,12 +41,17 @@ public:
 	std::map<ArbiterKey, Arbiter> arbiters;
     std::vector<Impulse> impulse_s;
 
+    int selectedBodyIndex;
+    Vec2 selectedBodyOffset;
+    Vec2 selectedBodyPoint;
+
 	World(Vec2 gravity, int iterations) : gravity(gravity), iterations(iterations) {}
 
 	void Clear();
 	void Add(Body* body);
 	void Add(Joint* joint);
     void Add(Impulse impulse);
+    void SelectBody(Vec2 mousePos);
 
 	void Step(float dt);
 

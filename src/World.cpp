@@ -44,6 +44,36 @@ void World::Clear()
 	joints.clear();
 	arbiters.clear();
 }
+void World::SelectBody(Vec2 mousePos)
+{
+    int index = -1;
+
+    Vec2 offset0;
+    float offset0_ls = FLT_MAX;
+
+    for (size_t i = 0; i < bodies.size(); i++)
+    {
+        auto body = bodies[i];
+
+        if (body->mass == FLT_MAX) continue;
+
+        Vec2 offset1 = ShortPathToSurface(mousePos, body->position, body->rotation, body->scale);
+        float offset1_ls = Dot(offset1, offset1);
+
+        if (offset0_ls <= offset1_ls) continue;
+
+        index = i;
+
+        offset0 = offset1;
+        offset0_ls = offset1_ls;
+    }
+
+    if (index == -1) PANIC
+
+    selectedBodyIndex = index;
+    selectedBodyOffset = offset0;
+    selectedBodyPoint = mousePos + offset0;
+}
 
 void World::Step(float dt)
 {
