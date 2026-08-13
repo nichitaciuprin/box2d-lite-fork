@@ -481,6 +481,12 @@ Vec2 ScreenToWorld(float x, float y)
 
     return result;
 }
+Vec2 GetMousePosition()
+{
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
+    return ScreenToWorld(xpos, ypos);
+}
 static void ErrorCallback(int error, const char* description)
 {
 	printf("GLFW error %d: %s\n", error, description);
@@ -561,10 +567,7 @@ static void Mouse(GLFWwindow* window, int button, int action, int mods)
     if (action != GLFW_PRESS) return;
     if (button != GLFW_MOUSE_BUTTON_LEFT) return;
 
-    double x, y;
-    glfwGetCursorPos(window, &x, &y);
-
-    auto pos = ScreenToWorld(x, y);
+    auto pos = GetMousePosition();
 
     // AddBox(coord);
 
@@ -601,10 +604,11 @@ static void DrawBody(Body* body)
 	Vec2 v3 = p + R * Vec2(+h.x, +h.y);
 	Vec2 v4 = p + R * Vec2(-h.x, +h.y);
 
-	if (body == bomb)
-		glColor3f(0.4f, 0.9f, 0.4f);
-	else
-		glColor3f(0.8f, 0.8f, 0.9f);
+    auto inside = IsPointInsideBox(GetMousePosition(), body->position, body->rotation, body->scale);
+
+    if (inside)            glColor3f(1.0f, 0.0f, 0.0f);
+    else if (body == bomb) glColor3f(0.4f, 0.9f, 0.4f);
+    else                   glColor3f(0.8f, 0.8f, 0.9f);
 
 	glBegin(GL_LINE_LOOP);
 	glVertex2f(v1.x, v1.y);
