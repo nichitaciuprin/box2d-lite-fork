@@ -215,5 +215,61 @@ inline bool IsPointInsideBox(Vec2 point, Vec2 boxPosition, float boxRotation, Ve
     return true;
 }
 
+inline Vec2 ShortPathToSurface(Vec2 point, Vec2 boxPosition, float boxRotation, Vec2 boxScale)
+{
+    Vec2 result = {};
+
+    point -= boxPosition;
+
+    float sin = sinf(-boxRotation);
+    float cos = cosf(-boxRotation);
+
+    auto pointOld = point;
+
+    point.x = pointOld.x * +cos + pointOld.y * +sin;
+    point.y = pointOld.x * -sin + pointOld.y * +cos;
+
+    float w = boxScale.x * 0.5f;
+    float h = boxScale.y * 0.5f;
+
+    float xclose = point.x < 0.0f ? -w : +w;
+    float yclose = point.y < 0.0f ? -h : +h;
+
+    float xoffset = xclose - point.x;
+    float yoffset = yclose - point.y;
+
+    bool inside_x = fabsf(point.x) <= w;
+    bool inside_y = fabsf(point.y) <= h;
+
+    int state = 0;
+    if (inside_y) state += 1;
+    if (inside_x) state += 2;
+
+    switch (state)
+    {
+        case 0: result = { xoffset, yoffset }; break;
+        case 1: result = { xoffset, 0.0f };    break;
+        case 2: result = { 0.0f, yoffset };    break;
+        case 3:
+        {
+            if (fabsf(xoffset) < fabsf(yoffset))
+                result = { xoffset, 0.0f };
+            else
+                result = { 0.0f, yoffset };
+
+            break;
+        }
+    }
+
+    {
+        float x_ = result.x * +cos + result.y * -sin;
+        float y_ = result.x * +sin + result.y * +cos;
+        result.x = x_;
+        result.y = y_;
+    }
+
+    return result;
+}
+
 #endif
 

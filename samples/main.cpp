@@ -32,7 +32,7 @@ namespace
     int width = 1280;
 	int height = 720;
 	float zoom = 10.0f;
-    // float zoom = 1.0f;
+    // float zoom = 100.0f;
 	float pan_y = 8.0f;
     // float pan_y = 0.0f;
 	GLFWwindow* window = NULL;
@@ -593,6 +593,23 @@ static void DrawText(int x, int y, const char* string)
 	ImGui::TextColored(ImColor(230, 153, 153, 255), "%s", string);
 	ImGui::End();
 }
+static void DrawPoint(Vec2 p)
+{
+    glPointSize(4.0f);
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glBegin(GL_POINTS);
+    glVertex2f(p.x, p.y);
+    glEnd();
+    glPointSize(1.0f);
+}
+static void DrawLine(Vec2 p0, Vec2 p1)
+{
+    glColor3f(0.8f, 0.8f, 0.9f);
+	glBegin(GL_LINES);
+	glVertex2f(p0.x, p0.y);
+	glVertex2f(p1.x, p1.y);
+	glEnd();
+}
 static void DrawBody(Body* body)
 {
 	Mat22 R(body->rotation);
@@ -604,7 +621,14 @@ static void DrawBody(Body* body)
 	Vec2 v3 = p + R * Vec2(+h.x, +h.y);
 	Vec2 v4 = p + R * Vec2(-h.x, +h.y);
 
-    auto inside = IsPointInsideBox(GetMousePosition(), body->position, body->rotation, body->scale);
+    auto pos = GetMousePosition();
+
+    auto inside = IsPointInsideBox(pos, body->position, body->rotation, body->scale + (Vec2){ 1.00f, 1.00f });
+    if (inside)
+    {
+        auto path = ShortPathToSurface(pos, body->position, body->rotation, body->scale);
+        DrawPoint(pos + path);
+    }
 
     if (inside)            glColor3f(1.0f, 0.0f, 0.0f);
     else if (body == bomb) glColor3f(0.4f, 0.9f, 0.4f);
@@ -654,23 +678,6 @@ static void DrawArbiter(Arbiter* arbiter)
     glEnd();
     glPointSize(1.0f);
 }
-static void DrawPoint(Vec2 p)
-{
-    glPointSize(4.0f);
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glBegin(GL_POINTS);
-    glVertex2f(p.x, p.y);
-    glEnd();
-    glPointSize(1.0f);
-}
-static void DrawLine(Vec2 p0, Vec2 p1)
-{
-    glColor3f(0.8f, 0.8f, 0.9f);
-	glBegin(GL_LINES);
-	glVertex2f(p0.x, p0.y);
-	glVertex2f(p1.x, p1.y);
-	glEnd();
-}
 static void Draw()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -706,8 +713,8 @@ static void Draw()
     for (int i = 0; i < joint_s_count; i++)
         DrawJoint(joint_s + i);
 
-    for (auto& i : world.arbiters)
-        DrawArbiter(&i.second);
+    // for (auto& i : world.arbiters)
+    //     DrawArbiter(&i.second);
 
     if (contactPointExists)
     {
