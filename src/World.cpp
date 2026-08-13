@@ -34,16 +34,22 @@ void World::Add(Joint* joint)
 {
 	joints.push_back(joint);
 }
-void World::Add(Impulse impulse)
+void World::ApplyImpulse(Body* body, Vec2 position, Vec2 velocity)
 {
-	impulse_s.push_back(impulse);
+    auto contactPoint = position;
+    auto impulse = velocity;
+    Vec2 r = body->position - contactPoint;
+    body->velocityLinear  += impulse * body->massInv;
+    body->velocityAngular += Cross(impulse, r) * body->inertiaInv;
 }
+
 void World::Clear()
 {
 	bodies.clear();
 	joints.clear();
 	arbiters.clear();
 }
+
 void World::SelectBody(Vec2 mousePos)
 {
     int index = -1;
@@ -74,6 +80,10 @@ void World::SelectBody(Vec2 mousePos)
     selectedBodyOffset = offset0;
     selectedBodyPoint = mousePos + offset0;
 }
+// void World::CommitBody()
+// {
+// }
+
 
 void World::Step(float dt)
 {
@@ -81,11 +91,6 @@ void World::Step(float dt)
 
 	// determine overlapping bodies and update contact points
 	BroadPhase();
-
-    // for (auto& a : arbiters)
-    // for (auto& c : a.second.contacts)
-    //     printf("%f\n", c.separation);
-    // printf("===========\n");
 
 	// integrate forces
     for (auto& body : bodies)
@@ -100,17 +105,6 @@ void World::Step(float dt)
         body->force = { 0.0f, 0.0f };
 		body->torque = 0.0f;
 	}
-
-    for (auto& body : bodies)
-    for (auto& imp : impulse_s)
-    {
-        auto contactPoint = imp.position;
-        auto impulse = imp.velocity;
-        Vec2 r = body->position - contactPoint;
-        body->velocityLinear  += impulse * body->massInv;
-        body->velocityAngular += Cross(impulse, r) * body->inertiaInv;
-    }
-    impulse_s.clear();
 
     {
         for (auto& arbiter : arbiters) arbiter.second.PreStep(dti);

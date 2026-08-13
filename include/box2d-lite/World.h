@@ -39,7 +39,6 @@ public:
     std::vector<Body*> bodies;
 	std::vector<Joint*> joints;
 	std::map<ArbiterKey, Arbiter> arbiters;
-    std::vector<Impulse> impulse_s;
 
     int selectedBodyIndex;
     Vec2 selectedBodyOffset;
@@ -50,7 +49,7 @@ public:
 	void Clear();
 	void Add(Body* body);
 	void Add(Joint* joint);
-    void Add(Impulse impulse);
+    void ApplyImpulse(Body* body, Vec2 point, Vec2 velocity);
     void SelectBody(Vec2 mousePos);
 
 	void Step(float dt);

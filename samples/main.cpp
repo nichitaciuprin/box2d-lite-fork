@@ -51,6 +51,7 @@ namespace
 	Body* bomb = NULL;
     Vec2 contactPoint;
     bool contactPointExists = false;
+    int contactPointBodyIndex = -1;
 
 	World world(gravity, iterations);
 }
@@ -93,7 +94,7 @@ static void Demo1(Body* b, Joint* j)
     AddGround(b);
 	b++; body_s_count++;
 
-	b->Set(Vec2(1.0f, 1.0f), 200.0f);
+    b->Set({ 1.0f, 1.0f }, 1.0f);
 	b->position.Set(0.0f, 4.0f);
 	world.Add(b);
 	b++; body_s_count++;
@@ -569,16 +570,21 @@ static void Mouse(GLFWwindow* window, int button, int action, int mods)
 
     // AddBox(coord);
 
+    world.SelectBody(pos);
+
     if (contactPointExists)
     {
         contactPointExists = false;
-        Impulse impulse = { contactPoint, pos - contactPoint };
-        world.Add(impulse);
+        auto velocity = pos - contactPoint;
+        auto body = world.bodies[contactPointBodyIndex];
+        printf("%f\n", body->mass);
+        world.ApplyImpulse(body, contactPoint, velocity);
     }
     else
     {
         contactPointExists = true;
-        contactPoint = pos;
+        contactPoint = world.selectedBodyPoint;
+        contactPointBodyIndex = world.selectedBodyIndex;
     }
 }
 static void DrawText(int x, int y, const char* string)
@@ -698,8 +704,15 @@ static void Draw()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    DrawPoint(world.selectedBodyPoint);
-    DrawLine(mousePos, mousePos + world.selectedBodyOffset);
+    if (contactPointExists)
+    {
+        DrawPoint(contactPoint);
+        DrawLine(contactPoint, mousePos);
+    }
+    else
+    {
+        DrawPoint(world.selectedBodyPoint);
+    }
 
     for (int i = 0; i < body_s_count; i++)
     {
@@ -713,14 +726,6 @@ static void Draw()
 
     // for (auto& i : world.arbiters)
     //     DrawArbiter(&i.second);
-
-    if (contactPointExists)
-    {
-        double xpos, ypos;
-        glfwGetCursorPos(window, &xpos, &ypos);
-        auto pos = ScreenToWorld(xpos, ypos);
-        DrawLine(pos, contactPoint);
-    }
 
     ImGui::Render();
     ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
