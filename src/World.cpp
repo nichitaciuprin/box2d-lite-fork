@@ -42,49 +42,12 @@ void World::ApplyImpulse(Body* body, Vec2 position, Vec2 velocity)
     body->velocityLinear  += impulse * body->massInv;
     body->velocityAngular += Cross(impulse, r) * body->inertiaInv;
 }
-
 void World::Clear()
 {
 	bodies.clear();
 	joints.clear();
 	arbiters.clear();
 }
-
-void World::SelectBody(Vec2 mousePos)
-{
-    int index = -1;
-
-    Vec2 offset0;
-    float offset0_ls = FLT_MAX;
-
-    for (size_t i = 0; i < bodies.size(); i++)
-    {
-        auto body = bodies[i];
-
-        if (body->mass == FLT_MAX) continue;
-
-        Vec2 offset1 = ShortPathToSurface(mousePos, body->position, body->rotation, body->scale);
-        float offset1_ls = Dot(offset1, offset1);
-
-        if (offset0_ls <= offset1_ls) continue;
-
-        index = i;
-
-        offset0 = offset1;
-        offset0_ls = offset1_ls;
-    }
-
-    if (index == -1) PANIC
-
-    selectedBodyIndex = index;
-    selectedBodyOffset = offset0;
-    selectedBodyPoint = mousePos + offset0;
-}
-// void World::CommitBody()
-// {
-// }
-
-
 void World::Step(float dt)
 {
     float dti = dt > 0.0f ? 1.0f / dt : 0.0f;

@@ -49,9 +49,10 @@ namespace
     int body_s_count = 0;
     int joint_s_count = 0;
 	Body* bomb = NULL;
-    Vec2 contactPoint;
-    bool contactPointExists = false;
-    int contactPointBodyIndex = -1;
+
+    int selectedBodyIndex = -1;
+    Vec2 selectedBodyOffset;
+    Vec2 selectedBodyPoint;
 
 	World world(gravity, iterations);
 }
@@ -449,6 +450,37 @@ static void InitDemo(int index)
 	demos[index](body_s, joint_s);
 }
 
+void SelectBody(Vec2 mousePos)
+{
+    int index = -1;
+
+    Vec2 offset0;
+    float offset0_ls = FLT_MAX;
+
+    for (size_t i = 0; i < world.bodies.size(); i++)
+    {
+        auto body = world.bodies[i];
+
+        if (body->mass == FLT_MAX) continue;
+
+        Vec2 offset1 = ShortPathToSurface(mousePos, body->position, body->rotation, body->scale);
+        float offset1_ls = Dot(offset1, offset1);
+
+        if (offset0_ls <= offset1_ls) continue;
+
+        index = i;
+
+        offset0 = offset1;
+        offset0_ls = offset1_ls;
+    }
+
+    if (index == -1) PANIC
+
+    selectedBodyIndex = index;
+    selectedBodyOffset = offset0;
+    selectedBodyPoint = mousePos + offset0;
+}
+
 Vec2 ScreenToWorld(float x, float y)
 {
     Vec2 result;
@@ -566,26 +598,18 @@ static void Mouse(GLFWwindow* window, int button, int action, int mods)
     if (action != GLFW_PRESS) return;
     if (button != GLFW_MOUSE_BUTTON_LEFT) return;
 
-    auto pos = GetMousePosition();
+    auto mousePosition = GetMousePosition();
 
     // AddBox(coord);
 
-    world.SelectBody(pos);
+    if (selectedBodyIndex == -1) return;
 
-    if (contactPointExists)
-    {
-        contactPointExists = false;
-        auto velocity = pos - contactPoint;
-        auto body = world.bodies[contactPointBodyIndex];
-        printf("%f\n", body->mass);
-        world.ApplyImpulse(body, contactPoint, velocity);
-    }
-    else
-    {
-        contactPointExists = true;
-        contactPoint = world.selectedBodyPoint;
-        contactPointBodyIndex = world.selectedBodyIndex;
-    }
+    auto body = world.bodies[selectedBodyIndex];
+    auto point = selectedBodyPoint;
+    auto velocity = mousePosition - point;
+    world.ApplyImpulse(body, point, velocity);
+
+    selectedBodyIndex = -1;
 }
 static void DrawText(int x, int y, const char* string)
 {
@@ -704,14 +728,14 @@ static void Draw()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    if (contactPointExists)
+    if (selectedBodyIndex == -1)
     {
-        DrawPoint(contactPoint);
-        DrawLine(contactPoint, mousePos);
+        DrawPoint(selectedBodyPoint);
     }
     else
     {
-        DrawPoint(world.selectedBodyPoint);
+        DrawPoint(selectedBodyPoint);
+        DrawLine(selectedBodyPoint, mousePos);
     }
 
     for (int i = 0; i < body_s_count; i++)
@@ -788,7 +812,7 @@ int main()
 	{
         auto mousePos = GetMousePosition();
 
-        world.SelectBody(mousePos);
+        SelectBody(mousePos);
 
         auto update = !pause || forward; forward = false;
         if (update)
