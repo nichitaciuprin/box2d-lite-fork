@@ -122,8 +122,18 @@ inline Vec2 Cross(float s, const Vec2& a)
 {
 	return Vec2(-s * a.y, s * a.x);
 }
-inline Vec2 RotateLeft(const Vec2& a)  { return Vec2(-a.y, +a.x); }
-inline Vec2 RotateRight(const Vec2& a) { return Vec2(+a.y, -a.x); }
+inline Vec2 RotateLeft(const Vec2& a)
+{
+    return Vec2(-a.y, +a.x);
+}
+inline Vec2 RotateRight(const Vec2& a)
+{
+    return Vec2(+a.y, -a.x);
+}
+inline float LengthSqrt(const Vec2& a)
+{
+    return Dot(a, a);
+}
 
 inline Vec2 operator * (const Mat22& A, const Vec2& v)
 {

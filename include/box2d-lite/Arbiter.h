@@ -39,8 +39,8 @@ struct Contact
 	float separation;
 	float Pn;	// accumulated normal impulse
 	float Pt;	// accumulated tangent impulse
-	float massNormal;
-    float massTangent;
+	float massNormalInv;
+    float massTangentInv;
 	float bias;
 	FeaturePair feature;
 };

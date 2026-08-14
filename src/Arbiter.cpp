@@ -64,8 +64,8 @@ void Arbiter::PreStep(float dti)
         Vec2 r1 = c->r1;
 		Vec2 r2 = c->r2;
 
-        float rls1 = Dot(r1, r1);
-        float rls2 = Dot(r2, r2);
+        float rls1 = LengthSqrt(r1);
+        float rls2 = LengthSqrt(r2);
 		float rnl1 = Dot(r1, normal);
 		float rnl2 = Dot(r2, normal);
 		float rtl1 = Dot(r1, tangent);
@@ -76,11 +76,12 @@ void Arbiter::PreStep(float dti)
         float rtls2 = rtl2 * rtl2;
 
         float massSum = body1->massInv + body2->massInv;
+
 		float massNormal  = massSum + body1->inertiaInv * (rls1 - rnls1) + body2->inertiaInv * (rls2 - rnls2);
 		float massTangent = massSum + body1->inertiaInv * (rls1 - rtls1) + body2->inertiaInv * (rls2 - rtls2);
 
-		c->massNormal  = 1.0f / massNormal;
-		c->massTangent = 1.0f / massTangent;
+		c->massNormalInv  = 1.0f / massNormal;
+		c->massTangentInv = 1.0f / massTangent;
 
         if (World::positionCorrection)
         {
@@ -107,7 +108,7 @@ void Arbiter::ApplyImpulse()
         {
             Vec2 vr = CalcRelativeVelocity(c, body1, body2);
             Vec2 normal = c->normal;
-            float impInit = (-Dot(normal, vr) + c->bias) * c->massNormal;
+            float impInit = (-Dot(normal, vr) + c->bias) * c->massNormalInv;
             float impOld = c->Pn;
             float impNew = Max(impOld + impInit, 0.0f);
             float impDiff = impNew - impOld;
@@ -121,7 +122,7 @@ void Arbiter::ApplyImpulse()
         {
             Vec2 vr = CalcRelativeVelocity(c, body1, body2);
             Vec2 tangent = RotateRight(c->normal);
-            float impInit = -Dot(tangent, vr) * c->massTangent;
+            float impInit = -Dot(tangent, vr) * c->massTangentInv;
             float impOld = c->Pt;
             float impNew = Clamp(impOld + impInit, -maxFriction, +maxFriction);
             float impDiff = impNew - impOld;
