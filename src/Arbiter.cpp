@@ -94,7 +94,6 @@ void Arbiter::PreStep(float dti)
             c->bias = 0.0f;
         }
 
-        // apply normal and friction impulse
         Vec2 impulse = normal * c->Pn + tangent * c->Pt;
         UpdateVelocity(c, body1, body2, impulse);
 	}
