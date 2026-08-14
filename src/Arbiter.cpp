@@ -75,10 +75,10 @@ void Arbiter::PreStep(float dti)
         float r1l = LengthSqrt(r1);
         float r2l = LengthSqrt(r2);
 
-        float massSum = body1->massInv + body2->massInv;
+        float massInvSum = body1->massInv + body2->massInv;
 
-		float massNormal  = massSum + body1->inertiaInv * (r1l - r1nl) + body2->inertiaInv * (r2l - r2nl);
-		float massTangent = massSum + body1->inertiaInv * (r1l - r1tl) + body2->inertiaInv * (r2l - r2tl);
+		float massNormal  = massInvSum + body1->inertiaInv * (r1l - r1nl) + body2->inertiaInv * (r2l - r2nl);
+		float massTangent = massInvSum + body1->inertiaInv * (r1l - r1tl) + body2->inertiaInv * (r2l - r2tl);
 
 		c->massNormalInv  = 1.0f / massNormal;
 		c->massTangentInv = 1.0f / massTangent;
