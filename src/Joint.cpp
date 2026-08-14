@@ -75,15 +75,14 @@ void Joint::PreStep(float inv_dt)
 	if (World::warmStarting)
 	{
 		// Apply accumulated impulse.
-		body1->velocityLinear -= body1->massInv * P;
-		body1->velocityAngular -= body1->inertiaInv * Cross(r1, P);
-
-		body2->velocityLinear += body2->massInv * P;
-		body2->velocityAngular += body2->inertiaInv * Cross(r2, P);
+		body1->velocityLinear -= P * body1->massInv;
+		body2->velocityLinear += P * body2->massInv;
+		body1->velocityAngular -= Cross(r1, P) * body1->inertiaInv;
+		body2->velocityAngular += Cross(r2, P) * body2->inertiaInv;
 	}
 	else
 	{
-		P.Set(0.0f, 0.0f);
+		P = { 0.0f, 0.0f };
 	}
 }
 
