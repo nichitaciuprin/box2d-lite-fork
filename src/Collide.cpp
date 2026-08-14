@@ -93,12 +93,12 @@ int ClipSegmentToLine(ClipVertex vOut[2], ClipVertex vIn[2], const Vec2& normal,
 	return numOut;
 }
 
-static void ComputeIncidentEdge(ClipVertex c[2], const Vec2& h, const Vec2& pos, const Mat22& Rot, const Vec2& normal)
+static void ComputeIncidentEdge(ClipVertex c[2], const Vec2& h, const Vec2& pos, const Mat22& rot, const Vec2& normal)
 {
 	// The normal is from the reference box. Convert it
 	// to the incident boxe's frame and flip sign.
-	Mat22 RotT = Rot.Transpose();
-	Vec2 n = -(RotT * normal);
+	Mat22 roti = rot.Transpose();
+	Vec2 n = -(roti * normal);
 	Vec2 nAbs = Abs(n);
 
 	if (nAbs.x > nAbs.y)
@@ -148,16 +148,16 @@ static void ComputeIncidentEdge(ClipVertex c[2], const Vec2& h, const Vec2& pos,
 		}
 	}
 
-	c[0].v = pos + Rot * c[0].v;
-	c[1].v = pos + Rot * c[1].v;
+	c[0].v = pos + rot * c[0].v;
+	c[1].v = pos + rot * c[1].v;
 }
 
 // The normal points from A to B
 int Collide(Contact* contacts, Body* bodyA, Body* bodyB)
 {
 	// Setup
-	Vec2 hA = 0.5f * bodyA->scale;
-	Vec2 hB = 0.5f * bodyB->scale;
+	Vec2 hA = bodyA->scale * 0.5f;
+	Vec2 hB = bodyB->scale * 0.5f;
 
 	Vec2 posA = bodyA->position;
 	Vec2 posB = bodyB->position;
