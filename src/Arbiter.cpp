@@ -63,6 +63,7 @@ void Arbiter::PreStep(float dti)
 		Vec2 tangent = RotateRight(c->normal);
         Vec2 r1 = c->r1;
 		Vec2 r2 = c->r2;
+
 		float r1n = Dot(r1, normal);
 		float r1t = Dot(r1, tangent);
 		float r2n = Dot(r2, normal);
