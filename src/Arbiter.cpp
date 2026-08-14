@@ -129,9 +129,5 @@ void Arbiter::ApplyImpulse()
             UpdateVelocity(c, body1, body2, impulse);
             c->Pt = impNew;
         }
-
-        // {
-        //     Vec2 vel1 = body1->velocityLinear + RotateLeft(c->r1) * body1->velocityAngular;
-        // }
 	}
 }
