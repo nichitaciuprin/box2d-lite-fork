@@ -37,7 +37,7 @@ void World::Add(Joint* joint)
 void World::ApplyImpulse(Body* body, Vec2 position, Vec2 velocity)
 {
     auto velocityLinearNew = velocity;
-    auto velocityAngularNew = Cross(velocity, body->position - position);
+    auto velocityAngularNew = Cross(position - body->position, velocity);
     body->velocityLinear += velocityLinearNew * body->massInv;
     body->velocityAngular += velocityAngularNew * body->inertiaInv;
 }

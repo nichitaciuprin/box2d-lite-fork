@@ -42,7 +42,6 @@ namespace
 	int demoIndex = 0;
 
 	Vec2 gravity = { 0.0f, -10.0f };
-    // Vec2 gravity = { 0.0f, -10.0f };
 	int iterations = 10;
 	Body body_s[200];
 	Joint joint_s[100];
