@@ -36,11 +36,10 @@ void World::Add(Joint* joint)
 }
 void World::ApplyImpulse(Body* body, Vec2 position, Vec2 velocity)
 {
-    auto contactPoint = position;
-    auto impulse = velocity;
-    Vec2 r = body->position - contactPoint;
-    body->velocityLinear  += impulse * body->massInv;
-    body->velocityAngular += Cross(impulse, r) * body->inertiaInv;
+    auto velocityLinearNew = velocity;
+    auto velocityAngularNew = Cross(velocity, body->position - position);
+    body->velocityLinear += velocityLinearNew * body->massInv;
+    body->velocityAngular += velocityAngularNew * body->inertiaInv;
 }
 void World::Clear()
 {

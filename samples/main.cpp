@@ -50,8 +50,11 @@ namespace
     int joint_s_count = 0;
 	Body* bomb = NULL;
 
+    int closeBodyIndex = -1;
+    Vec2 closeBodyPoint;
+    Vec2 closeBodyOffset;
+
     int selectedBodyIndex = -1;
-    Vec2 selectedBodyOffset;
     Vec2 selectedBodyPoint;
 
 	World world(gravity, iterations);
@@ -476,9 +479,9 @@ void SelectBody(Vec2 mousePos)
 
     if (index == -1) PANIC
 
-    selectedBodyIndex = index;
-    selectedBodyOffset = offset0;
-    selectedBodyPoint = mousePos + offset0;
+    closeBodyIndex = index;
+    closeBodyOffset = offset0;
+    closeBodyPoint = mousePos + offset0;
 }
 
 Vec2 ScreenToWorld(float x, float y)
@@ -602,14 +605,21 @@ static void Mouse(GLFWwindow* window, int button, int action, int mods)
 
     // AddBox(coord);
 
-    if (selectedBodyIndex == -1) return;
+    if (closeBodyIndex == -1) return;
 
-    auto body = world.bodies[selectedBodyIndex];
-    auto point = selectedBodyPoint;
-    auto velocity = mousePosition - point;
-    world.ApplyImpulse(body, point, velocity);
-
-    selectedBodyIndex = -1;
+    if (selectedBodyIndex == -1)
+    {
+        selectedBodyPoint = closeBodyPoint;
+        selectedBodyIndex = closeBodyIndex;
+    }
+    else
+    {
+        auto body = world.bodies[selectedBodyIndex];
+        auto point = selectedBodyPoint;
+        auto velocity = mousePosition - point;
+        world.ApplyImpulse(body, point, velocity);
+        selectedBodyIndex = -1;
+    }
 }
 static void DrawText(int x, int y, const char* string)
 {
@@ -730,7 +740,8 @@ static void Draw()
 
     if (selectedBodyIndex == -1)
     {
-        DrawPoint(selectedBodyPoint);
+        if (closeBodyIndex != -1)
+            DrawPoint(closeBodyPoint);
     }
     else
     {
@@ -739,11 +750,7 @@ static void Draw()
     }
 
     for (int i = 0; i < body_s_count; i++)
-    {
-        // auto selected = world.selectedBodyIndex == i;
-        // DrawBody(body_s + i, selected);
         DrawBody(body_s + i, false);
-    }
 
     for (int i = 0; i < joint_s_count; i++)
         DrawJoint(joint_s + i);
