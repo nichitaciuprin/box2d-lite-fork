@@ -38,8 +38,10 @@ void World::ApplyImpulse(Body* body, Vec2 position, Vec2 velocity)
 {
     auto velocityLinearNew = velocity;
     auto velocityAngularNew = Cross(position - body->position, velocity);
-    body->velocityLinear += velocityLinearNew * body->massInv;
-    body->velocityAngular += velocityAngularNew * body->inertiaInv;
+    // body->velocityLinear += velocityLinearNew * body->massInv;
+    // body->velocityAngular += velocityAngularNew * body->inertiaInv;
+    body->velocityLinear += velocityLinearNew;
+    body->velocityAngular += velocityAngularNew;
 }
 void World::Clear()
 {
@@ -51,10 +53,8 @@ void World::Step(float dt)
 {
     float dti = dt > 0.0f ? 1.0f / dt : 0.0f;
 
-	// determine overlapping bodies and update contact points
 	BroadPhase();
 
-	// integrate forces
     for (auto& body : bodies)
 	{
 		if (body->massInv == 0.0f) continue;
@@ -78,7 +78,6 @@ void World::Step(float dt)
         for (auto& joint : joints) joint->ApplyImpulse();
 	}
 
-	// integrate velocities
     for (auto& body : bodies)
 	{
         if (body->massInv == 0.0f) continue;
