@@ -63,22 +63,21 @@ void Arbiter::PreStep(float dti)
 		Vec2 tangent = RotateRight(c->normal);
         Vec2 r1 = c->r1;
 		Vec2 r2 = c->r2;
-
-        float rls1 = LengthSqrt(r1);
-        float rls2 = LengthSqrt(r2);
-		float rnl1 = Dot(r1, normal);
-		float rnl2 = Dot(r2, normal);
-		float rtl1 = Dot(r1, tangent);
-		float rtl2 = Dot(r2, tangent);
-        float rnls1 = rnl1 * rnl1;
-        float rnls2 = rnl2 * rnl2;
-        float rtls1 = rtl1 * rtl1;
-        float rtls2 = rtl2 * rtl2;
+		float r1n = Dot(r1, normal);
+		float r1t = Dot(r1, tangent);
+		float r2n = Dot(r2, normal);
+		float r2t = Dot(r2, tangent);
+        float r1nl = r1n * r1n;
+        float r1tl = r1t * r1t;
+        float r2nl = r2n * r2n;
+        float r2tl = r2t * r2t;
+        float r1l = LengthSqrt(r1);
+        float r2l = LengthSqrt(r2);
 
         float massSum = body1->massInv + body2->massInv;
 
-		float massNormal  = massSum + body1->inertiaInv * (rls1 - rnls1) + body2->inertiaInv * (rls2 - rnls2);
-		float massTangent = massSum + body1->inertiaInv * (rls1 - rtls1) + body2->inertiaInv * (rls2 - rtls2);
+		float massNormal  = massSum + body1->inertiaInv * (r1l - r1nl) + body2->inertiaInv * (r2l - r2nl);
+		float massTangent = massSum + body1->inertiaInv * (r1l - r1tl) + body2->inertiaInv * (r2l - r2tl);
 
 		c->massNormalInv  = 1.0f / massNormal;
 		c->massTangentInv = 1.0f / massTangent;
