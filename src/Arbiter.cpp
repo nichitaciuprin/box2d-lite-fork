@@ -84,8 +84,8 @@ void Arbiter::PreStep(float dti)
 
         if (World::positionCorrection)
         {
-            const float allowedPenetration = 0.01f;
-	        const float biasFactor = 0.2f;
+            float allowedPenetration = 0.01f;
+	        float biasFactor = 0.2f;
 		    c->bias = -Min(c->separation + allowedPenetration, 0.0f) * biasFactor * dti;
         }
         else
