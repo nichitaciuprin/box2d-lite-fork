@@ -147,7 +147,7 @@ static void ComputeIncidentEdge(ClipVertex c[2], const Vec2& h, const Vec2& pos,
     c[1].v = pos + rot * c[1].v;
 }
 
-static bool Sat(Body* body1, Body* body2, Vec2& normal, float& dist, Axis& axis)
+static bool Sat(const Body* body1, const Body* body2, Vec2& normal, float& dist, Axis& axis)
 {
     Vec2 pos1 = body1->position;
     Vec2 pos2 = body2->position;
