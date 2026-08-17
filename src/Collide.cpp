@@ -209,7 +209,8 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
     // Setup clipping plane data based on the separating axis
     Vec2 normalFront, normalSide;
     ClipVertex incidentEdge[2] = {};
-    float front, sideNeg, sidePos;
+    float front;
+    float sideNeg, sidePos;
     char edgeNeg, edgePos;
 
     // Compute the clipping lines and the line segment to be clipped.
