@@ -37,7 +37,7 @@ struct ClipVertex
     FeaturePair fp;
 };
 
-template<typename T>
+template <typename T>
 inline void Swap(T& a, T& b)
 {
     T tmp = a;
