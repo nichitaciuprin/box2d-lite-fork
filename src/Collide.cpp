@@ -149,12 +149,10 @@ static void ComputeIncidentEdge(ClipVertex c[2], const Vec2& h, const Vec2& pos,
 
 static bool Sat(Body* body1, Body* body2, Vec2& normal, float& separation, Axis& axis)
 {
-    Vec2 scale1 = body1->scale * 0.5f;
-    Vec2 scale2 = body2->scale * 0.5f;
-
     Vec2 pos1 = body1->position;
     Vec2 pos2 = body2->position;
-
+    Vec2 scale1 = body1->scale * 0.5f;
+    Vec2 scale2 = body2->scale * 0.5f;
     Mat22 rot1 = Mat22(body1->rotation);
     Mat22 rot2 = Mat22(body2->rotation);
 
@@ -178,35 +176,20 @@ static bool Sat(Body* body1, Body* body2, Vec2& normal, float& separation, Axis&
     if (face2.x > 0.0f) return false;
     if (face2.y > 0.0f) return false;
 
-    const float relativeTol = 0.95f;
-    const float absoluteTol = 0.01f;
+    const float tr = 0.95f; // tolerance relative
+    const float ta = 0.01f; // tolerance absolute
 
-    {
-        axis = FACE_A_X;
-        separation = face1.x;
-        normal = d1.x > 0.0f ? rot1.col1 : -rot1.col1;
-    }
+                                                     { separation = face1.x; axis = FACE_A_X; }
+    if (face1.y > (separation * tr + scale1.y * ta)) { separation = face1.y; axis = FACE_A_Y; }
+    if (face2.x > (separation * tr + scale2.x * ta)) { separation = face2.x; axis = FACE_B_X; }
+    if (face2.y > (separation * tr + scale2.y * ta)) { separation = face2.y; axis = FACE_B_Y; }
 
-    if (face1.y > separation * relativeTol + scale1.y * absoluteTol)
+    switch (axis)
     {
-        axis = FACE_A_Y;
-        separation = face1.y;
-        normal = d1.y > 0.0f ? rot1.col2 : -rot1.col2;
-    }
-
-    // Box 2 faces
-    if (face2.x > separation * relativeTol + scale2.x * absoluteTol)
-    {
-        axis = FACE_B_X;
-        separation = face2.x;
-        normal = d2.x > 0.0f ? rot2.col1 : -rot2.col1;
-    }
-
-    if (face2.y > separation * relativeTol + scale2.y * absoluteTol)
-    {
-        axis = FACE_B_Y;
-        separation = face2.y;
-        normal = d2.y > 0.0f ? rot2.col2 : -rot2.col2;
+        case FACE_A_X: normal = d1.x > 0.0f ? rot1.col1 : -rot1.col1; break;
+        case FACE_A_Y: normal = d1.y > 0.0f ? rot1.col2 : -rot1.col2; break;
+        case FACE_B_X: normal = d2.x > 0.0f ? rot2.col1 : -rot2.col1; break;
+        case FACE_B_Y: normal = d2.y > 0.0f ? rot2.col2 : -rot2.col2; break;
     }
 
     return true;
