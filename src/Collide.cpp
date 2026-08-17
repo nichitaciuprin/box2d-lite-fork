@@ -173,8 +173,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
 	Vec2 d1 = rot1t * (pos2 - pos1);
 	Vec2 d2 = rot2t * (pos2 - pos1);
 
-	Mat22 c = rot1t * rot2;
-	Mat22 absC = Abs(c);
+	Mat22 absC = Abs(rot1t * rot2);
 	Mat22 absCT = absC.Transpose();
 
 	// Box A faces
@@ -200,7 +199,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
 	const float relativeTol = 0.95f;
 	const float absoluteTol = 0.01f;
 
-	if (face1.y > relativeTol * separation + absoluteTol * scale1.y)
+	if (face1.y > separation * relativeTol + scale1.y * absoluteTol)
 	{
 		axis = FACE_A_Y;
 		separation = face1.y;
@@ -208,14 +207,14 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
 	}
 
 	// Box 2 faces
-	if (face2.x > relativeTol * separation + absoluteTol * scale2.x)
+	if (face2.x > separation * relativeTol + scale2.x * absoluteTol)
 	{
 		axis = FACE_B_X;
 		separation = face2.x;
 		normal = d2.x > 0.0f ? rot2.col1 : -rot2.col1;
 	}
 
-	if (face2.y > relativeTol * separation + absoluteTol * scale2.y)
+	if (face2.y > separation * relativeTol + scale2.y * absoluteTol)
 	{
 		axis = FACE_B_Y;
 		separation = face2.y;
