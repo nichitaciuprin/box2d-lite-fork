@@ -178,11 +178,13 @@ int Collide(Contact* contacts, Body* bodyA, Body* bodyB)
 
 	// Box A faces
 	Vec2 faceA = Abs(dA) - hA - absC * hB;
-	if (faceA.x > 0.0f || faceA.y > 0.0f) return 0;
+	if (faceA.x > 0.0f) return 0;
+	if (faceA.y > 0.0f) return 0;
 
 	// Box B faces
 	Vec2 faceB = Abs(dB) - absCT * hA - hB;
-	if (faceB.x > 0.0f || faceB.y > 0.0f) return 0;
+	if (faceB.x > 0.0f) return 0;
+	if (faceB.y > 0.0f) return 0;
 
 	// Find best axis
 	Axis axis;
@@ -307,15 +309,18 @@ int Collide(Contact* contacts, Body* bodyA, Body* bodyB)
 	for (int i = 0; i < 2; i++)
 	{
 		float separation = Dot(frontNormal, clipPoints2[i].v) - front;
+
 		if (separation > 0) continue;
 
         auto& contact = contacts[numContacts];
 
         contact.separation = separation;
         contact.normal = normal;
+
         // slide contact point onto reference face (easy to cull)
         contact.position = clipPoints2[i].v - separation * frontNormal;
         contact.feature = clipPoints2[i].fp;
+
         contact.r1 = contact.position - bodyA->position;
         contact.r2 = contact.position - bodyB->position;
 
