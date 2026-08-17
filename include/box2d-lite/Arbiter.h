@@ -16,15 +16,17 @@
 
 struct Body;
 
+struct Edges
+{
+    char inEdge1;
+    char outEdge1;
+    char inEdge2;
+    char outEdge2;
+};
+
 union FeaturePair
 {
-	struct Edges
-	{
-		char inEdge1;
-		char outEdge1;
-		char inEdge2;
-		char outEdge2;
-	} e;
+	Edges e;
 	int value;
 };
 
