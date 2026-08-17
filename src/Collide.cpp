@@ -50,10 +50,11 @@ static void Flip(FeaturePair& fp)
     Swap(fp.e.edge1in, fp.e.edge2in);
     Swap(fp.e.edge1out, fp.e.edge2out);
 }
-static void ComputeIncidentEdge(ClipVertex c[2], const Vec2& h, const Vec2& pos, const Mat22& rot, const Vec2& normal)
+static void ComputeIncidentEdge(ClipVertex vOut[2], Vec2 h, Vec2 pos, Mat22 rot, Vec2 normal)
 {
-    // The normal is from the reference box. Convert it
-    // to the incident boxe's frame and flip sign.
+    // the normal is from the reference box
+    // convert it to the incident boxe's frame and flip sign
+
     Mat22 roti = rot.Transpose();
     Vec2 n = -(roti * normal);
     Vec2 nAbs = Abs(n);
@@ -62,51 +63,51 @@ static void ComputeIncidentEdge(ClipVertex c[2], const Vec2& h, const Vec2& pos,
     {
         if (Sign(n.x) > 0.0f)
         {
-            c[0].v.Set(h.x, -h.y);
-            c[0].fp.e.edge2in = EDGE3;
-            c[0].fp.e.edge2out = EDGE4;
+            vOut[0].v.Set(h.x, -h.y);
+            vOut[0].fp.e.edge2in = EDGE3;
+            vOut[0].fp.e.edge2out = EDGE4;
 
-            c[1].v.Set(h.x, h.y);
-            c[1].fp.e.edge2in = EDGE4;
-            c[1].fp.e.edge2out = EDGE1;
+            vOut[1].v.Set(h.x, h.y);
+            vOut[1].fp.e.edge2in = EDGE4;
+            vOut[1].fp.e.edge2out = EDGE1;
         }
         else
         {
-            c[0].v.Set(-h.x, h.y);
-            c[0].fp.e.edge2in = EDGE1;
-            c[0].fp.e.edge2out = EDGE2;
+            vOut[0].v.Set(-h.x, h.y);
+            vOut[0].fp.e.edge2in = EDGE1;
+            vOut[0].fp.e.edge2out = EDGE2;
 
-            c[1].v.Set(-h.x, -h.y);
-            c[1].fp.e.edge2in = EDGE2;
-            c[1].fp.e.edge2out = EDGE3;
+            vOut[1].v.Set(-h.x, -h.y);
+            vOut[1].fp.e.edge2in = EDGE2;
+            vOut[1].fp.e.edge2out = EDGE3;
         }
     }
     else
     {
         if (Sign(n.y) > 0.0f)
         {
-            c[0].v.Set(h.x, h.y);
-            c[0].fp.e.edge2in = EDGE4;
-            c[0].fp.e.edge2out = EDGE1;
+            vOut[0].v.Set(h.x, h.y);
+            vOut[0].fp.e.edge2in = EDGE4;
+            vOut[0].fp.e.edge2out = EDGE1;
 
-            c[1].v.Set(-h.x, h.y);
-            c[1].fp.e.edge2in = EDGE1;
-            c[1].fp.e.edge2out = EDGE2;
+            vOut[1].v.Set(-h.x, h.y);
+            vOut[1].fp.e.edge2in = EDGE1;
+            vOut[1].fp.e.edge2out = EDGE2;
         }
         else
         {
-            c[0].v.Set(-h.x, -h.y);
-            c[0].fp.e.edge2in = EDGE2;
-            c[0].fp.e.edge2out = EDGE3;
+            vOut[0].v.Set(-h.x, -h.y);
+            vOut[0].fp.e.edge2in = EDGE2;
+            vOut[0].fp.e.edge2out = EDGE3;
 
-            c[1].v.Set(h.x, -h.y);
-            c[1].fp.e.edge2in = EDGE3;
-            c[1].fp.e.edge2out = EDGE4;
+            vOut[1].v.Set(h.x, -h.y);
+            vOut[1].fp.e.edge2in = EDGE3;
+            vOut[1].fp.e.edge2out = EDGE4;
         }
     }
 
-    c[0].v = pos + rot * c[0].v;
-    c[1].v = pos + rot * c[1].v;
+    vOut[0].v = pos + rot * vOut[0].v;
+    vOut[1].v = pos + rot * vOut[1].v;
 }
 static int ClipSegmentToLine(ClipVertex vIn[2], ClipVertex vOut[2], Vec2 normal, float offset, char clipEdge)
 {
