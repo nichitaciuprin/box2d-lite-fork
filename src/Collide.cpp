@@ -299,7 +299,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
 	if (np < 2) return 0;
 
 	// Clip to negative box side 1
-	np = ClipSegmentToLine(clipPoints2, clipPoints1, +sideNormal, posSide, posEdge);
+	np = ClipSegmentToLine(clipPoints2, clipPoints1, sideNormal, posSide, posEdge);
 	if (np < 2) return 0;
 
 	// Now clipPoints2 contains the clipping points.
