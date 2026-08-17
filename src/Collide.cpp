@@ -182,7 +182,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
 	if (face1.y > 0.0f) return 0;
 
 	// Box B faces
-	Vec2 face2 = Abs(d2) - absCT * scale1 - scale2;
+	Vec2 face2 = Abs(d2) - scale2 - absCT * scale1;
 	if (face2.x > 0.0f) return 0;
 	if (face2.y > 0.0f) return 0;
 
