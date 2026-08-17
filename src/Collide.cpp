@@ -50,44 +50,6 @@ static void Flip(FeaturePair& fp)
     Swap(fp.e.edge1in, fp.e.edge2in);
     Swap(fp.e.edge1out, fp.e.edge2out);
 }
-static int ClipSegmentToLine(ClipVertex vIn[2], ClipVertex vOut[2], Vec2 normal, float offset, char clipEdge)
-{
-    // Start with no output points
-    int numOut = 0;
-
-    // Calculate the distance of end points to the line
-    float distance0 = Dot(normal, vIn[0].v) - offset;
-    float distance1 = Dot(normal, vIn[1].v) - offset;
-
-    // If the points are behind the plane
-    if (distance0 <= 0.0f) vOut[numOut++] = vIn[0];
-    if (distance1 <= 0.0f) vOut[numOut++] = vIn[1];
-
-    // If the points are on different sides of the plane
-    if (distance0 * distance1 < 0.0f)
-    {
-        // Find intersection point of edge and plane
-        float interp = distance0 / (distance0 - distance1);
-        vOut[numOut].v = vIn[0].v + interp * (vIn[1].v - vIn[0].v);
-
-        if (distance0 > 0.0f)
-        {
-            vOut[numOut].fp = vIn[0].fp;
-            vOut[numOut].fp.e.edge1in = clipEdge;
-            vOut[numOut].fp.e.edge2in = NO_EDGE;
-        }
-        else
-        {
-            vOut[numOut].fp = vIn[1].fp;
-            vOut[numOut].fp.e.edge1out = clipEdge;
-            vOut[numOut].fp.e.edge2out = NO_EDGE;
-        }
-
-        numOut++;
-    }
-
-    return numOut;
-}
 static void ComputeIncidentEdge(ClipVertex c[2], const Vec2& h, const Vec2& pos, const Mat22& rot, const Vec2& normal)
 {
     // The normal is from the reference box. Convert it
@@ -145,6 +107,44 @@ static void ComputeIncidentEdge(ClipVertex c[2], const Vec2& h, const Vec2& pos,
 
     c[0].v = pos + rot * c[0].v;
     c[1].v = pos + rot * c[1].v;
+}
+static int ClipSegmentToLine(ClipVertex vIn[2], ClipVertex vOut[2], Vec2 normal, float offset, char clipEdge)
+{
+    // Start with no output points
+    int numOut = 0;
+
+    // Calculate the distance of end points to the line
+    float distance0 = Dot(normal, vIn[0].v) - offset;
+    float distance1 = Dot(normal, vIn[1].v) - offset;
+
+    // If the points are behind the plane
+    if (distance0 <= 0.0f) vOut[numOut++] = vIn[0];
+    if (distance1 <= 0.0f) vOut[numOut++] = vIn[1];
+
+    // If the points are on different sides of the plane
+    if (distance0 * distance1 < 0.0f)
+    {
+        // Find intersection point of edge and plane
+        float interp = distance0 / (distance0 - distance1);
+        vOut[numOut].v = vIn[0].v + interp * (vIn[1].v - vIn[0].v);
+
+        if (distance0 > 0.0f)
+        {
+            vOut[numOut].fp = vIn[0].fp;
+            vOut[numOut].fp.e.edge1in = clipEdge;
+            vOut[numOut].fp.e.edge2in = NO_EDGE;
+        }
+        else
+        {
+            vOut[numOut].fp = vIn[1].fp;
+            vOut[numOut].fp.e.edge1out = clipEdge;
+            vOut[numOut].fp.e.edge2out = NO_EDGE;
+        }
+
+        numOut++;
+    }
+
+    return numOut;
 }
 
 static bool Sat(const Body* body1, const Body* body2, Vec2& normal, float& dist, Axis& axis)
