@@ -34,6 +34,14 @@ struct ClipVertex
 	FeaturePair fp;
 };
 
+template<typename T>
+inline void Swap(T& a, T& b)
+{
+	T tmp = a;
+	a = b;
+	b = tmp;
+}
+
 static void Flip(FeaturePair& fp)
 {
 	Swap(fp.e.inEdge1, fp.e.inEdge2);

@@ -93,14 +93,6 @@ struct Mat22
 	Vec2 col1, col2;
 };
 
-template<typename T>
-inline void Swap(T& a, T& b)
-{
-	T tmp = a;
-	a = b;
-	b = tmp;
-}
-
 inline float Dot(const Vec2& a, const Vec2& b)
 {
 	return a.x * b.x + a.y * b.y;
