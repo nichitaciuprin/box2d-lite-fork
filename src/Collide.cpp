@@ -1,19 +1,6 @@
-/*
-* Copyright (c) 2006-2007 Erin Catto http://www.gphysics.com
-*
-* Permission to use, copy, modify, distribute and sell this software
-* and its documentation for any purpose is hereby granted without fee,
-* provided that the above copyright notice appear in all copies.
-* Erin Catto makes no representations about the suitability
-* of this software for any purpose.
-* It is provided "as is" without express or implied warranty.
-*/
-
 #include "box2d-lite/Arbiter.h"
 #include "box2d-lite/Body.h"
 
-// Box vertex and edge numbering:
-//
 //   ^ y
 //   |
 //   + --> x
@@ -33,7 +20,6 @@ enum Axis
 	FACE_B_X,
 	FACE_B_Y
 };
-
 enum EdgeNumbers
 {
 	NO_EDGE = 0,
@@ -42,7 +28,6 @@ enum EdgeNumbers
 	EDGE3,
 	EDGE4
 };
-
 struct ClipVertex
 {
 	Vec2 v;
@@ -51,13 +36,12 @@ struct ClipVertex
 	ClipVertex() { fp.value = 0; }
 };
 
-void Flip(FeaturePair& fp)
+static void Flip(FeaturePair& fp)
 {
 	Swap(fp.e.inEdge1, fp.e.inEdge2);
 	Swap(fp.e.outEdge1, fp.e.outEdge2);
 }
-
-int ClipSegmentToLine(ClipVertex vOut[2], ClipVertex vIn[2], const Vec2& normal, float offset, char clipEdge)
+static int ClipSegmentToLine(ClipVertex vOut[2], ClipVertex vIn[2], const Vec2& normal, float offset, char clipEdge)
 {
 	// Start with no output points
 	int numOut = 0;
@@ -95,7 +79,6 @@ int ClipSegmentToLine(ClipVertex vOut[2], ClipVertex vIn[2], const Vec2& normal,
 
 	return numOut;
 }
-
 static void ComputeIncidentEdge(ClipVertex c[2], const Vec2& h, const Vec2& pos, const Mat22& rot, const Vec2& normal)
 {
 	// The normal is from the reference box. Convert it
@@ -155,9 +138,10 @@ static void ComputeIncidentEdge(ClipVertex c[2], const Vec2& h, const Vec2& pos,
 	c[1].v = pos + rot * c[1].v;
 }
 
-// The normal points from A to B
 int Collide(Contact* contacts, Body* body1, Body* body2)
 {
+	// The normal points from A to B
+
 	Vec2 scale1 = body1->scale * 0.5f;
 	Vec2 scale2 = body2->scale * 0.5f;
 

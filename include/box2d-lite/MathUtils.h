@@ -61,7 +61,6 @@ struct Vec2
 		return sqrtf(x * x + y * y);
 	}
 };
-
 struct Mat22
 {
 	Mat22() {}
@@ -93,6 +92,14 @@ struct Mat22
 
 	Vec2 col1, col2;
 };
+
+template<typename T>
+inline void Swap(T& a, T& b)
+{
+	T tmp = a;
+	a = b;
+	b = tmp;
+}
 
 inline float Dot(const Vec2& a, const Vec2& b)
 {
@@ -181,13 +188,6 @@ inline float Clamp(float a, float low, float high)
 	return Max(low, Min(a, high));
 }
 
-template<typename T> inline void Swap(T& a, T& b)
-{
-	T tmp = a;
-	a = b;
-	b = tmp;
-}
-
 inline float Random()
 {
     // Random number in range [-1,1]
@@ -225,7 +225,6 @@ inline bool IsPointInsideBox(Vec2 point, Vec2 boxPosition, float boxRotation, Ve
 
     return true;
 }
-
 inline Vec2 ShortPathToSurface(Vec2 point, Vec2 boxPosition, float boxRotation, Vec2 boxScale)
 {
     Vec2 result = {};
