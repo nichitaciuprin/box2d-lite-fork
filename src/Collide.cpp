@@ -32,8 +32,6 @@ struct ClipVertex
 {
 	Vec2 v;
 	FeaturePair fp;
-
-	ClipVertex() { fp.value = 0; }
 };
 
 static void Flip(FeaturePair& fp)
@@ -207,7 +205,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
 
 	// Setup clipping plane data based on the separating axis
 	Vec2 frontNormal, sideNormal;
-	ClipVertex incidentEdge[2];
+	ClipVertex incidentEdge[2] = {};
 	float front, negSide, posSide;
 	char negEdge, posEdge;
 
@@ -273,8 +271,8 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
 
 	// clip other face with 5 box planes (1 face plane, 4 edge planes)
 
-	ClipVertex clipPoints1[2];
-	ClipVertex clipPoints2[2];
+	ClipVertex clipPoints1[2] = {};
+	ClipVertex clipPoints2[2] = {};
 	int np;
 
 	// Clip to box side 1
