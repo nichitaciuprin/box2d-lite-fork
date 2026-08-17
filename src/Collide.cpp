@@ -47,8 +47,8 @@ inline void Swap(T& a, T& b)
 
 static void Flip(FeaturePair& fp)
 {
-    Swap(fp.e.inEdge1, fp.e.inEdge2);
-    Swap(fp.e.outEdge1, fp.e.outEdge2);
+    Swap(fp.e.edge1in, fp.e.edge2in);
+    Swap(fp.e.edge1out, fp.e.edge2out);
 }
 static int ClipSegmentToLine(ClipVertex vIn[2], ClipVertex vOut[2], const Vec2& normal, float offset, char clipEdge)
 {
@@ -73,14 +73,14 @@ static int ClipSegmentToLine(ClipVertex vIn[2], ClipVertex vOut[2], const Vec2& 
         if (distance0 > 0.0f)
         {
             vOut[numOut].fp = vIn[0].fp;
-            vOut[numOut].fp.e.inEdge1 = clipEdge;
-            vOut[numOut].fp.e.inEdge2 = NO_EDGE;
+            vOut[numOut].fp.e.edge1in = clipEdge;
+            vOut[numOut].fp.e.edge2in = NO_EDGE;
         }
         else
         {
             vOut[numOut].fp = vIn[1].fp;
-            vOut[numOut].fp.e.outEdge1 = clipEdge;
-            vOut[numOut].fp.e.outEdge2 = NO_EDGE;
+            vOut[numOut].fp.e.edge1out = clipEdge;
+            vOut[numOut].fp.e.edge2out = NO_EDGE;
         }
 
         numOut++;
@@ -101,22 +101,22 @@ static void ComputeIncidentEdge(ClipVertex c[2], const Vec2& h, const Vec2& pos,
         if (Sign(n.x) > 0.0f)
         {
             c[0].v.Set(h.x, -h.y);
-            c[0].fp.e.inEdge2 = EDGE3;
-            c[0].fp.e.outEdge2 = EDGE4;
+            c[0].fp.e.edge2in = EDGE3;
+            c[0].fp.e.edge2out = EDGE4;
 
             c[1].v.Set(h.x, h.y);
-            c[1].fp.e.inEdge2 = EDGE4;
-            c[1].fp.e.outEdge2 = EDGE1;
+            c[1].fp.e.edge2in = EDGE4;
+            c[1].fp.e.edge2out = EDGE1;
         }
         else
         {
             c[0].v.Set(-h.x, h.y);
-            c[0].fp.e.inEdge2 = EDGE1;
-            c[0].fp.e.outEdge2 = EDGE2;
+            c[0].fp.e.edge2in = EDGE1;
+            c[0].fp.e.edge2out = EDGE2;
 
             c[1].v.Set(-h.x, -h.y);
-            c[1].fp.e.inEdge2 = EDGE2;
-            c[1].fp.e.outEdge2 = EDGE3;
+            c[1].fp.e.edge2in = EDGE2;
+            c[1].fp.e.edge2out = EDGE3;
         }
     }
     else
@@ -124,22 +124,22 @@ static void ComputeIncidentEdge(ClipVertex c[2], const Vec2& h, const Vec2& pos,
         if (Sign(n.y) > 0.0f)
         {
             c[0].v.Set(h.x, h.y);
-            c[0].fp.e.inEdge2 = EDGE4;
-            c[0].fp.e.outEdge2 = EDGE1;
+            c[0].fp.e.edge2in = EDGE4;
+            c[0].fp.e.edge2out = EDGE1;
 
             c[1].v.Set(-h.x, h.y);
-            c[1].fp.e.inEdge2 = EDGE1;
-            c[1].fp.e.outEdge2 = EDGE2;
+            c[1].fp.e.edge2in = EDGE1;
+            c[1].fp.e.edge2out = EDGE2;
         }
         else
         {
             c[0].v.Set(-h.x, -h.y);
-            c[0].fp.e.inEdge2 = EDGE2;
-            c[0].fp.e.outEdge2 = EDGE3;
+            c[0].fp.e.edge2in = EDGE2;
+            c[0].fp.e.edge2out = EDGE3;
 
             c[1].v.Set(h.x, -h.y);
-            c[1].fp.e.inEdge2 = EDGE3;
-            c[1].fp.e.outEdge2 = EDGE4;
+            c[1].fp.e.edge2in = EDGE3;
+            c[1].fp.e.edge2out = EDGE4;
         }
     }
 
