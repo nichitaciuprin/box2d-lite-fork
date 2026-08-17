@@ -18,14 +18,13 @@ struct Body
 {
     Vec2 position;
     float rotation;
+    Vec2 scale;
 
     Vec2 velocityLinear;
     float velocityAngular;
 
     Vec2 force;
     float torque;
-
-    Vec2 scale;
 
     float friction;
     float mass, massInv;

@@ -147,10 +147,8 @@ static void ComputeIncidentEdge(ClipVertex c[2], const Vec2& h, const Vec2& pos,
     c[1].v = pos + rot * c[1].v;
 }
 
-int Collide(Contact* contacts, Body* body1, Body* body2)
+static bool Sat(Body* body1, Body* body2, Vec2& normal, float& separation, Axis& axis)
 {
-    // The normal points from A to B
-
     Vec2 scale1 = body1->scale * 0.5f;
     Vec2 scale2 = body2->scale * 0.5f;
 
@@ -173,25 +171,21 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
     Vec2 face2 = Abs(d2) - scale2 - absCT * scale1;
 
     // Box A faces
-    if (face1.x > 0.0f) return 0;
-    if (face1.y > 0.0f) return 0;
+    if (face1.x > 0.0f) return false;
+    if (face1.y > 0.0f) return false;
 
     // Box B faces
-    if (face2.x > 0.0f) return 0;
-    if (face2.y > 0.0f) return 0;
-
-    // Find best axis
-    Axis axis;
-    float separation;
-    Vec2 normal;
-
-    // Box 1 faces
-    axis = FACE_A_X;
-    separation = face1.x;
-    normal = d1.x > 0.0f ? rot1.col1 : -rot1.col1;
+    if (face2.x > 0.0f) return false;
+    if (face2.y > 0.0f) return false;
 
     const float relativeTol = 0.95f;
     const float absoluteTol = 0.01f;
+
+    {
+        axis = FACE_A_X;
+        separation = face1.x;
+        normal = d1.x > 0.0f ? rot1.col1 : -rot1.col1;
+    }
 
     if (face1.y > separation * relativeTol + scale1.y * absoluteTol)
     {
@@ -214,6 +208,24 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
         separation = face2.y;
         normal = d2.y > 0.0f ? rot2.col2 : -rot2.col2;
     }
+
+    return true;
+}
+
+int Collide(Contact* contacts, Body* body1, Body* body2)
+{
+    // The normal points from A to B
+
+    Vec2 pos1 = body1->position;
+    Vec2 pos2 = body2->position;
+    Vec2 scale1 = body1->scale * 0.5f;
+    Vec2 scale2 = body2->scale * 0.5f;
+    Mat22 rot1 = Mat22(body1->rotation);
+    Mat22 rot2 = Mat22(body2->rotation);
+
+    Vec2 normal; float separation; Axis axis;
+    auto hit = Sat(body1, body2, normal, separation, axis);
+    if (!hit) return 0;
 
     // Setup clipping plane data based on the separating axis
     Vec2 frontNormal, sideNormal;
