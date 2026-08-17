@@ -30,6 +30,7 @@ enum EdgeNumbers
     EDGE3,
     EDGE4
 };
+
 struct ClipVertex
 {
     Vec2 v;
