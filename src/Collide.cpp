@@ -108,7 +108,7 @@ static int ClipSegmentToLine(ClipVertex vIn[2], ClipVertex vOut[2], Vec2 normal,
     {
         // Find intersection point of edge and plane
         float interp = distance0 / (distance0 - distance1);
-        vOut[numOut].v = vIn[0].v + interp * (vIn[1].v - vIn[0].v);
+        vOut[numOut].v = vIn[0].v + (vIn[1].v - vIn[0].v) * interp;
 
         if (distance0 > 0.0f)
         {
@@ -128,7 +128,6 @@ static int ClipSegmentToLine(ClipVertex vIn[2], ClipVertex vOut[2], Vec2 normal,
 
     return numOut;
 }
-
 static bool Sat(const Body* body1, const Body* body2, Vec2& normal, float& dist, Axis& axis)
 {
     Vec2 pos1 = body1->position;
