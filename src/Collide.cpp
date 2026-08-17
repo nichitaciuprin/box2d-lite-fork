@@ -55,57 +55,40 @@ static void ComputeIncidentEdge(ClipVertex vOut[2], Vec2 h, Vec2 pos, Mat22 rot,
     // the normal is from the reference box
     // convert it to the incident boxe's frame and flip sign
 
-    normal = -(rot.Transpose() * normal);
+    normal = rot.Transpose() * -normal;
+
+    auto& v0 = vOut[0];
+    auto& v1 = vOut[1];
 
     if (Abs(normal.x) > Abs(normal.y))
     {
         if (Sign(normal.x) > 0.0f)
         {
-            vOut[0].v.Set(h.x, -h.y);
-            vOut[0].fp.e.edge2in = EDGE3;
-            vOut[0].fp.e.edge2out = EDGE4;
-
-            vOut[1].v.Set(h.x, h.y);
-            vOut[1].fp.e.edge2in = EDGE4;
-            vOut[1].fp.e.edge2out = EDGE1;
+            v0.v = { +h.x, -h.y }; v0.fp.e.edge2in = EDGE3; v0.fp.e.edge2out = EDGE4;
+            v1.v = { +h.x, +h.y }; v1.fp.e.edge2in = EDGE4; v1.fp.e.edge2out = EDGE1;
         }
         else
         {
-            vOut[0].v.Set(-h.x, h.y);
-            vOut[0].fp.e.edge2in = EDGE1;
-            vOut[0].fp.e.edge2out = EDGE2;
-
-            vOut[1].v.Set(-h.x, -h.y);
-            vOut[1].fp.e.edge2in = EDGE2;
-            vOut[1].fp.e.edge2out = EDGE3;
+            v0.v = { -h.x, +h.y }; v0.fp.e.edge2in = EDGE1; v0.fp.e.edge2out = EDGE2;
+            v1.v = { -h.x, -h.y }; v1.fp.e.edge2in = EDGE2; v1.fp.e.edge2out = EDGE3;
         }
     }
     else
     {
         if (Sign(normal.y) > 0.0f)
         {
-            vOut[0].v.Set(h.x, h.y);
-            vOut[0].fp.e.edge2in = EDGE4;
-            vOut[0].fp.e.edge2out = EDGE1;
-
-            vOut[1].v.Set(-h.x, h.y);
-            vOut[1].fp.e.edge2in = EDGE1;
-            vOut[1].fp.e.edge2out = EDGE2;
+            v0.v = { +h.x, +h.y }; v0.fp.e.edge2in = EDGE4; v0.fp.e.edge2out = EDGE1;
+            v1.v = { -h.x, +h.y }; v1.fp.e.edge2in = EDGE1; v1.fp.e.edge2out = EDGE2;
         }
         else
         {
-            vOut[0].v.Set(-h.x, -h.y);
-            vOut[0].fp.e.edge2in = EDGE2;
-            vOut[0].fp.e.edge2out = EDGE3;
-
-            vOut[1].v.Set(h.x, -h.y);
-            vOut[1].fp.e.edge2in = EDGE3;
-            vOut[1].fp.e.edge2out = EDGE4;
+            v0.v = { -h.x, -h.y }; v0.fp.e.edge2in = EDGE2; v0.fp.e.edge2out = EDGE3;
+            v1.v = { +h.x, -h.y }; v1.fp.e.edge2in = EDGE3; v1.fp.e.edge2out = EDGE4;
         }
     }
 
-    vOut[0].v = pos + rot * vOut[0].v;
-    vOut[1].v = pos + rot * vOut[1].v;
+    v0.v = pos + rot * v0.v;
+    v1.v = pos + rot * v1.v;
 }
 static int ClipSegmentToLine(ClipVertex vIn[2], ClipVertex vOut[2], Vec2 normal, float offset, char clipEdge)
 {
