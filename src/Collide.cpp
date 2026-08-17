@@ -147,7 +147,7 @@ static void ComputeIncidentEdge(ClipVertex c[2], const Vec2& h, const Vec2& pos,
     c[1].v = pos + rot * c[1].v;
 }
 
-static bool Sat(Body* body1, Body* body2, Vec2& normal, float& separation, Axis& axis)
+static bool Sat(Body* body1, Body* body2, Vec2& normal, float& dist, Axis& axis)
 {
     Vec2 pos1 = body1->position;
     Vec2 pos2 = body2->position;
@@ -155,34 +155,29 @@ static bool Sat(Body* body1, Body* body2, Vec2& normal, float& separation, Axis&
     Vec2 scale2 = body2->scale * 0.5f;
     Mat22 rot1 = Mat22(body1->rotation);
     Mat22 rot2 = Mat22(body2->rotation);
-
     Mat22 rot1t = rot1.Transpose();
     Mat22 rot2t = rot2.Transpose();
-
     Vec2 d1 = rot1t * (pos2 - pos1);
     Vec2 d2 = rot2t * (pos2 - pos1);
-
     Mat22 absC = Abs(rot1t * rot2);
     Mat22 absCT = absC.Transpose();
-
     Vec2 face1 = Abs(d1) - scale1 - absC  * scale2;
     Vec2 face2 = Abs(d2) - scale2 - absCT * scale1;
 
-    // Box A faces
     if (face1.x > 0.0f) return false;
     if (face1.y > 0.0f) return false;
-
-    // Box B faces
     if (face2.x > 0.0f) return false;
     if (face2.y > 0.0f) return false;
+
+    // makes axis switch if diff significant
 
     const float tr = 0.95f; // tolerance relative
     const float ta = 0.01f; // tolerance absolute
 
-                                                     { separation = face1.x; axis = FACE_A_X; }
-    if (face1.y > (separation * tr + scale1.y * ta)) { separation = face1.y; axis = FACE_A_Y; }
-    if (face2.x > (separation * tr + scale2.x * ta)) { separation = face2.x; axis = FACE_B_X; }
-    if (face2.y > (separation * tr + scale2.y * ta)) { separation = face2.y; axis = FACE_B_Y; }
+                                               { dist = face1.x; axis = FACE_A_X; }
+    if ((dist * tr + scale1.y * ta) < face1.y) { dist = face1.y; axis = FACE_A_Y; }
+    if ((dist * tr + scale2.x * ta) < face2.x) { dist = face2.x; axis = FACE_B_X; }
+    if ((dist * tr + scale2.y * ta) < face2.y) { dist = face2.y; axis = FACE_B_Y; }
 
     switch (axis)
     {
