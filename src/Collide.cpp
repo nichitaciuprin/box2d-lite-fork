@@ -55,13 +55,11 @@ static void ComputeIncidentEdge(ClipVertex vOut[2], Vec2 h, Vec2 pos, Mat22 rot,
     // the normal is from the reference box
     // convert it to the incident boxe's frame and flip sign
 
-    Mat22 roti = rot.Transpose();
-    Vec2 n = -(roti * normal);
-    Vec2 nAbs = Abs(n);
+    normal = -(rot.Transpose() * normal);
 
-    if (nAbs.x > nAbs.y)
+    if (Abs(normal.x) > Abs(normal.y))
     {
-        if (Sign(n.x) > 0.0f)
+        if (Sign(normal.x) > 0.0f)
         {
             vOut[0].v.Set(h.x, -h.y);
             vOut[0].fp.e.edge2in = EDGE3;
@@ -84,7 +82,7 @@ static void ComputeIncidentEdge(ClipVertex vOut[2], Vec2 h, Vec2 pos, Mat22 rot,
     }
     else
     {
-        if (Sign(n.y) > 0.0f)
+        if (Sign(normal.y) > 0.0f)
         {
             vOut[0].v.Set(h.x, h.y);
             vOut[0].fp.e.edge2in = EDGE4;
