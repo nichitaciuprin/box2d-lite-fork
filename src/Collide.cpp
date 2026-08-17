@@ -49,7 +49,7 @@ static void Flip(FeaturePair& fp)
 	Swap(fp.e.inEdge1, fp.e.inEdge2);
 	Swap(fp.e.outEdge1, fp.e.outEdge2);
 }
-static int ClipSegmentToLine(ClipVertex vOut[2], ClipVertex vIn[2], const Vec2& normal, float offset, char clipEdge)
+static int ClipSegmentToLine(ClipVertex vIn[2], ClipVertex vOut[2], const Vec2& normal, float offset, char clipEdge)
 {
 	// Start with no output points
 	int numOut = 0;
@@ -286,11 +286,11 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
 	int np;
 
 	// Clip to box side 1
-	np = ClipSegmentToLine(clipPoints1, incidentEdge, -sideNormal, negSide, negEdge);
+	np = ClipSegmentToLine(incidentEdge, clipPoints1, -sideNormal, negSide, negEdge);
 	if (np < 2) return 0;
 
 	// Clip to negative box side 1
-	np = ClipSegmentToLine(clipPoints2, clipPoints1, sideNormal, posSide, posEdge);
+	np = ClipSegmentToLine(clipPoints1, clipPoints2, sideNormal, posSide, posEdge);
 	if (np < 2) return 0;
 
 	// Now clipPoints2 contains the clipping points.
