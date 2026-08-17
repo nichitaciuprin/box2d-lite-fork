@@ -153,17 +153,17 @@ static void ComputeIncidentEdge(ClipVertex c[2], const Vec2& h, const Vec2& pos,
 }
 
 // The normal points from A to B
-int Collide(Contact* contacts, Body* bodyA, Body* bodyB)
+int Collide(Contact* contacts, Body* body1, Body* body2)
 {
 	// Setup
-	Vec2 hA = bodyA->scale * 0.5f;
-	Vec2 hB = bodyB->scale * 0.5f;
+	Vec2 hA = body1->scale * 0.5f;
+	Vec2 hB = body2->scale * 0.5f;
 
-	Vec2 posA = bodyA->position;
-	Vec2 posB = bodyB->position;
+	Vec2 posA = body1->position;
+	Vec2 posB = body2->position;
 
-	Mat22 RotA(bodyA->rotation);
-    Mat22 RotB(bodyB->rotation);
+	Mat22 RotA(body1->rotation);
+    Mat22 RotB(body2->rotation);
 
 	Mat22 RotAT = RotA.Transpose();
 	Mat22 RotBT = RotB.Transpose();
@@ -321,8 +321,8 @@ int Collide(Contact* contacts, Body* bodyA, Body* bodyB)
         contact.position = clipPoints2[i].v - separation * frontNormal;
         contact.feature = clipPoints2[i].fp;
 
-        contact.r1 = contact.position - bodyA->position;
-        contact.r2 = contact.position - bodyB->position;
+        contact.r1 = contact.position - body1->position;
+        contact.r2 = contact.position - body2->position;
 
         if (axis == FACE_B_X || axis == FACE_B_Y)
             Flip(contact.feature);
