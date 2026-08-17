@@ -202,8 +202,8 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
     Mat22 rot1 = Mat22(body1->rotation);
     Mat22 rot2 = Mat22(body2->rotation);
 
-    Vec2 normal; float separation; Axis axis;
-    auto hit = Sat(body1, body2, normal, separation, axis);
+    Vec2 normal; float dist; Axis axis;
+    auto hit = Sat(body1, body2, normal, dist, axis);
     if (!hit) return 0;
 
     // Setup clipping plane data based on the separating axis
@@ -303,7 +303,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
         contact.normal = normal;
 
         // slide contact point onto reference face (easy to cull)
-        contact.position = clipPoints2[i].v - separation * frontNormal;
+        contact.position = clipPoints2[i].v - frontNormal * separation;
         contact.feature = clipPoints2[i].fp;
 
         contact.r1 = contact.position - body1->position;
