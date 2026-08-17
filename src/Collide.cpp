@@ -169,8 +169,9 @@ static bool Sat(Body* body1, Body* body2, Vec2& normal, float& dist, Axis& axis)
     if (face2.x > 0.0f) return false;
     if (face2.y > 0.0f) return false;
 
-    // makes axis switch if diff significant
-
+    // todo double check tr ta
+    // tr makes axis switch if diff significant
+    // ta makes axis switch to for smaller body
     const float tr = 0.95f; // tolerance relative
     const float ta = 0.01f; // tolerance absolute
 
