@@ -207,7 +207,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
     if (!hit) return 0;
 
     // Setup clipping plane data based on the separating axis
-    Vec2 frontNormal, sideNormal;
+    Vec2 normalFront, normalSide;
     ClipVertex incidentEdge[2] = {};
     float front, sideNeg, sidePos;
     char edgeNeg, edgePos;
@@ -217,57 +217,57 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
     {
         case FACE_A_X:
         {
-            frontNormal = normal;
-            front = Dot(pos1, frontNormal) + scale1.x;
-            sideNormal = rot1.col2;
-            float side = Dot(pos1, sideNormal);
+            normalFront = normal;
+            front = Dot(pos1, normalFront) + scale1.x;
+            normalSide = rot1.col2;
+            float side = Dot(pos1, normalSide);
             sideNeg = -side + scale1.y;
             sidePos = +side + scale1.y;
             edgeNeg = EDGE3;
             edgePos = EDGE1;
-            ComputeIncidentEdge(incidentEdge, scale2, pos2, rot2, frontNormal);
+            ComputeIncidentEdge(incidentEdge, scale2, pos2, rot2, normalFront);
         }
         break;
 
         case FACE_A_Y:
         {
-            frontNormal = normal;
-            front = Dot(pos1, frontNormal) + scale1.y;
-            sideNormal = rot1.col1;
-            float side = Dot(pos1, sideNormal);
+            normalFront = normal;
+            front = Dot(pos1, normalFront) + scale1.y;
+            normalSide = rot1.col1;
+            float side = Dot(pos1, normalSide);
             sideNeg = -side + scale1.x;
             sidePos = +side + scale1.x;
             edgeNeg = EDGE2;
             edgePos = EDGE4;
-            ComputeIncidentEdge(incidentEdge, scale2, pos2, rot2, frontNormal);
+            ComputeIncidentEdge(incidentEdge, scale2, pos2, rot2, normalFront);
         }
         break;
 
         case FACE_B_X:
         {
-            frontNormal = -normal;
-            front = Dot(pos2, frontNormal) + scale2.x;
-            sideNormal = rot2.col2;
-            float side = Dot(pos2, sideNormal);
+            normalFront = -normal;
+            front = Dot(pos2, normalFront) + scale2.x;
+            normalSide = rot2.col2;
+            float side = Dot(pos2, normalSide);
             sideNeg = -side + scale2.y;
             sidePos = +side + scale2.y;
             edgeNeg = EDGE3;
             edgePos = EDGE1;
-            ComputeIncidentEdge(incidentEdge, scale1, pos1, rot1, frontNormal);
+            ComputeIncidentEdge(incidentEdge, scale1, pos1, rot1, normalFront);
         }
         break;
 
         case FACE_B_Y:
         {
-            frontNormal = -normal;
-            front = Dot(pos2, frontNormal) + scale2.y;
-            sideNormal = rot2.col1;
-            float side = Dot(pos2, sideNormal);
+            normalFront = -normal;
+            front = Dot(pos2, normalFront) + scale2.y;
+            normalSide = rot2.col1;
+            float side = Dot(pos2, normalSide);
             sideNeg = -side + scale2.x;
             sidePos = +side + scale2.x;
             edgeNeg = EDGE2;
             edgePos = EDGE4;
-            ComputeIncidentEdge(incidentEdge, scale1, pos1, rot1, frontNormal);
+            ComputeIncidentEdge(incidentEdge, scale1, pos1, rot1, normalFront);
         }
         break;
     }
@@ -279,11 +279,11 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
     int np;
 
     // Clip to box side 1
-    np = ClipSegmentToLine(incidentEdge, clipPoints1, -sideNormal, sideNeg, edgeNeg);
+    np = ClipSegmentToLine(incidentEdge, clipPoints1, -normalSide, sideNeg, edgeNeg);
     if (np < 2) return 0;
 
     // Clip to negative box side 1
-    np = ClipSegmentToLine(clipPoints1, clipPoints2, sideNormal, sidePos, edgePos);
+    np = ClipSegmentToLine(clipPoints1, clipPoints2, normalSide, sidePos, edgePos);
     if (np < 2) return 0;
 
     // Now clipPoints2 contains the clipping points.
@@ -293,7 +293,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
 
     for (int i = 0; i < 2; i++)
     {
-        float separation = Dot(frontNormal, clipPoints2[i].v) - front;
+        float separation = Dot(normalFront, clipPoints2[i].v) - front;
 
         if (separation > 0) continue;
 
@@ -303,7 +303,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
         contact.normal = normal;
 
         // slide contact point onto reference face (easy to cull)
-        contact.position = clipPoints2[i].v - frontNormal * separation;
+        contact.position = clipPoints2[i].v - normalFront * separation;
         contact.feature = clipPoints2[i].fp;
 
         contact.r1 = contact.position - body1->position;
