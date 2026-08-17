@@ -28,11 +28,11 @@ bool World::positionCorrection = true;
 
 void World::Add(Body* body)
 {
-	bodies.push_back(body);
+    bodies.push_back(body);
 }
 void World::Add(Joint* joint)
 {
-	joints.push_back(joint);
+    joints.push_back(joint);
 }
 void World::ApplyImpulse(Body* body, Vec2 position, Vec2 velocity)
 {
@@ -45,56 +45,56 @@ void World::ApplyImpulse(Body* body, Vec2 position, Vec2 velocity)
 }
 void World::Clear()
 {
-	bodies.clear();
-	joints.clear();
-	arbiters.clear();
+    bodies.clear();
+    joints.clear();
+    arbiters.clear();
 }
 void World::Step(float dt)
 {
     float dti = dt > 0.0f ? 1.0f / dt : 0.0f;
 
-	BroadPhase();
+    BroadPhase();
 
     for (auto& body : bodies)
-	{
-		if (body->massInv == 0.0f) continue;
+    {
+        if (body->massInv == 0.0f) continue;
 
         body->velocityLinear += gravity * dt;
 
         body->velocityLinear  += body->force  * body->massInv    * dt;
-		body->velocityAngular += body->torque * body->inertiaInv * dt;
+        body->velocityAngular += body->torque * body->inertiaInv * dt;
 
         body->force = { 0.0f, 0.0f };
-		body->torque = 0.0f;
-	}
+        body->torque = 0.0f;
+    }
 
     {
         for (auto& arbiter : arbiters) arbiter.second.PreStep(dti);
         for (auto& joint : joints) joint->PreStep(dti);
     }
-	for (int i = 0; i < iterations; i++)
-	{
+    for (int i = 0; i < iterations; i++)
+    {
         for (auto& arbiter : arbiters) arbiter.second.ApplyImpulse();
         for (auto& joint : joints) joint->ApplyImpulse();
-	}
+    }
 
     for (auto& body : bodies)
-	{
+    {
         if (body->massInv == 0.0f) continue;
 
-		body->position += body->velocityLinear  * dt;
-		body->rotation += body->velocityAngular * dt;
-	}
+        body->position += body->velocityLinear  * dt;
+        body->rotation += body->velocityAngular * dt;
+    }
 }
 
 void World::BroadPhase()
 {
-	// O(n^2) broad-phase
+    // O(n^2) broad-phase
 
-	for (int i =   0; i < (int)bodies.size(); i++)
+    for (int i =   0; i < (int)bodies.size(); i++)
     for (int j = i+1; j < (int)bodies.size(); j++)
-	{
-		Body* b1 = bodies[i];
+    {
+        Body* b1 = bodies[i];
         Body* b2 = bodies[j];
 
         if (b1->massInv == 0.0f && b2->massInv == 0.0f) continue;
@@ -137,5 +137,5 @@ void World::BroadPhase()
         }
 
         *a_old = *a_new;
-	}
+    }
 }

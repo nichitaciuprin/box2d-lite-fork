@@ -37,37 +37,37 @@ static inline void UpdateVelocity(Contact* c, Body* b1, Body* b2, Vec2 impulse)
 
 Arbiter::Arbiter(Body* b1, Body* b2)
 {
-	if (b1 < b2)
-	{
-		body1 = b1;
-		body2 = b2;
-	}
-	else
-	{
-		body1 = b2;
-		body2 = b1;
-	}
+    if (b1 < b2)
+    {
+        body1 = b1;
+        body2 = b2;
+    }
+    else
+    {
+        body1 = b2;
+        body2 = b1;
+    }
 
-	numContacts = Collide(contacts, body1, body2);
+    numContacts = Collide(contacts, body1, body2);
 
-	friction = sqrtf(body1->friction * body2->friction);
+    friction = sqrtf(body1->friction * body2->friction);
 }
 
 void Arbiter::PreStep(float dti)
 {
-	for (int i = 0; i < numContacts; i++)
-	{
-		Contact* c = contacts + i;
+    for (int i = 0; i < numContacts; i++)
+    {
+        Contact* c = contacts + i;
 
         Vec2 normal = c->normal;
-		Vec2 tangent = RotateRight(c->normal);
+        Vec2 tangent = RotateRight(c->normal);
         Vec2 r1 = c->r1;
-		Vec2 r2 = c->r2;
+        Vec2 r2 = c->r2;
 
-		float r1n = Dot(r1, normal);
-		float r1t = Dot(r1, tangent);
-		float r2n = Dot(r2, normal);
-		float r2t = Dot(r2, tangent);
+        float r1n = Dot(r1, normal);
+        float r1t = Dot(r1, tangent);
+        float r2n = Dot(r2, normal);
+        float r2t = Dot(r2, tangent);
         float r1nl = r1n * r1n;
         float r1tl = r1t * r1t;
         float r2nl = r2n * r2n;
@@ -77,17 +77,17 @@ void Arbiter::PreStep(float dti)
 
         float massInvSum = body1->massInv + body2->massInv;
 
-		float massNormal  = massInvSum + body1->inertiaInv * (r1l - r1nl) + body2->inertiaInv * (r2l - r2nl);
-		float massTangent = massInvSum + body1->inertiaInv * (r1l - r1tl) + body2->inertiaInv * (r2l - r2tl);
+        float massNormal  = massInvSum + body1->inertiaInv * (r1l - r1nl) + body2->inertiaInv * (r2l - r2nl);
+        float massTangent = massInvSum + body1->inertiaInv * (r1l - r1tl) + body2->inertiaInv * (r2l - r2tl);
 
-		c->massNormalInv  = 1.0f / massNormal;
-		c->massTangentInv = 1.0f / massTangent;
+        c->massNormalInv  = 1.0f / massNormal;
+        c->massTangentInv = 1.0f / massTangent;
 
         if (World::positionCorrection)
         {
             float allowedPenetration = 0.01f;
-	        float biasFactor = 0.2f;
-		    c->bias = -Min(c->separation + allowedPenetration, 0.0f) * biasFactor * dti;
+            float biasFactor = 0.2f;
+            c->bias = -Min(c->separation + allowedPenetration, 0.0f) * biasFactor * dti;
         }
         else
         {
@@ -96,13 +96,13 @@ void Arbiter::PreStep(float dti)
 
         Vec2 impulse = normal * c->Pn + tangent * c->Pt;
         UpdateVelocity(c, body1, body2, impulse);
-	}
+    }
 }
 void Arbiter::ApplyImpulse()
 {
-	for (int i = 0; i < numContacts; i++)
-	{
-		Contact* c = contacts + i;
+    for (int i = 0; i < numContacts; i++)
+    {
+        Contact* c = contacts + i;
 
         {
             Vec2 vr = CalcRelativeVelocity(c, body1, body2);
@@ -129,5 +129,5 @@ void Arbiter::ApplyImpulse()
             UpdateVelocity(c, body1, body2, impulse);
             c->Pt = impNew;
         }
-	}
+    }
 }

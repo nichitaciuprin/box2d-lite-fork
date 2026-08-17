@@ -29,28 +29,28 @@ struct Impulse
 struct World
 {
 public:
-	static bool accumulateImpulses;
-	static bool warmStarting;
-	static bool positionCorrection;
+    static bool accumulateImpulses;
+    static bool warmStarting;
+    static bool positionCorrection;
 
-	Vec2 gravity;
-	int iterations;
+    Vec2 gravity;
+    int iterations;
 
     std::vector<Body*> bodies;
-	std::vector<Joint*> joints;
-	std::map<ArbiterKey, Arbiter> arbiters;
+    std::vector<Joint*> joints;
+    std::map<ArbiterKey, Arbiter> arbiters;
 
-	World(Vec2 gravity, int iterations) : gravity(gravity), iterations(iterations) {}
+    World(Vec2 gravity, int iterations) : gravity(gravity), iterations(iterations) {}
 
-	void Clear();
-	void Add(Body* body);
-	void Add(Joint* joint);
+    void Clear();
+    void Add(Body* body);
+    void Add(Joint* joint);
     void ApplyImpulse(Body* body, Vec2 point, Vec2 velocity);
 
-	void Step(float dt);
+    void Step(float dt);
 
 private:
-	void BroadPhase();
+    void BroadPhase();
 };
 
 #endif
