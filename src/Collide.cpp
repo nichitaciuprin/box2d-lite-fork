@@ -50,7 +50,7 @@ static void Flip(FeaturePair& fp)
     Swap(fp.e.edge1in, fp.e.edge2in);
     Swap(fp.e.edge1out, fp.e.edge2out);
 }
-static int ClipSegmentToLine(ClipVertex vIn[2], ClipVertex vOut[2], const Vec2& normal, float offset, char clipEdge)
+static int ClipSegmentToLine(ClipVertex vIn[2], ClipVertex vOut[2], Vec2 normal, float offset, char clipEdge)
 {
     // Start with no output points
     int numOut = 0;
