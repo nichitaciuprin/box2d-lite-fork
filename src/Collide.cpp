@@ -319,6 +319,8 @@ int Collide(Contact* contacts, Body* bodyA, Body* bodyB)
 			// slide contact point onto reference face (easy to cull)
 			contacts[numContacts].position = clipPoints2[i].v - separation * frontNormal;
 			contacts[numContacts].feature = clipPoints2[i].fp;
+			contacts[numContacts].r1 = contacts[numContacts].position - bodyA->position;
+			contacts[numContacts].r2 = contacts[numContacts].position - bodyB->position;
 			if (axis == FACE_B_X || axis == FACE_B_Y)
 				Flip(contacts[numContacts].feature);
 			++numContacts;

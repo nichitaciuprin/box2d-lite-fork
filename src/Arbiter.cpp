@@ -130,8 +130,6 @@ void Arbiter::ApplyImpulse()
 	for (int i = 0; i < numContacts; ++i)
 	{
 		Contact* c = contacts + i;
-		c->r1 = c->position - b1->position;
-		c->r2 = c->position - b2->position;
 
 		// Relative velocity at contact
 		Vec2 dv = b2->velocity + Cross(b2->angularVelocity, c->r2) - b1->velocity - Cross(b1->angularVelocity, c->r1);
