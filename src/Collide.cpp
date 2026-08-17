@@ -209,8 +209,8 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
     // Setup clipping plane data based on the separating axis
     Vec2 frontNormal, sideNormal;
     ClipVertex incidentEdge[2] = {};
-    float front, negSide, posSide;
-    char negEdge, posEdge;
+    float front, sideNeg, sidePos;
+    char edgeNeg, edgePos;
 
     // Compute the clipping lines and the line segment to be clipped.
     switch (axis)
@@ -221,10 +221,10 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             front = Dot(pos1, frontNormal) + scale1.x;
             sideNormal = rot1.col2;
             float side = Dot(pos1, sideNormal);
-            negSide = -side + scale1.y;
-            posSide = +side + scale1.y;
-            negEdge = EDGE3;
-            posEdge = EDGE1;
+            sideNeg = -side + scale1.y;
+            sidePos = +side + scale1.y;
+            edgeNeg = EDGE3;
+            edgePos = EDGE1;
             ComputeIncidentEdge(incidentEdge, scale2, pos2, rot2, frontNormal);
         }
         break;
@@ -235,10 +235,10 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             front = Dot(pos1, frontNormal) + scale1.y;
             sideNormal = rot1.col1;
             float side = Dot(pos1, sideNormal);
-            negSide = -side + scale1.x;
-            posSide = +side + scale1.x;
-            negEdge = EDGE2;
-            posEdge = EDGE4;
+            sideNeg = -side + scale1.x;
+            sidePos = +side + scale1.x;
+            edgeNeg = EDGE2;
+            edgePos = EDGE4;
             ComputeIncidentEdge(incidentEdge, scale2, pos2, rot2, frontNormal);
         }
         break;
@@ -249,10 +249,10 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             front = Dot(pos2, frontNormal) + scale2.x;
             sideNormal = rot2.col2;
             float side = Dot(pos2, sideNormal);
-            negSide = -side + scale2.y;
-            posSide = +side + scale2.y;
-            negEdge = EDGE3;
-            posEdge = EDGE1;
+            sideNeg = -side + scale2.y;
+            sidePos = +side + scale2.y;
+            edgeNeg = EDGE3;
+            edgePos = EDGE1;
             ComputeIncidentEdge(incidentEdge, scale1, pos1, rot1, frontNormal);
         }
         break;
@@ -263,10 +263,10 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             front = Dot(pos2, frontNormal) + scale2.y;
             sideNormal = rot2.col1;
             float side = Dot(pos2, sideNormal);
-            negSide = -side + scale2.x;
-            posSide = +side + scale2.x;
-            negEdge = EDGE2;
-            posEdge = EDGE4;
+            sideNeg = -side + scale2.x;
+            sidePos = +side + scale2.x;
+            edgeNeg = EDGE2;
+            edgePos = EDGE4;
             ComputeIncidentEdge(incidentEdge, scale1, pos1, rot1, frontNormal);
         }
         break;
@@ -279,11 +279,11 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
     int np;
 
     // Clip to box side 1
-    np = ClipSegmentToLine(incidentEdge, clipPoints1, -sideNormal, negSide, negEdge);
+    np = ClipSegmentToLine(incidentEdge, clipPoints1, -sideNormal, sideNeg, edgeNeg);
     if (np < 2) return 0;
 
     // Clip to negative box side 1
-    np = ClipSegmentToLine(clipPoints1, clipPoints2, sideNormal, posSide, posEdge);
+    np = ClipSegmentToLine(clipPoints1, clipPoints2, sideNormal, sidePos, edgePos);
     if (np < 2) return 0;
 
     // Now clipPoints2 contains the clipping points.
