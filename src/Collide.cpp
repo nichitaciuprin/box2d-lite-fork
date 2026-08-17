@@ -17,292 +17,292 @@
 
 enum Axis
 {
-	FACE_A_X,
-	FACE_A_Y,
-	FACE_B_X,
-	FACE_B_Y
+    FACE_A_X,
+    FACE_A_Y,
+    FACE_B_X,
+    FACE_B_Y
 };
 enum EdgeNumbers
 {
-	NO_EDGE = 0,
-	EDGE1,
-	EDGE2,
-	EDGE3,
-	EDGE4
+    NO_EDGE = 0,
+    EDGE1,
+    EDGE2,
+    EDGE3,
+    EDGE4
 };
 struct ClipVertex
 {
-	Vec2 v;
-	FeaturePair fp;
+    Vec2 v;
+    FeaturePair fp;
 };
 
 template<typename T>
 inline void Swap(T& a, T& b)
 {
-	T tmp = a;
-	a = b;
-	b = tmp;
+    T tmp = a;
+    a = b;
+    b = tmp;
 }
 
 static void Flip(FeaturePair& fp)
 {
-	Swap(fp.e.inEdge1, fp.e.inEdge2);
-	Swap(fp.e.outEdge1, fp.e.outEdge2);
+    Swap(fp.e.inEdge1, fp.e.inEdge2);
+    Swap(fp.e.outEdge1, fp.e.outEdge2);
 }
 static int ClipSegmentToLine(ClipVertex vIn[2], ClipVertex vOut[2], const Vec2& normal, float offset, char clipEdge)
 {
-	// Start with no output points
-	int numOut = 0;
+    // Start with no output points
+    int numOut = 0;
 
-	// Calculate the distance of end points to the line
-	float distance0 = Dot(normal, vIn[0].v) - offset;
-	float distance1 = Dot(normal, vIn[1].v) - offset;
+    // Calculate the distance of end points to the line
+    float distance0 = Dot(normal, vIn[0].v) - offset;
+    float distance1 = Dot(normal, vIn[1].v) - offset;
 
-	// If the points are behind the plane
-	if (distance0 <= 0.0f) vOut[numOut++] = vIn[0];
-	if (distance1 <= 0.0f) vOut[numOut++] = vIn[1];
+    // If the points are behind the plane
+    if (distance0 <= 0.0f) vOut[numOut++] = vIn[0];
+    if (distance1 <= 0.0f) vOut[numOut++] = vIn[1];
 
-	// If the points are on different sides of the plane
-	if (distance0 * distance1 < 0.0f)
-	{
-		// Find intersection point of edge and plane
-		float interp = distance0 / (distance0 - distance1);
-		vOut[numOut].v = vIn[0].v + interp * (vIn[1].v - vIn[0].v);
+    // If the points are on different sides of the plane
+    if (distance0 * distance1 < 0.0f)
+    {
+        // Find intersection point of edge and plane
+        float interp = distance0 / (distance0 - distance1);
+        vOut[numOut].v = vIn[0].v + interp * (vIn[1].v - vIn[0].v);
 
-		if (distance0 > 0.0f)
-		{
-			vOut[numOut].fp = vIn[0].fp;
-			vOut[numOut].fp.e.inEdge1 = clipEdge;
-			vOut[numOut].fp.e.inEdge2 = NO_EDGE;
-		}
-		else
-		{
-			vOut[numOut].fp = vIn[1].fp;
-			vOut[numOut].fp.e.outEdge1 = clipEdge;
-			vOut[numOut].fp.e.outEdge2 = NO_EDGE;
-		}
+        if (distance0 > 0.0f)
+        {
+            vOut[numOut].fp = vIn[0].fp;
+            vOut[numOut].fp.e.inEdge1 = clipEdge;
+            vOut[numOut].fp.e.inEdge2 = NO_EDGE;
+        }
+        else
+        {
+            vOut[numOut].fp = vIn[1].fp;
+            vOut[numOut].fp.e.outEdge1 = clipEdge;
+            vOut[numOut].fp.e.outEdge2 = NO_EDGE;
+        }
 
-		numOut++;
-	}
+        numOut++;
+    }
 
-	return numOut;
+    return numOut;
 }
 static void ComputeIncidentEdge(ClipVertex c[2], const Vec2& h, const Vec2& pos, const Mat22& rot, const Vec2& normal)
 {
-	// The normal is from the reference box. Convert it
-	// to the incident boxe's frame and flip sign.
-	Mat22 roti = rot.Transpose();
-	Vec2 n = -(roti * normal);
-	Vec2 nAbs = Abs(n);
+    // The normal is from the reference box. Convert it
+    // to the incident boxe's frame and flip sign.
+    Mat22 roti = rot.Transpose();
+    Vec2 n = -(roti * normal);
+    Vec2 nAbs = Abs(n);
 
-	if (nAbs.x > nAbs.y)
-	{
-		if (Sign(n.x) > 0.0f)
-		{
-			c[0].v.Set(h.x, -h.y);
-			c[0].fp.e.inEdge2 = EDGE3;
-			c[0].fp.e.outEdge2 = EDGE4;
+    if (nAbs.x > nAbs.y)
+    {
+        if (Sign(n.x) > 0.0f)
+        {
+            c[0].v.Set(h.x, -h.y);
+            c[0].fp.e.inEdge2 = EDGE3;
+            c[0].fp.e.outEdge2 = EDGE4;
 
-			c[1].v.Set(h.x, h.y);
-			c[1].fp.e.inEdge2 = EDGE4;
-			c[1].fp.e.outEdge2 = EDGE1;
-		}
-		else
-		{
-			c[0].v.Set(-h.x, h.y);
-			c[0].fp.e.inEdge2 = EDGE1;
-			c[0].fp.e.outEdge2 = EDGE2;
+            c[1].v.Set(h.x, h.y);
+            c[1].fp.e.inEdge2 = EDGE4;
+            c[1].fp.e.outEdge2 = EDGE1;
+        }
+        else
+        {
+            c[0].v.Set(-h.x, h.y);
+            c[0].fp.e.inEdge2 = EDGE1;
+            c[0].fp.e.outEdge2 = EDGE2;
 
-			c[1].v.Set(-h.x, -h.y);
-			c[1].fp.e.inEdge2 = EDGE2;
-			c[1].fp.e.outEdge2 = EDGE3;
-		}
-	}
-	else
-	{
-		if (Sign(n.y) > 0.0f)
-		{
-			c[0].v.Set(h.x, h.y);
-			c[0].fp.e.inEdge2 = EDGE4;
-			c[0].fp.e.outEdge2 = EDGE1;
+            c[1].v.Set(-h.x, -h.y);
+            c[1].fp.e.inEdge2 = EDGE2;
+            c[1].fp.e.outEdge2 = EDGE3;
+        }
+    }
+    else
+    {
+        if (Sign(n.y) > 0.0f)
+        {
+            c[0].v.Set(h.x, h.y);
+            c[0].fp.e.inEdge2 = EDGE4;
+            c[0].fp.e.outEdge2 = EDGE1;
 
-			c[1].v.Set(-h.x, h.y);
-			c[1].fp.e.inEdge2 = EDGE1;
-			c[1].fp.e.outEdge2 = EDGE2;
-		}
-		else
-		{
-			c[0].v.Set(-h.x, -h.y);
-			c[0].fp.e.inEdge2 = EDGE2;
-			c[0].fp.e.outEdge2 = EDGE3;
+            c[1].v.Set(-h.x, h.y);
+            c[1].fp.e.inEdge2 = EDGE1;
+            c[1].fp.e.outEdge2 = EDGE2;
+        }
+        else
+        {
+            c[0].v.Set(-h.x, -h.y);
+            c[0].fp.e.inEdge2 = EDGE2;
+            c[0].fp.e.outEdge2 = EDGE3;
 
-			c[1].v.Set(h.x, -h.y);
-			c[1].fp.e.inEdge2 = EDGE3;
-			c[1].fp.e.outEdge2 = EDGE4;
-		}
-	}
+            c[1].v.Set(h.x, -h.y);
+            c[1].fp.e.inEdge2 = EDGE3;
+            c[1].fp.e.outEdge2 = EDGE4;
+        }
+    }
 
-	c[0].v = pos + rot * c[0].v;
-	c[1].v = pos + rot * c[1].v;
+    c[0].v = pos + rot * c[0].v;
+    c[1].v = pos + rot * c[1].v;
 }
 
 int Collide(Contact* contacts, Body* body1, Body* body2)
 {
-	// The normal points from A to B
+    // The normal points from A to B
 
-	Vec2 scale1 = body1->scale * 0.5f;
-	Vec2 scale2 = body2->scale * 0.5f;
+    Vec2 scale1 = body1->scale * 0.5f;
+    Vec2 scale2 = body2->scale * 0.5f;
 
-	Vec2 pos1 = body1->position;
-	Vec2 pos2 = body2->position;
+    Vec2 pos1 = body1->position;
+    Vec2 pos2 = body2->position;
 
-	Mat22 rot1 = Mat22(body1->rotation);
+    Mat22 rot1 = Mat22(body1->rotation);
     Mat22 rot2 = Mat22(body2->rotation);
 
-	Mat22 rot1t = rot1.Transpose();
-	Mat22 rot2t = rot2.Transpose();
+    Mat22 rot1t = rot1.Transpose();
+    Mat22 rot2t = rot2.Transpose();
 
-	Vec2 d1 = rot1t * (pos2 - pos1);
-	Vec2 d2 = rot2t * (pos2 - pos1);
+    Vec2 d1 = rot1t * (pos2 - pos1);
+    Vec2 d2 = rot2t * (pos2 - pos1);
 
-	Mat22 absC = Abs(rot1t * rot2);
-	Mat22 absCT = absC.Transpose();
+    Mat22 absC = Abs(rot1t * rot2);
+    Mat22 absCT = absC.Transpose();
 
-	// Box A faces
-	Vec2 face1 = Abs(d1) - scale1 - absC * scale2;
-	if (face1.x > 0.0f) return 0;
-	if (face1.y > 0.0f) return 0;
+    // Box A faces
+    Vec2 face1 = Abs(d1) - scale1 - absC * scale2;
+    if (face1.x > 0.0f) return 0;
+    if (face1.y > 0.0f) return 0;
 
-	// Box B faces
-	Vec2 face2 = Abs(d2) - scale2 - absCT * scale1;
-	if (face2.x > 0.0f) return 0;
-	if (face2.y > 0.0f) return 0;
+    // Box B faces
+    Vec2 face2 = Abs(d2) - scale2 - absCT * scale1;
+    if (face2.x > 0.0f) return 0;
+    if (face2.y > 0.0f) return 0;
 
-	// Find best axis
-	Axis axis;
-	float separation;
-	Vec2 normal;
+    // Find best axis
+    Axis axis;
+    float separation;
+    Vec2 normal;
 
-	// Box 1 faces
-	axis = FACE_A_X;
-	separation = face1.x;
-	normal = d1.x > 0.0f ? rot1.col1 : -rot1.col1;
+    // Box 1 faces
+    axis = FACE_A_X;
+    separation = face1.x;
+    normal = d1.x > 0.0f ? rot1.col1 : -rot1.col1;
 
-	const float relativeTol = 0.95f;
-	const float absoluteTol = 0.01f;
+    const float relativeTol = 0.95f;
+    const float absoluteTol = 0.01f;
 
-	if (face1.y > separation * relativeTol + scale1.y * absoluteTol)
-	{
-		axis = FACE_A_Y;
-		separation = face1.y;
-		normal = d1.y > 0.0f ? rot1.col2 : -rot1.col2;
-	}
+    if (face1.y > separation * relativeTol + scale1.y * absoluteTol)
+    {
+        axis = FACE_A_Y;
+        separation = face1.y;
+        normal = d1.y > 0.0f ? rot1.col2 : -rot1.col2;
+    }
 
-	// Box 2 faces
-	if (face2.x > separation * relativeTol + scale2.x * absoluteTol)
-	{
-		axis = FACE_B_X;
-		separation = face2.x;
-		normal = d2.x > 0.0f ? rot2.col1 : -rot2.col1;
-	}
+    // Box 2 faces
+    if (face2.x > separation * relativeTol + scale2.x * absoluteTol)
+    {
+        axis = FACE_B_X;
+        separation = face2.x;
+        normal = d2.x > 0.0f ? rot2.col1 : -rot2.col1;
+    }
 
-	if (face2.y > separation * relativeTol + scale2.y * absoluteTol)
-	{
-		axis = FACE_B_Y;
-		separation = face2.y;
-		normal = d2.y > 0.0f ? rot2.col2 : -rot2.col2;
-	}
+    if (face2.y > separation * relativeTol + scale2.y * absoluteTol)
+    {
+        axis = FACE_B_Y;
+        separation = face2.y;
+        normal = d2.y > 0.0f ? rot2.col2 : -rot2.col2;
+    }
 
-	// Setup clipping plane data based on the separating axis
-	Vec2 frontNormal, sideNormal;
-	ClipVertex incidentEdge[2] = {};
-	float front, negSide, posSide;
-	char negEdge, posEdge;
+    // Setup clipping plane data based on the separating axis
+    Vec2 frontNormal, sideNormal;
+    ClipVertex incidentEdge[2] = {};
+    float front, negSide, posSide;
+    char negEdge, posEdge;
 
-	// Compute the clipping lines and the line segment to be clipped.
-	switch (axis)
-	{
-	    case FACE_A_X:
-		{
-			frontNormal = normal;
-			front = Dot(pos1, frontNormal) + scale1.x;
-			sideNormal = rot1.col2;
-			float side = Dot(pos1, sideNormal);
-			negSide = -side + scale1.y;
-			posSide = +side + scale1.y;
-			negEdge = EDGE3;
-			posEdge = EDGE1;
-			ComputeIncidentEdge(incidentEdge, scale2, pos2, rot2, frontNormal);
-		}
-		break;
+    // Compute the clipping lines and the line segment to be clipped.
+    switch (axis)
+    {
+        case FACE_A_X:
+        {
+            frontNormal = normal;
+            front = Dot(pos1, frontNormal) + scale1.x;
+            sideNormal = rot1.col2;
+            float side = Dot(pos1, sideNormal);
+            negSide = -side + scale1.y;
+            posSide = +side + scale1.y;
+            negEdge = EDGE3;
+            posEdge = EDGE1;
+            ComputeIncidentEdge(incidentEdge, scale2, pos2, rot2, frontNormal);
+        }
+        break;
 
-	    case FACE_A_Y:
-		{
-			frontNormal = normal;
-			front = Dot(pos1, frontNormal) + scale1.y;
-			sideNormal = rot1.col1;
-			float side = Dot(pos1, sideNormal);
-			negSide = -side + scale1.x;
-			posSide = +side + scale1.x;
-			negEdge = EDGE2;
-			posEdge = EDGE4;
-			ComputeIncidentEdge(incidentEdge, scale2, pos2, rot2, frontNormal);
-		}
-		break;
+        case FACE_A_Y:
+        {
+            frontNormal = normal;
+            front = Dot(pos1, frontNormal) + scale1.y;
+            sideNormal = rot1.col1;
+            float side = Dot(pos1, sideNormal);
+            negSide = -side + scale1.x;
+            posSide = +side + scale1.x;
+            negEdge = EDGE2;
+            posEdge = EDGE4;
+            ComputeIncidentEdge(incidentEdge, scale2, pos2, rot2, frontNormal);
+        }
+        break;
 
-	    case FACE_B_X:
-		{
-			frontNormal = -normal;
-			front = Dot(pos2, frontNormal) + scale2.x;
-			sideNormal = rot2.col2;
-			float side = Dot(pos2, sideNormal);
-			negSide = -side + scale2.y;
-			posSide = +side + scale2.y;
-			negEdge = EDGE3;
-			posEdge = EDGE1;
-			ComputeIncidentEdge(incidentEdge, scale1, pos1, rot1, frontNormal);
-		}
-		break;
+        case FACE_B_X:
+        {
+            frontNormal = -normal;
+            front = Dot(pos2, frontNormal) + scale2.x;
+            sideNormal = rot2.col2;
+            float side = Dot(pos2, sideNormal);
+            negSide = -side + scale2.y;
+            posSide = +side + scale2.y;
+            negEdge = EDGE3;
+            posEdge = EDGE1;
+            ComputeIncidentEdge(incidentEdge, scale1, pos1, rot1, frontNormal);
+        }
+        break;
 
-	    case FACE_B_Y:
-		{
-			frontNormal = -normal;
-			front = Dot(pos2, frontNormal) + scale2.y;
-			sideNormal = rot2.col1;
-			float side = Dot(pos2, sideNormal);
-			negSide = -side + scale2.x;
-			posSide = +side + scale2.x;
-			negEdge = EDGE2;
-			posEdge = EDGE4;
-			ComputeIncidentEdge(incidentEdge, scale1, pos1, rot1, frontNormal);
-		}
-		break;
-	}
+        case FACE_B_Y:
+        {
+            frontNormal = -normal;
+            front = Dot(pos2, frontNormal) + scale2.y;
+            sideNormal = rot2.col1;
+            float side = Dot(pos2, sideNormal);
+            negSide = -side + scale2.x;
+            posSide = +side + scale2.x;
+            negEdge = EDGE2;
+            posEdge = EDGE4;
+            ComputeIncidentEdge(incidentEdge, scale1, pos1, rot1, frontNormal);
+        }
+        break;
+    }
 
-	// clip other face with 5 box planes (1 face plane, 4 edge planes)
+    // clip other face with 5 box planes (1 face plane, 4 edge planes)
 
-	ClipVertex clipPoints1[2] = {};
-	ClipVertex clipPoints2[2] = {};
-	int np;
+    ClipVertex clipPoints1[2] = {};
+    ClipVertex clipPoints2[2] = {};
+    int np;
 
-	// Clip to box side 1
-	np = ClipSegmentToLine(incidentEdge, clipPoints1, -sideNormal, negSide, negEdge);
-	if (np < 2) return 0;
+    // Clip to box side 1
+    np = ClipSegmentToLine(incidentEdge, clipPoints1, -sideNormal, negSide, negEdge);
+    if (np < 2) return 0;
 
-	// Clip to negative box side 1
-	np = ClipSegmentToLine(clipPoints1, clipPoints2, sideNormal, posSide, posEdge);
-	if (np < 2) return 0;
+    // Clip to negative box side 1
+    np = ClipSegmentToLine(clipPoints1, clipPoints2, sideNormal, posSide, posEdge);
+    if (np < 2) return 0;
 
-	// Now clipPoints2 contains the clipping points.
-	// Due to roundoff, it is possible that clipping removes all points.
+    // Now clipPoints2 contains the clipping points.
+    // Due to roundoff, it is possible that clipping removes all points.
 
-	int numContacts = 0;
+    int numContacts = 0;
 
-	for (int i = 0; i < 2; i++)
-	{
-		float separation = Dot(frontNormal, clipPoints2[i].v) - front;
+    for (int i = 0; i < 2; i++)
+    {
+        float separation = Dot(frontNormal, clipPoints2[i].v) - front;
 
-		if (separation > 0) continue;
+        if (separation > 0) continue;
 
         auto& contact = contacts[numContacts];
 
@@ -320,7 +320,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             Flip(contact.feature);
 
         numContacts++;
-	}
+    }
 
-	return numContacts;
+    return numContacts;
 }
