@@ -178,8 +178,8 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
 
     Vec2 pos1 = body1->position;
     Vec2 pos2 = body2->position;
-    Vec2 scale1 = body1->scale * 0.5f;
-    Vec2 scale2 = body2->scale * 0.5f;
+    Vec2 hscale1 = body1->scale * 0.5f;
+    Vec2 hscale2 = body2->scale * 0.5f;
     Mat22 rot1 = Mat22(body1->rotation);
     Mat22 rot2 = Mat22(body2->rotation);
 
@@ -200,56 +200,56 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
         case FACE_A_X:
         {
             normalFront = normal;
-            front = Dot(pos1, normalFront) + scale1.x;
+            front = Dot(pos1, normalFront) + hscale1.x;
             normalSide = rot1.col2;
             float side = Dot(pos1, normalSide);
-            sideNeg = -side + scale1.y;
-            sidePos = +side + scale1.y;
+            sideNeg = -side + hscale1.y;
+            sidePos = +side + hscale1.y;
             edgeNeg = EDGE3;
             edgePos = EDGE1;
-            ComputeIncidentEdge(incidentEdge, scale2, pos2, rot2, normalFront);
+            ComputeIncidentEdge(incidentEdge, hscale2, pos2, rot2, normalFront);
         }
         break;
 
         case FACE_A_Y:
         {
             normalFront = normal;
-            front = Dot(pos1, normalFront) + scale1.y;
+            front = Dot(pos1, normalFront) + hscale1.y;
             normalSide = rot1.col1;
             float side = Dot(pos1, normalSide);
-            sideNeg = -side + scale1.x;
-            sidePos = +side + scale1.x;
+            sideNeg = -side + hscale1.x;
+            sidePos = +side + hscale1.x;
             edgeNeg = EDGE2;
             edgePos = EDGE4;
-            ComputeIncidentEdge(incidentEdge, scale2, pos2, rot2, normalFront);
+            ComputeIncidentEdge(incidentEdge, hscale2, pos2, rot2, normalFront);
         }
         break;
 
         case FACE_B_X:
         {
             normalFront = -normal;
-            front = Dot(pos2, normalFront) + scale2.x;
+            front = Dot(pos2, normalFront) + hscale2.x;
             normalSide = rot2.col2;
             float side = Dot(pos2, normalSide);
-            sideNeg = -side + scale2.y;
-            sidePos = +side + scale2.y;
+            sideNeg = -side + hscale2.y;
+            sidePos = +side + hscale2.y;
             edgeNeg = EDGE3;
             edgePos = EDGE1;
-            ComputeIncidentEdge(incidentEdge, scale1, pos1, rot1, normalFront);
+            ComputeIncidentEdge(incidentEdge, hscale1, pos1, rot1, normalFront);
         }
         break;
 
         case FACE_B_Y:
         {
             normalFront = -normal;
-            front = Dot(pos2, normalFront) + scale2.y;
+            front = Dot(pos2, normalFront) + hscale2.y;
             normalSide = rot2.col1;
             float side = Dot(pos2, normalSide);
-            sideNeg = -side + scale2.x;
-            sidePos = +side + scale2.x;
+            sideNeg = -side + hscale2.x;
+            sidePos = +side + hscale2.x;
             edgeNeg = EDGE2;
             edgePos = EDGE4;
-            ComputeIncidentEdge(incidentEdge, scale1, pos1, rot1, normalFront);
+            ComputeIncidentEdge(incidentEdge, hscale1, pos1, rot1, normalFront);
         }
         break;
     }
