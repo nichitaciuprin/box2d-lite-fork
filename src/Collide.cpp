@@ -136,11 +136,11 @@ static bool Sat(const Body* body1, const Body* body2, Vec2& normal, float& dist,
     Vec2 scale2 = body2->scale * 0.5f;
     Mat22 rot1 = Mat22(body1->rotation);
     Mat22 rot2 = Mat22(body2->rotation);
-    Mat22 rot1t = rot1.Transpose();
-    Mat22 rot2t = rot2.Transpose();
-    Vec2 d1 = rot1t * (pos2 - pos1);
-    Vec2 d2 = rot2t * (pos2 - pos1);
-    Mat22 rotc = Abs(rot1t * rot2);
+    Mat22 rot1i = rot1.Transpose();
+    Mat22 rot2i = rot2.Transpose();
+    Vec2 d1 = rot1i * (pos2 - pos1);
+    Vec2 d2 = rot2i * (pos2 - pos1);
+    Mat22 rotc = Abs(rot1i * rot2);
     Mat22 rotci = rotc.Transpose();
     Vec2 face1 = Abs(d1) - scale1 - rotc  * scale2;
     Vec2 face2 = Abs(d2) - scale2 - rotci * scale1;
