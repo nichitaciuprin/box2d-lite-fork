@@ -18,6 +18,10 @@
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 #define PANIC { fprintf(stderr, "\033[91mPANIC %s:%d \n\033[0m" , __FILENAME__, __LINE__); _Exit(-1); }
 
+static constexpr int MAX_POINTS = 2;
+
+#define MATH_PI 3.14159265358979323846f
+
 const float k_pi = 3.14159265358979323846264f;
 
 struct Vec2

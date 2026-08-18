@@ -58,8 +58,6 @@ struct ArbiterKey
 struct Arbiter
 {
 public:
-    static constexpr int MAX_POINTS = 2;
-
     Contact contacts[MAX_POINTS];
     int numContacts;
     Body* body1;

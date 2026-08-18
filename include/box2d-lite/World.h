@@ -49,8 +49,10 @@ public:
 
     void Step(float dt);
 
-private:
     void BroadPhase();
+
+private:
+    // void BroadPhase();
 };
 
 #endif

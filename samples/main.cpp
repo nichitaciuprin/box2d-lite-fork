@@ -26,13 +26,16 @@
 
 namespace
 {
+    // int width = 1280;
+    // int height = 720;
+    // float zoom = 10.0f;
+    // float pan_y = 8.0f;
+    // GLFWwindow* window = NULL;
+
     int width = 1280;
     int height = 720;
-    // float zoom = 1.0f;
-    float zoom = 10.0f;
-    // float zoom = 100.0f;
-    float pan_y = 8.0f;
-    // float pan_y = 0.0f;
+    float zoom = 2.0f;
+    float pan_y = 0.0f;
     GLFWwindow* window = NULL;
 
     float timestep = 1.0f / 60.0f;
@@ -94,11 +97,25 @@ static void AddBox(Vec2 coord)
 
 static void Demo1(Body* b, Joint* j)
 {
-    AddGround(b);
+    // AddGround(b);
+    // b++; body_s_count++;
+
+    // b->Set({ 1.0f, 1.0f }, 1.0f);
+    // b->position.Set(0.0f, 4.0f);
+    // world.Add(b);
+    // b++; body_s_count++;
+
+
+
+    b->Set({ 1.0f, 1.0f }, FLT_MAX);
+    b->position = { 0.0f, 0.0f };
+    world.Add(b);
     b++; body_s_count++;
 
-    b->Set({ 1.0f, 1.0f }, 1.0f);
-    b->position.Set(0.0f, 4.0f);
+    b->Set({ 0.5f, 0.5f }, 1.0f);
+    b->position = { 0.60f, 0.0f };
+    // b->rotation = -MATH_PI/4;
+    b->rotation = -0.3f;
     world.Add(b);
     b++; body_s_count++;
 }
@@ -725,28 +742,23 @@ static void Draw()
     DrawText(5, 35, "Keys: 1-9 Demos, Space to Launch the Bomb");
 
     char buffer[64];
-    sprintf(buffer, "(A) Accumulation %s", World::accumulateImpulses ? "ON" : "OFF");
-    DrawText(5, 65, buffer);
-
-    sprintf(buffer, "(S) Position Correction %s", World::positionCorrection ? "ON" : "OFF");
-    DrawText(5, 95, buffer);
-
-    sprintf(buffer, "(D) Warm Starting %s", World::warmStarting ? "ON" : "OFF");
-    DrawText(5, 125, buffer);
+    sprintf(buffer, "(A) Accumulation %s",        World::accumulateImpulses ? "ON" : "OFF"); DrawText(5, 65,  buffer);
+    sprintf(buffer, "(S) Position Correction %s", World::positionCorrection ? "ON" : "OFF"); DrawText(5, 95,  buffer);
+    sprintf(buffer, "(D) Warm Starting %s",       World::warmStarting       ? "ON" : "OFF"); DrawText(5, 125, buffer);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    if (selectedBodyIndex == -1)
-    {
-        if (closeBodyIndex != -1)
-            DrawPoint(closeBodyPoint);
-    }
-    else
-    {
-        DrawPoint(selectedBodyPoint);
-        DrawLine(selectedBodyPoint, mousePos);
-    }
+    // if (selectedBodyIndex == -1)
+    // {
+    //     if (closeBodyIndex != -1)
+    //         DrawPoint(closeBodyPoint);
+    // }
+    // else
+    // {
+    //     DrawPoint(selectedBodyPoint);
+    //     DrawLine(selectedBodyPoint, mousePos);
+    // }
 
     for (int i = 0; i < body_s_count; i++)
         DrawBody(body_s + i, false);
@@ -754,8 +766,8 @@ static void Draw()
     for (int i = 0; i < joint_s_count; i++)
         DrawJoint(joint_s + i);
 
-    // for (auto& i : world.arbiters)
-    //     DrawArbiter(&i.second);
+    for (auto& i : world.arbiters)
+        DrawArbiter(&i.second);
 
     ImGui::Render();
     ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
@@ -812,7 +824,10 @@ int main()
 {
     InitWindow();
 
-    InitDemo(3);
+    InitDemo(0);
+    world.BroadPhase();
+
+    pause = true;
 
     while (!glfwWindowShouldClose(window))
     {
@@ -823,6 +838,8 @@ int main()
         auto update = !pause || forward; forward = false;
         if (update)
             world.Step(timestep);
+
+        world.BroadPhase();
 
         Draw();
 

@@ -45,12 +45,7 @@ inline void Swap(T& a, T& b)
     b = tmp;
 }
 
-static void Flip(FeaturePair& fp)
-{
-    Swap(fp.e.edge1in, fp.e.edge2in);
-    Swap(fp.e.edge1out, fp.e.edge2out);
-}
-static void ComputeIncidentEdge(ClipVertex vOut[2], Vec2 h, Vec2 pos, Mat22 rot, Vec2 normal)
+static void ComputeIncidentEdge(ClipVertex vOut[MAX_POINTS], Vec2 h, Vec2 pos, Mat22 rot, Vec2 normal)
 {
     // the normal is from the reference box
     // convert it to the incident boxe's frame and flip sign
@@ -90,7 +85,7 @@ static void ComputeIncidentEdge(ClipVertex vOut[2], Vec2 h, Vec2 pos, Mat22 rot,
     v0.v = pos + rot * v0.v;
     v1.v = pos + rot * v1.v;
 }
-static int ClipSegmentToLine(ClipVertex vIn[2], ClipVertex vOut[2], Vec2 normal, float offset, char clipEdge)
+static int ClipSegmentToLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POINTS], Vec2 normal, float offset, char clipEdge)
 {
     // Start with no output points
     int numOut = 0;
@@ -189,7 +184,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
 
     // Setup clipping plane data based on the separating axis
     Vec2 normalFront, normalSide;
-    ClipVertex incidentEdge[2] = {};
+    ClipVertex incidentEdge[MAX_POINTS] = {};
     float front;
     float sideNeg, sidePos;
     char edgeNeg, edgePos;
@@ -256,24 +251,25 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
 
     // clip other face with 5 box planes (1 face plane, 4 edge planes)
 
-    ClipVertex clipPoints1[2] = {};
-    ClipVertex clipPoints2[2] = {};
+    ClipVertex clipPoints1[MAX_POINTS] = {};
+    ClipVertex clipPoints2[MAX_POINTS] = {};
+
     int np;
 
     // Clip to box side 1
     np = ClipSegmentToLine(incidentEdge, clipPoints1, -normalSide, sideNeg, edgeNeg);
-    if (np < 2) return 0;
+    if (np < MAX_POINTS) return 0;
 
     // Clip to negative box side 1
     np = ClipSegmentToLine(clipPoints1, clipPoints2, normalSide, sidePos, edgePos);
-    if (np < 2) return 0;
+    if (np < MAX_POINTS) return 0;
 
     // Now clipPoints2 contains the clipping points.
     // Due to roundoff, it is possible that clipping removes all points.
 
     int numContacts = 0;
 
-    for (int i = 0; i < 2; i++)
+    for (int i = 0; i < MAX_POINTS; i++)
     {
         float separation = Dot(normalFront, clipPoints2[i].v) - front;
 
@@ -292,7 +288,10 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
         contact.r2 = contact.position - body2->position;
 
         if (axis == FACE_B_X || axis == FACE_B_Y)
-            Flip(contact.feature);
+        {
+            Swap(contact.feature.e.edge1in, contact.feature.e.edge2in);
+            Swap(contact.feature.e.edge1out, contact.feature.e.edge2out);
+        }
 
         numContacts++;
     }
