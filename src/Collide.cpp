@@ -140,10 +140,10 @@ static bool Sat(const Body* body1, const Body* body2, Vec2& normal, float& dist,
     Mat22 rot2t = rot2.Transpose();
     Vec2 d1 = rot1t * (pos2 - pos1);
     Vec2 d2 = rot2t * (pos2 - pos1);
-    Mat22 absC = Abs(rot1t * rot2);
-    Mat22 absCT = absC.Transpose();
-    Vec2 face1 = Abs(d1) - scale1 - absC  * scale2;
-    Vec2 face2 = Abs(d2) - scale2 - absCT * scale1;
+    Mat22 rotc = Abs(rot1t * rot2);
+    Mat22 rotci = rot.Transpose();
+    Vec2 face1 = Abs(d1) - scale1 - rotc  * scale2;
+    Vec2 face2 = Abs(d2) - scale2 - rotci * scale1;
 
     if (face1.x > 0.0f) return false;
     if (face1.y > 0.0f) return false;
