@@ -266,18 +266,8 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
     ClipVertex clipPoints2[MAX_POINTS] = {};
 
     int np;
-
-    // Clip to box side 1
-    np = ClipSegmentToLine(incidentEdge, clipPoints1, -normalSide, sideNeg, edgeNeg);
-    if (np < MAX_POINTS) return 0;
-    // printf("%i\n", np);
-
-    // Clip to negative box side 1
-    np = ClipSegmentToLine(clipPoints1, clipPoints2, normalSide, sidePos, edgePos);
-    if (np < MAX_POINTS) return 0;
-    // printf("%i\n", np);
-
-    // printf("========\n", np);
+    np = ClipSegmentToLine(incidentEdge, clipPoints1, -normalSide, sideNeg, edgeNeg); if (np < MAX_POINTS) return 0;
+    np = ClipSegmentToLine(clipPoints1,  clipPoints2,  normalSide, sidePos, edgePos); if (np < MAX_POINTS) return 0;
 
     // Now clipPoints2 contains the clipping points.
     // Due to roundoff, it is possible that clipping removes all points.
