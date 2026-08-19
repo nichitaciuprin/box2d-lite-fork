@@ -205,8 +205,8 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
     {
         case FACE_A_X:
         {
+            ComputeIncidentEdge(body2, normal, incidentEdge[0], incidentEdge[1]);
             normalFront = normal;
-            ComputeIncidentEdge(body2, normalFront, incidentEdge[0], incidentEdge[1]);
             normalSide = rot1.col2;
             front = Dot(pos1, normalFront) + hscale1.x;
             float side = Dot(pos1, normalSide);
@@ -219,8 +219,8 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
 
         case FACE_A_Y:
         {
+            ComputeIncidentEdge(body2, normal, incidentEdge[0], incidentEdge[1]);
             normalFront = normal;
-            ComputeIncidentEdge(body2, normalFront, incidentEdge[0], incidentEdge[1]);
             normalSide = rot1.col1;
             front = Dot(pos1, normalFront) + hscale1.y;
             float side = Dot(pos1, normalSide);
@@ -233,8 +233,8 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
 
         case FACE_B_X:
         {
+            ComputeIncidentEdge(body1, -normal, incidentEdge[0], incidentEdge[1]);
             normalFront = -normal;
-            ComputeIncidentEdge(body1, normalFront, incidentEdge[0], incidentEdge[1]);
             normalSide = rot2.col2;
             front = Dot(pos2, normalFront) + hscale2.x;
             float side = Dot(pos2, normalSide);
@@ -247,8 +247,8 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
 
         case FACE_B_Y:
         {
+            ComputeIncidentEdge(body1, -normal, incidentEdge[0], incidentEdge[1]);
             normalFront = -normal;
-            ComputeIncidentEdge(body1, normalFront, incidentEdge[0], incidentEdge[1]);
             normalSide = rot2.col1;
             front = Dot(pos2, normalFront) + hscale2.y;
             float side = Dot(pos2, normalSide);
