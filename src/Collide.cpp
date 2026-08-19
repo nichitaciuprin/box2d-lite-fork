@@ -45,7 +45,7 @@ inline void Swap(T& a, T& b)
     b = tmp;
 }
 
-static void ComputeIncidentEdge(ClipVertex vOut[MAX_POINTS], Vec2 h, Vec2 pos, Mat22 rot, Vec2 normal)
+static void ComputeIncidentEdge(ClipVertex vOut[MAX_POINTS], Vec2 pos, Vec2 hscale, Mat22 rot, Vec2 normal)
 {
     // the normal is from the reference box
     // convert it to the incident boxe's frame and flip sign
@@ -59,26 +59,26 @@ static void ComputeIncidentEdge(ClipVertex vOut[MAX_POINTS], Vec2 h, Vec2 pos, M
     {
         if (Sign(normal.x) > 0.0f)
         {
-            v0.v = { +h.x, -h.y }; v0.fp.e.edge2in = EDGE3; v0.fp.e.edge2out = EDGE4;
-            v1.v = { +h.x, +h.y }; v1.fp.e.edge2in = EDGE4; v1.fp.e.edge2out = EDGE1;
+            v0.v = { +hscale.x, -hscale.y }; v0.fp.e.edge2in = EDGE3; v0.fp.e.edge2out = EDGE4;
+            v1.v = { +hscale.x, +hscale.y }; v1.fp.e.edge2in = EDGE4; v1.fp.e.edge2out = EDGE1;
         }
         else
         {
-            v0.v = { -h.x, +h.y }; v0.fp.e.edge2in = EDGE1; v0.fp.e.edge2out = EDGE2;
-            v1.v = { -h.x, -h.y }; v1.fp.e.edge2in = EDGE2; v1.fp.e.edge2out = EDGE3;
+            v0.v = { -hscale.x, +hscale.y }; v0.fp.e.edge2in = EDGE1; v0.fp.e.edge2out = EDGE2;
+            v1.v = { -hscale.x, -hscale.y }; v1.fp.e.edge2in = EDGE2; v1.fp.e.edge2out = EDGE3;
         }
     }
     else
     {
         if (Sign(normal.y) > 0.0f)
         {
-            v0.v = { +h.x, +h.y }; v0.fp.e.edge2in = EDGE4; v0.fp.e.edge2out = EDGE1;
-            v1.v = { -h.x, +h.y }; v1.fp.e.edge2in = EDGE1; v1.fp.e.edge2out = EDGE2;
+            v0.v = { +hscale.x, +hscale.y }; v0.fp.e.edge2in = EDGE4; v0.fp.e.edge2out = EDGE1;
+            v1.v = { -hscale.x, +hscale.y }; v1.fp.e.edge2in = EDGE1; v1.fp.e.edge2out = EDGE2;
         }
         else
         {
-            v0.v = { -h.x, -h.y }; v0.fp.e.edge2in = EDGE2; v0.fp.e.edge2out = EDGE3;
-            v1.v = { +h.x, -h.y }; v1.fp.e.edge2in = EDGE3; v1.fp.e.edge2out = EDGE4;
+            v0.v = { -hscale.x, -hscale.y }; v0.fp.e.edge2in = EDGE2; v0.fp.e.edge2out = EDGE3;
+            v1.v = { +hscale.x, -hscale.y }; v1.fp.e.edge2in = EDGE3; v1.fp.e.edge2out = EDGE4;
         }
     }
 
@@ -202,7 +202,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             sidePos = +side + hscale1.y;
             edgeNeg = EDGE3;
             edgePos = EDGE1;
-            ComputeIncidentEdge(incidentEdge, hscale2, pos2, rot2, normalFront);
+            ComputeIncidentEdge(incidentEdge, pos2, hscale2, rot2, normalFront);
         }
         break;
 
@@ -216,7 +216,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             sidePos = +side + hscale1.x;
             edgeNeg = EDGE2;
             edgePos = EDGE4;
-            ComputeIncidentEdge(incidentEdge, hscale2, pos2, rot2, normalFront);
+            ComputeIncidentEdge(incidentEdge, pos2, hscale2, rot2, normalFront);
         }
         break;
 
@@ -230,7 +230,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             sidePos = +side + hscale2.y;
             edgeNeg = EDGE3;
             edgePos = EDGE1;
-            ComputeIncidentEdge(incidentEdge, hscale1, pos1, rot1, normalFront);
+            ComputeIncidentEdge(incidentEdge, pos1, hscale1, rot1, normalFront);
         }
         break;
 
@@ -244,7 +244,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             sidePos = +side + hscale2.x;
             edgeNeg = EDGE2;
             edgePos = EDGE4;
-            ComputeIncidentEdge(incidentEdge, hscale1, pos1, rot1, normalFront);
+            ComputeIncidentEdge(incidentEdge, pos1, hscale1, rot1, normalFront);
         }
         break;
     }
