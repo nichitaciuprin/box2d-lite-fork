@@ -39,4 +39,11 @@ struct Body
     }
 };
 
+// struct Body2
+// {
+//     Vec2 position;
+//     Mat22 rotation;
+//     Vec2 scaleHalf;
+// };
+
 #endif
