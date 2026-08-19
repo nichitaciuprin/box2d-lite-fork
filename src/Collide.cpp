@@ -57,7 +57,7 @@ static void ComputeIncidentEdge(ClipVertex vOut[MAX_POINTS], Vec2 pos, Vec2 hsca
 
     if (Abs(normal.x) > Abs(normal.y))
     {
-        if (Sign(normal.x) > 0.0f)
+        if (normal.x >= 0.0f)
         {
             v0.v = { +hscale.x, -hscale.y }; v0.fp.e.edge2in = EDGE3; v0.fp.e.edge2out = EDGE4;
             v1.v = { +hscale.x, +hscale.y }; v1.fp.e.edge2in = EDGE4; v1.fp.e.edge2out = EDGE1;
@@ -70,7 +70,7 @@ static void ComputeIncidentEdge(ClipVertex vOut[MAX_POINTS], Vec2 pos, Vec2 hsca
     }
     else
     {
-        if (Sign(normal.y) > 0.0f)
+        if (normal.y >= 0.0f)
         {
             v0.v = { +hscale.x, +hscale.y }; v0.fp.e.edge2in = EDGE4; v0.fp.e.edge2out = EDGE1;
             v1.v = { -hscale.x, +hscale.y }; v1.fp.e.edge2in = EDGE1; v1.fp.e.edge2out = EDGE2;
