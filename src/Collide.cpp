@@ -45,7 +45,7 @@ inline void Swap(T& a, T& b)
     b = tmp;
 }
 
-static void ComputeIncidentEdge(Vec2 pos, Vec2 hscale, Mat22 rot, Vec2 normal, ClipVertex& v0, ClipVertex& v1)
+static void ComputeIncidentEdge(Vec2 pos, Vec2 scaleh, Mat22 rot, Vec2 normal, ClipVertex& v0, ClipVertex& v1)
 {
     // the normal is from the reference box
     // convert it to the incident boxe's frame and flip sign
@@ -56,26 +56,26 @@ static void ComputeIncidentEdge(Vec2 pos, Vec2 hscale, Mat22 rot, Vec2 normal, C
     {
         if (normal.x >= 0.0f)
         {
-            v0.v = { +hscale.x, -hscale.y }; v0.fp.e.edge2in = EDGE3; v0.fp.e.edge2out = EDGE4;
-            v1.v = { +hscale.x, +hscale.y }; v1.fp.e.edge2in = EDGE4; v1.fp.e.edge2out = EDGE1;
+            v0.v = { +scaleh.x, -scaleh.y }; v0.fp.e.edge2in = EDGE3; v0.fp.e.edge2out = EDGE4;
+            v1.v = { +scaleh.x, +scaleh.y }; v1.fp.e.edge2in = EDGE4; v1.fp.e.edge2out = EDGE1;
         }
         else
         {
-            v0.v = { -hscale.x, +hscale.y }; v0.fp.e.edge2in = EDGE1; v0.fp.e.edge2out = EDGE2;
-            v1.v = { -hscale.x, -hscale.y }; v1.fp.e.edge2in = EDGE2; v1.fp.e.edge2out = EDGE3;
+            v0.v = { -scaleh.x, +scaleh.y }; v0.fp.e.edge2in = EDGE1; v0.fp.e.edge2out = EDGE2;
+            v1.v = { -scaleh.x, -scaleh.y }; v1.fp.e.edge2in = EDGE2; v1.fp.e.edge2out = EDGE3;
         }
     }
     else
     {
         if (normal.y >= 0.0f)
         {
-            v0.v = { +hscale.x, +hscale.y }; v0.fp.e.edge2in = EDGE4; v0.fp.e.edge2out = EDGE1;
-            v1.v = { -hscale.x, +hscale.y }; v1.fp.e.edge2in = EDGE1; v1.fp.e.edge2out = EDGE2;
+            v0.v = { +scaleh.x, +scaleh.y }; v0.fp.e.edge2in = EDGE4; v0.fp.e.edge2out = EDGE1;
+            v1.v = { -scaleh.x, +scaleh.y }; v1.fp.e.edge2in = EDGE1; v1.fp.e.edge2out = EDGE2;
         }
         else
         {
-            v0.v = { -hscale.x, -hscale.y }; v0.fp.e.edge2in = EDGE2; v0.fp.e.edge2out = EDGE3;
-            v1.v = { +hscale.x, -hscale.y }; v1.fp.e.edge2in = EDGE3; v1.fp.e.edge2out = EDGE4;
+            v0.v = { -scaleh.x, -scaleh.y }; v0.fp.e.edge2in = EDGE2; v0.fp.e.edge2out = EDGE3;
+            v1.v = { +scaleh.x, -scaleh.y }; v1.fp.e.edge2in = EDGE3; v1.fp.e.edge2out = EDGE4;
         }
     }
 
