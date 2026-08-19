@@ -45,15 +45,12 @@ inline void Swap(T& a, T& b)
     b = tmp;
 }
 
-static void ComputeIncidentEdge(ClipVertex vOut[MAX_POINTS], Vec2 pos, Vec2 hscale, Mat22 rot, Vec2 normal)
+static void ComputeIncidentEdge(Vec2 pos, Vec2 hscale, Mat22 rot, Vec2 normal, ClipVertex& v0, ClipVertex& v1)
 {
     // the normal is from the reference box
     // convert it to the incident boxe's frame and flip sign
 
     normal = rot.Transpose() * -normal;
-
-    auto& v0 = vOut[0];
-    auto& v1 = vOut[1];
 
     if (Abs(normal.x) > Abs(normal.y))
     {
@@ -212,7 +209,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             sidePos = +side + hscale1.y;
             edgeNeg = EDGE3;
             edgePos = EDGE1;
-            ComputeIncidentEdge(incidentEdge, pos2, hscale2, rot2, normalFront);
+            ComputeIncidentEdge(pos2, hscale2, rot2, normalFront, incidentEdge[0], incidentEdge[1]);
             // PrintVec2(incidentEdge[0].v);
             // PrintVec2(incidentEdge[1].v);
         }
@@ -228,7 +225,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             sidePos = +side + hscale1.x;
             edgeNeg = EDGE2;
             edgePos = EDGE4;
-            ComputeIncidentEdge(incidentEdge, pos2, hscale2, rot2, normalFront);
+            ComputeIncidentEdge(pos2, hscale2, rot2, normalFront, incidentEdge[0], incidentEdge[1]);
         }
         break;
 
@@ -242,7 +239,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             sidePos = +side + hscale2.y;
             edgeNeg = EDGE3;
             edgePos = EDGE1;
-            ComputeIncidentEdge(incidentEdge, pos1, hscale1, rot1, normalFront);
+            ComputeIncidentEdge(pos1, hscale1, rot1, normalFront, incidentEdge[0], incidentEdge[1]);
         }
         break;
 
@@ -256,7 +253,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             sidePos = +side + hscale2.x;
             edgeNeg = EDGE2;
             edgePos = EDGE4;
-            ComputeIncidentEdge(incidentEdge, pos1, hscale1, rot1, normalFront);
+            ComputeIncidentEdge(pos1, hscale1, rot1, normalFront, incidentEdge[0], incidentEdge[1]);
         }
         break;
     }
