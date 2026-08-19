@@ -210,8 +210,6 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             sidePos = +side + hscale1.y;
             edgeNeg = EDGE3;
             edgePos = EDGE1;
-            // PrintVec2(incidentEdge[0].v);
-            // PrintVec2(incidentEdge[1].v);
         }
         break;
 
