@@ -171,6 +171,8 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
 {
     // The normal points from A to B
 
+    // printf("%f\n", body1->mass);
+
     Vec2 pos1 = body1->position;
     Vec2 pos2 = body2->position;
     Vec2 hscale1 = body1->scale * 0.5f;
@@ -189,6 +191,14 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
     float sideNeg, sidePos;
     char edgeNeg, edgePos;
 
+    // switch (axis)
+    // {
+    //     case FACE_A_X: printf("FACE_A_X\n"); break;
+    //     case FACE_A_Y: printf("FACE_A_Y\n"); break;
+    //     case FACE_B_X: printf("FACE_B_X\n"); break;
+    //     case FACE_B_Y: printf("FACE_B_Y\n"); break;
+    // }
+
     // Compute the clipping lines and the line segment to be clipped.
     switch (axis)
     {
@@ -203,6 +213,8 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             edgeNeg = EDGE3;
             edgePos = EDGE1;
             ComputeIncidentEdge(incidentEdge, pos2, hscale2, rot2, normalFront);
+            // PrintVec2(incidentEdge[0].v);
+            // PrintVec2(incidentEdge[1].v);
         }
         break;
 
@@ -259,10 +271,14 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
     // Clip to box side 1
     np = ClipSegmentToLine(incidentEdge, clipPoints1, -normalSide, sideNeg, edgeNeg);
     if (np < MAX_POINTS) return 0;
+    // printf("%i\n", np);
 
     // Clip to negative box side 1
     np = ClipSegmentToLine(clipPoints1, clipPoints2, normalSide, sidePos, edgePos);
     if (np < MAX_POINTS) return 0;
+    // printf("%i\n", np);
+
+    // printf("========\n", np);
 
     // Now clipPoints2 contains the clipping points.
     // Due to roundoff, it is possible that clipping removes all points.

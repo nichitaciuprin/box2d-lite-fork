@@ -114,8 +114,8 @@ static void Demo1(Body* b, Joint* j)
 
     b->Set({ 0.5f, 0.5f }, 1.0f);
     b->position = { 0.60f, 0.0f };
-    // b->rotation = -MATH_PI/4;
-    b->rotation = -0.3f;
+    b->rotation = -MATH_PI/4;
+    // b->rotation = -0.3f;
     world.Add(b);
     b++; body_s_count++;
 }
@@ -769,6 +769,9 @@ static void Draw()
     for (auto& i : world.arbiters)
         DrawArbiter(&i.second);
 
+    // DrawPoint({ 0.246447, 0.000000 });
+    // DrawPoint({ 0.600000, -0.353553 });
+
     ImGui::Render();
     ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 }
@@ -838,9 +841,10 @@ int main()
 
         auto update = !pause || forward; forward = false;
         if (update)
+        {
             world.Step(timestep);
-
-        // world.BroadPhase();
+            // world.BroadPhase();
+        }
 
         Draw();
 

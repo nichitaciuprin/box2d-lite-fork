@@ -103,6 +103,11 @@ struct OrientedRectangle
     float rotation;
 };
 
+inline void PrintVec2(Vec2 v)
+{
+    printf("{ %f, %f }\n", v.x, v.y);
+}
+
 inline float Dot(const Vec2& a, const Vec2& b)
 {
     return a.x * b.x + a.y * b.y;
