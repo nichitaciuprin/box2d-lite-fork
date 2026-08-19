@@ -188,7 +188,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
     // Setup clipping plane data based on the separating axis
     Vec2 normalFront, normalSide;
     ClipVertex incidentEdge[MAX_POINTS] = {};
-    float front;
+    float front, side;
     float sideNeg, sidePos;
     char edgeNeg, edgePos;
 
@@ -209,7 +209,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             normalFront = normal;
             normalSide = rot1.col2;
             front = Dot(pos1, normalFront) + hscale1.x;
-            float side = Dot(pos1, normalSide);
+            side = Dot(pos1, normalSide);
             sideNeg = -side + hscale1.y;
             sidePos = +side + hscale1.y;
             edgeNeg = EDGE3;
@@ -223,7 +223,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             normalFront = normal;
             normalSide = rot1.col1;
             front = Dot(pos1, normalFront) + hscale1.y;
-            float side = Dot(pos1, normalSide);
+            side = Dot(pos1, normalSide);
             sideNeg = -side + hscale1.x;
             sidePos = +side + hscale1.x;
             edgeNeg = EDGE2;
@@ -237,7 +237,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             normalFront = -normal;
             normalSide = rot2.col2;
             front = Dot(pos2, normalFront) + hscale2.x;
-            float side = Dot(pos2, normalSide);
+            side = Dot(pos2, normalSide);
             sideNeg = -side + hscale2.y;
             sidePos = +side + hscale2.y;
             edgeNeg = EDGE3;
@@ -251,7 +251,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             normalFront = -normal;
             normalSide = rot2.col1;
             front = Dot(pos2, normalFront) + hscale2.y;
-            float side = Dot(pos2, normalSide);
+            side = Dot(pos2, normalSide);
             sideNeg = -side + hscale2.x;
             sidePos = +side + hscale2.x;
             edgeNeg = EDGE2;
