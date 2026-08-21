@@ -197,7 +197,6 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
     //     case FACE_B_Y: printf("FACE_B_Y\n"); break;
     // }
 
-    // Compute the clipping lines and the line segment to be clipped.
     switch (axis)
     {
         case FACE_A_X:
