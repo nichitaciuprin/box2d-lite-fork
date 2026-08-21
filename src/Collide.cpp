@@ -207,8 +207,8 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             normalFront = normal;
             normalSide = rot1.col2;
             front   = scaleh1.x + Dot(pos1, normalFront);
-            sideNeg = scaleh1.y - Dot(pos1, normalSide);
             sidePos = scaleh1.y + Dot(pos1, normalSide);
+            sideNeg = scaleh1.y - Dot(pos1, normalSide);
             edgeNeg = EDGE3;
             edgePos = EDGE1;
         }
@@ -220,8 +220,8 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             normalFront = normal;
             normalSide = rot1.col1;
             front   = scaleh1.y + Dot(pos1, normalFront);
-            sideNeg = scaleh1.x - Dot(pos1, normalSide);
             sidePos = scaleh1.x + Dot(pos1, normalSide);
+            sideNeg = scaleh1.x - Dot(pos1, normalSide);
             edgeNeg = EDGE2;
             edgePos = EDGE4;
         }
@@ -233,8 +233,8 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             normalFront = -normal;
             normalSide = rot2.col2;
             front   = scaleh2.x + Dot(pos2, normalFront);
-            sideNeg = scaleh2.y - Dot(pos2, normalSide);
             sidePos = scaleh2.y + Dot(pos2, normalSide);
+            sideNeg = scaleh2.y - Dot(pos2, normalSide);
             edgeNeg = EDGE3;
             edgePos = EDGE1;
         }
@@ -246,8 +246,8 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             normalFront = -normal;
             normalSide = rot2.col1;
             front   = scaleh2.y + Dot(pos2, normalFront);
-            sideNeg = scaleh2.x - Dot(pos2, normalSide);
             sidePos = scaleh2.x + Dot(pos2, normalSide);
+            sideNeg = scaleh2.x - Dot(pos2, normalSide);
             edgeNeg = EDGE2;
             edgePos = EDGE4;
         }
@@ -257,8 +257,8 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
     // clip other face with 5 box planes (1 face plane, 4 edge planes)
 
     int np;
-    np = ClipSegmentToLine(clipPoints0, clipPoints1, -normalSide, sideNeg, edgeNeg); if (np < MAX_POINTS) return 0;
-    np = ClipSegmentToLine(clipPoints1, clipPoints2,  normalSide, sidePos, edgePos); if (np < MAX_POINTS) return 0;
+    np = ClipSegmentToLine(clipPoints0, clipPoints1, +normalSide, sidePos, edgePos); if (np < MAX_POINTS) return 0;
+    np = ClipSegmentToLine(clipPoints1, clipPoints2, -normalSide, sideNeg, edgeNeg); if (np < MAX_POINTS) return 0;
 
     int numContacts = 0;
 

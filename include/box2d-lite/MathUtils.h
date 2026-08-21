@@ -37,6 +37,10 @@ struct Vec2
         y = y_;
     }
 
+    Vec2 operator +()
+    {
+        return Vec2(+x, +y);
+    }
     Vec2 operator -()
     {
         return Vec2(-x, -y);
