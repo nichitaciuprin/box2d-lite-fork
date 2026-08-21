@@ -167,10 +167,6 @@ static bool Sat(const Body* body1, const Body* body2, Vec2& normal, float& dist,
 
 int Collide(Contact* contacts, Body* body1, Body* body2)
 {
-    // The normal points from A to B
-
-    // printf("%f\n", body1->mass);
-
     Vec2 pos1 = body1->position;
     Vec2 pos2 = body2->position;
     Vec2 scaleh1 = body1->scale * 0.5f;
