@@ -47,14 +47,11 @@ inline void Swap(T& a, T& b)
 
 static void ComputeIncidentEdge(const Body* body, Vec2 normal, ClipVertex& v0, ClipVertex& v1)
 {
-    // the normal is from the reference box
-    // convert it to the incident boxe's frame and flip sign
-
     Vec2 pos = body->position;
     Vec2 scaleh = body->scale * 0.5f;
     Mat22 rot = Mat22(body->rotation);
 
-    normal = rot.Transpose() * -normal;
+    normal = rot.Transpose() * normal;
 
     if (Abs(normal.x) > Abs(normal.y))
     {
@@ -205,7 +202,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
     {
         case FACE_A_X:
         {
-            ComputeIncidentEdge(body2, normal, incidentEdge[0], incidentEdge[1]);
+            ComputeIncidentEdge(body2, -normal, incidentEdge[0], incidentEdge[1]);
             normalFront = normal;
             normalSide = rot1.col2;
             front = Dot(pos1, normalFront) + scaleh1.x;
@@ -219,7 +216,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
 
         case FACE_A_Y:
         {
-            ComputeIncidentEdge(body2, normal, incidentEdge[0], incidentEdge[1]);
+            ComputeIncidentEdge(body2, -normal, incidentEdge[0], incidentEdge[1]);
             normalFront = normal;
             normalSide = rot1.col1;
             front = Dot(pos1, normalFront) + scaleh1.y;
@@ -233,7 +230,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
 
         case FACE_B_X:
         {
-            ComputeIncidentEdge(body1, -normal, incidentEdge[0], incidentEdge[1]);
+            ComputeIncidentEdge(body1, normal, incidentEdge[0], incidentEdge[1]);
             normalFront = -normal;
             normalSide = rot2.col2;
             front = Dot(pos2, normalFront) + scaleh2.x;
@@ -247,7 +244,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
 
         case FACE_B_Y:
         {
-            ComputeIncidentEdge(body1, -normal, incidentEdge[0], incidentEdge[1]);
+            ComputeIncidentEdge(body1, normal, incidentEdge[0], incidentEdge[1]);
             normalFront = -normal;
             normalSide = rot2.col1;
             front = Dot(pos2, normalFront) + scaleh2.y;
