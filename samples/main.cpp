@@ -26,17 +26,17 @@
 
 namespace
 {
-    // int width = 1280;
-    // int height = 720;
-    // float zoom = 10.0f;
-    // float pan_y = 8.0f;
-    // GLFWwindow* window = NULL;
-
     int width = 1280;
     int height = 720;
-    float zoom = 2.0f;
-    float pan_y = 0.0f;
+    float zoom = 10.0f;
+    float pan_y = 8.0f;
     GLFWwindow* window = NULL;
+
+    // int width = 1280;
+    // int height = 720;
+    // float zoom = 2.0f;
+    // float pan_y = 0.0f;
+    // GLFWwindow* window = NULL;
 
     float timestep = 1.0f / 60.0f;
     bool pause = false;
@@ -827,11 +827,11 @@ int main()
 {
     InitWindow();
 
-    InitDemo(0);
-    world.BroadPhase();
-    pause = true;
+    // InitDemo(0);
+    // world.BroadPhase();
+    // pause = true;
 
-    // InitDemo(3);
+    InitDemo(3);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -843,7 +843,7 @@ int main()
         if (update)
         {
             world.Step(timestep);
-            world.BroadPhase();
+            // world.BroadPhase();
         }
 
         Draw();

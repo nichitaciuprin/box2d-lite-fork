@@ -185,7 +185,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
     // Setup clipping plane data based on the separating axis
     Vec2 normalFront, normalSide;
     ClipVertex incidentEdge[MAX_POINTS] = {};
-    float front, side;
+    float front;
     float sideNeg, sidePos;
     char edgeNeg, edgePos;
 
@@ -205,10 +205,9 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             ComputeIncidentEdge(body2, -normal, incidentEdge[0], incidentEdge[1]);
             normalFront = normal;
             normalSide = rot1.col2;
-            front = Dot(pos1, normalFront) + scaleh1.x;
-            side = Dot(pos1, normalSide);
-            sideNeg = -side + scaleh1.y;
-            sidePos = +side + scaleh1.y;
+            front   = scaleh1.x + Dot(pos1, normalFront);
+            sideNeg = scaleh1.y - Dot(pos1, normalSide);
+            sidePos = scaleh1.y + Dot(pos1, normalSide);
             edgeNeg = EDGE3;
             edgePos = EDGE1;
         }
@@ -219,10 +218,9 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             ComputeIncidentEdge(body2, -normal, incidentEdge[0], incidentEdge[1]);
             normalFront = normal;
             normalSide = rot1.col1;
-            front = Dot(pos1, normalFront) + scaleh1.y;
-            side = Dot(pos1, normalSide);
-            sideNeg = -side + scaleh1.x;
-            sidePos = +side + scaleh1.x;
+            front   = scaleh1.y + Dot(pos1, normalFront);
+            sideNeg = scaleh1.x - Dot(pos1, normalSide);
+            sidePos = scaleh1.x + Dot(pos1, normalSide);
             edgeNeg = EDGE2;
             edgePos = EDGE4;
         }
@@ -233,10 +231,9 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             ComputeIncidentEdge(body1, normal, incidentEdge[0], incidentEdge[1]);
             normalFront = -normal;
             normalSide = rot2.col2;
-            front = Dot(pos2, normalFront) + scaleh2.x;
-            side = Dot(pos2, normalSide);
-            sideNeg = -side + scaleh2.y;
-            sidePos = +side + scaleh2.y;
+            front   = scaleh2.x + Dot(pos2, normalFront);
+            sideNeg = scaleh2.y - Dot(pos2, normalSide);
+            sidePos = scaleh2.y + Dot(pos2, normalSide);
             edgeNeg = EDGE3;
             edgePos = EDGE1;
         }
@@ -247,10 +244,9 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             ComputeIncidentEdge(body1, normal, incidentEdge[0], incidentEdge[1]);
             normalFront = -normal;
             normalSide = rot2.col1;
-            front = Dot(pos2, normalFront) + scaleh2.y;
-            side = Dot(pos2, normalSide);
-            sideNeg = -side + scaleh2.x;
-            sidePos = +side + scaleh2.x;
+            front   = scaleh2.y + Dot(pos2, normalFront);
+            sideNeg = scaleh2.x - Dot(pos2, normalSide);
+            sidePos = scaleh2.x + Dot(pos2, normalSide);
             edgeNeg = EDGE2;
             edgePos = EDGE4;
         }
