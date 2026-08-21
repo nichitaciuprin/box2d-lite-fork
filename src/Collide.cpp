@@ -184,7 +184,9 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
 
     // Setup clipping plane data based on the separating axis
     Vec2 normalFront, normalSide;
-    ClipVertex incidentEdge[MAX_POINTS] = {};
+    ClipVertex clipPoints0[MAX_POINTS] = {};
+    ClipVertex clipPoints1[MAX_POINTS] = {};
+    ClipVertex clipPoints2[MAX_POINTS] = {};
     float front;
     float sideNeg, sidePos;
     char edgeNeg, edgePos;
@@ -201,7 +203,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
     {
         case FACE_A_X:
         {
-            ComputeIncidentEdge(body2, -normal, incidentEdge[0], incidentEdge[1]);
+            ComputeIncidentEdge(body2, -normal, clipPoints0[0], clipPoints0[1]);
             normalFront = normal;
             normalSide = rot1.col2;
             front   = scaleh1.x + Dot(pos1, normalFront);
@@ -214,7 +216,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
 
         case FACE_A_Y:
         {
-            ComputeIncidentEdge(body2, -normal, incidentEdge[0], incidentEdge[1]);
+            ComputeIncidentEdge(body2, -normal, clipPoints0[0], clipPoints0[1]);
             normalFront = normal;
             normalSide = rot1.col1;
             front   = scaleh1.y + Dot(pos1, normalFront);
@@ -227,7 +229,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
 
         case FACE_B_X:
         {
-            ComputeIncidentEdge(body1, normal, incidentEdge[0], incidentEdge[1]);
+            ComputeIncidentEdge(body1, normal, clipPoints0[0], clipPoints0[1]);
             normalFront = -normal;
             normalSide = rot2.col2;
             front   = scaleh2.x + Dot(pos2, normalFront);
@@ -240,7 +242,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
 
         case FACE_B_Y:
         {
-            ComputeIncidentEdge(body1, normal, incidentEdge[0], incidentEdge[1]);
+            ComputeIncidentEdge(body1, normal, clipPoints0[0], clipPoints0[1]);
             normalFront = -normal;
             normalSide = rot2.col1;
             front   = scaleh2.y + Dot(pos2, normalFront);
@@ -254,12 +256,9 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
 
     // clip other face with 5 box planes (1 face plane, 4 edge planes)
 
-    ClipVertex clipPoints1[MAX_POINTS] = {};
-    ClipVertex clipPoints2[MAX_POINTS] = {};
-
     int np;
-    np = ClipSegmentToLine(incidentEdge, clipPoints1, -normalSide, sideNeg, edgeNeg); if (np < MAX_POINTS) return 0;
-    np = ClipSegmentToLine(clipPoints1,  clipPoints2,  normalSide, sidePos, edgePos); if (np < MAX_POINTS) return 0;
+    np = ClipSegmentToLine(clipPoints0, clipPoints1, -normalSide, sideNeg, edgeNeg); if (np < MAX_POINTS) return 0;
+    np = ClipSegmentToLine(clipPoints1, clipPoints2,  normalSide, sidePos, edgePos); if (np < MAX_POINTS) return 0;
 
     // Now clipPoints2 contains the clipping points.
     // Due to roundoff, it is possible that clipping removes all points.
