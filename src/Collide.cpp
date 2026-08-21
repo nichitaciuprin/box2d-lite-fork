@@ -182,22 +182,12 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
     auto hit = Sat(body1, body2, normal, dist, axis);
     if (!hit) return 0;
 
-    // Setup clipping plane data based on the separating axis
-    Vec2 normalFront, normalSide;
     ClipVertex clipPoints0[MAX_POINTS] = {};
     ClipVertex clipPoints1[MAX_POINTS] = {};
     ClipVertex clipPoints2[MAX_POINTS] = {};
-    float front;
-    float sideNeg, sidePos;
+    Vec2 normalFront, normalSide;
+    float front, sideNeg, sidePos;
     char edgeNeg, edgePos;
-
-    // switch (axis)
-    // {
-    //     case FACE_A_X: printf("FACE_A_X\n"); break;
-    //     case FACE_A_Y: printf("FACE_A_Y\n"); break;
-    //     case FACE_B_X: printf("FACE_B_X\n"); break;
-    //     case FACE_B_Y: printf("FACE_B_Y\n"); break;
-    // }
 
     switch (axis)
     {
@@ -209,8 +199,8 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             front   = scaleh1.x + Dot(pos1, normalFront);
             sidePos = scaleh1.y + Dot(pos1, normalSide);
             sideNeg = scaleh1.y - Dot(pos1, normalSide);
-            edgeNeg = EDGE3;
             edgePos = EDGE1;
+            edgeNeg = EDGE3;
         }
         break;
 
@@ -222,8 +212,8 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             front   = scaleh1.y + Dot(pos1, normalFront);
             sidePos = scaleh1.x + Dot(pos1, normalSide);
             sideNeg = scaleh1.x - Dot(pos1, normalSide);
-            edgeNeg = EDGE2;
             edgePos = EDGE4;
+            edgeNeg = EDGE2;
         }
         break;
 
@@ -235,8 +225,8 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             front   = scaleh2.x + Dot(pos2, normalFront);
             sidePos = scaleh2.y + Dot(pos2, normalSide);
             sideNeg = scaleh2.y - Dot(pos2, normalSide);
-            edgeNeg = EDGE3;
             edgePos = EDGE1;
+            edgeNeg = EDGE3;
         }
         break;
 
@@ -248,8 +238,8 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
             front   = scaleh2.y + Dot(pos2, normalFront);
             sidePos = scaleh2.x + Dot(pos2, normalSide);
             sideNeg = scaleh2.x - Dot(pos2, normalSide);
-            edgeNeg = EDGE2;
             edgePos = EDGE4;
+            edgeNeg = EDGE2;
         }
         break;
     }
