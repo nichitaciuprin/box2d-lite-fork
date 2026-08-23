@@ -6,7 +6,7 @@ struct Body;
 
 enum EdgeNumbers
 {
-    NO_EDGE = 0,
+    NO_EDGE,
     EDGE1,
     EDGE2,
     EDGE3,
