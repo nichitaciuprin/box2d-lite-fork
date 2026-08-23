@@ -91,26 +91,12 @@ static int ClipSegmentToLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POI
     float distance0 = Dot(normal, vIn[0].v) - offset;
     float distance1 = Dot(normal, vIn[1].v) - offset;
 
-    // int state = 0;
-    // if (distance0 < 0.0f) state += 1;
-    // if (distance1 < 0.0f) state += 2;
-    // switch (state)
-    // {
-    //     case 0: break;
-    //     case 1: break;
-    //     case 2: break;
-    //     case 3: break;
-    // }
-
-    if (distance0 < 0.0f)
+    int state = 0;
+    if (distance0 < 0.0f) state += 1;
+    if (distance1 < 0.0f) state += 2;
+    switch (state)
     {
-        if (distance1 < 0.0f)
-        {
-            vOut[0] = vIn[0];
-            vOut[1] = vIn[1];
-            return 2;
-        }
-        else
+        case 1:
         {
             float t = distance0 / (distance0 - distance1);
             vOut[1].v = Lerp(vIn[0].v, vIn[1].v, t);
@@ -120,10 +106,7 @@ static int ClipSegmentToLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POI
             vOut[0] = vIn[0];
             return 2;
         }
-    }
-    else
-    {
-        if (distance1 < 0.0f)
+        case 2:
         {
             float t = distance0 / (distance0 - distance1);
             vOut[1].v = Lerp(vIn[0].v, vIn[1].v, t);
@@ -133,10 +116,13 @@ static int ClipSegmentToLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POI
             vOut[0] = vIn[1];
             return 2;
         }
-        else
+        case 3:
         {
-            return 0;
+            vOut[0] = vIn[0];
+            vOut[1] = vIn[1];
+            return 2;
         }
+        default: return 0;
     }
 }
 static bool Sat(const Body* body1, const Body* body2, Vec2& normal, float& dist, Axis& axis)
