@@ -91,35 +91,42 @@ static int ClipSegmentToLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POI
     float distance0 = Dot(normal, vIn[0].v) - offset;
     float distance1 = Dot(normal, vIn[1].v) - offset;
 
-    // If the points are behind the plane
-    if (distance0 <= 0.0f) vOut[numOut++] = vIn[0];
-    if (distance1 <= 0.0f) vOut[numOut++] = vIn[1];
-
-    // If the points are on different sides of the plane
-    if (distance0 * distance1 < 0.0f)
+    if (distance0 <= 0.0f)
     {
-        // Find intersection point of edge and plane
-        float t = distance0 / (distance0 - distance1);
-
-        vOut[numOut].v = Lerp(vIn[0].v, vIn[1].v, t);
-
-        if (distance0 > 0.0f)
+        if (distance1 <= 0.0f)
         {
-            vOut[numOut].fp = vIn[0].fp;
-            vOut[numOut].fp.e.edge1in = clipEdge;
-            vOut[numOut].fp.e.edge2in = NO_EDGE;
+            vOut[0] = vIn[0];
+            vOut[1] = vIn[1];
+            return 2;
         }
         else
         {
-            vOut[numOut].fp = vIn[1].fp;
-            vOut[numOut].fp.e.edge1out = clipEdge;
-            vOut[numOut].fp.e.edge2out = NO_EDGE;
+            vOut[0] = vIn[0];
+            float t = distance0 / (distance0 - distance1);
+            vOut[1].v = Lerp(vIn[0].v, vIn[1].v, t);
+            vOut[1].fp = vIn[1].fp;
+            vOut[1].fp.e.edge1out = clipEdge;
+            vOut[1].fp.e.edge2out = NO_EDGE;
+            return 2;
         }
-
-        numOut++;
     }
-
-    return numOut;
+    else
+    {
+        if (distance1 <= 0.0f)
+        {
+            vOut[0] = vIn[1];
+            float t = distance0 / (distance0 - distance1);
+            vOut[1].v = Lerp(vIn[0].v, vIn[1].v, t);
+            vOut[1].fp = vIn[0].fp;
+            vOut[1].fp.e.edge1in = clipEdge;
+            vOut[1].fp.e.edge2in = NO_EDGE;
+            return 2;
+        }
+        else
+        {
+            return 0;
+        }
+    }
 }
 static bool Sat(const Body* body1, const Body* body2, Vec2& normal, float& dist, Axis& axis)
 {
