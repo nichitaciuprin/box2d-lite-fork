@@ -91,9 +91,9 @@ static int ClipSegmentToLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POI
     float distance0 = Dot(normal, vIn[0].v) - offset;
     float distance1 = Dot(normal, vIn[1].v) - offset;
 
-    if (distance0 <= 0.0f)
+    if (distance0 < 0.0f)
     {
-        if (distance1 <= 0.0f)
+        if (distance1 < 0.0f)
         {
             vOut[0] = vIn[0];
             vOut[1] = vIn[1];
@@ -112,7 +112,7 @@ static int ClipSegmentToLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POI
     }
     else
     {
-        if (distance1 <= 0.0f)
+        if (distance1 < 0.0f)
         {
             vOut[0] = vIn[1];
             float t = distance0 / (distance0 - distance1);
