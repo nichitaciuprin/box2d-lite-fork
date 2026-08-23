@@ -22,14 +22,6 @@ enum Axis
     FACE_B_X,
     FACE_B_Y
 };
-enum EdgeNumbers
-{
-    NO_EDGE = 0,
-    EDGE1,
-    EDGE2,
-    EDGE3,
-    EDGE4
-};
 
 struct ClipVertex
 {

@@ -4,6 +4,14 @@
 
 struct Body;
 
+enum EdgeNumbers
+{
+    NO_EDGE = 0,
+    EDGE1,
+    EDGE2,
+    EDGE3,
+    EDGE4
+};
 struct Edges
 {
     char edge1in;
