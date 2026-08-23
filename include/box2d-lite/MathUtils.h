@@ -112,6 +112,22 @@ inline void PrintVec2(Vec2 v)
     printf("{ %f, %f }\n", v.x, v.y);
 }
 
+inline float Lerp(float a, float b, float t)
+{
+    return a + (b - a) * t;
+}
+inline float LerpInverse(float a, float b, float x)
+{
+    return (x - a) / (b - a);
+}
+inline Vec2 Lerp(Vec2 a, Vec2 b, float t)
+{
+    a.x = Lerp(a.x, b.x, t);
+    a.y = Lerp(a.y, b.y, t);
+    return a;
+}
+
+
 inline float Dot(const Vec2& a, const Vec2& b)
 {
     return a.x * b.x + a.y * b.y;

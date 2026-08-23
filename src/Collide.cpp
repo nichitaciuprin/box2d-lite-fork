@@ -85,7 +85,6 @@ static void ComputeIncidentEdge(const Body* body, Vec2 normal, ClipVertex& v0, C
 }
 static int ClipSegmentToLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POINTS], Vec2 normal, float offset, char clipEdge)
 {
-    // Start with no output points
     int numOut = 0;
 
     // Calculate the distance of end points to the line
@@ -100,8 +99,9 @@ static int ClipSegmentToLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POI
     if (distance0 * distance1 < 0.0f)
     {
         // Find intersection point of edge and plane
-        float interp = distance0 / (distance0 - distance1);
-        vOut[numOut].v = vIn[0].v + (vIn[1].v - vIn[0].v) * interp;
+        float t = distance0 / (distance0 - distance1);
+
+        vOut[numOut].v = Lerp(vIn[0].v, vIn[1].v, t);
 
         if (distance0 > 0.0f)
         {
@@ -181,6 +181,7 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
     ClipVertex clipPoints0[MAX_POINTS] = {};
     ClipVertex clipPoints1[MAX_POINTS] = {};
     ClipVertex clipPoints2[MAX_POINTS] = {};
+
     Vec2 normalFront, normalSide;
     float front, sideNeg, sidePos;
     char edgeNeg, edgePos;
@@ -240,28 +241,31 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
         break;
     }
 
-    // clip other face with 5 box planes (1 face plane, 4 edge planes)
+    // clips segment
 
     int np;
     np = ClipSegmentToLine(clipPoints0, clipPoints1, +normalSide, sidePos, edgePos); if (np < MAX_POINTS) return 0;
     np = ClipSegmentToLine(clipPoints1, clipPoints2, -normalSide, sideNeg, edgeNeg); if (np < MAX_POINTS) return 0;
 
+    // removes points ouside referance box
+
     int numContacts = 0;
 
     for (int i = 0; i < MAX_POINTS; i++)
     {
-        float separation = Dot(normalFront, clipPoints2[i].v) - front;
+        auto& point = clipPoints2[i];
 
-        if (separation > 0) continue;
+        float separation = Dot(normalFront, point.v) - front;
+        if (separation > 0.0f) continue;
 
         auto& contact = contacts[numContacts];
 
-        contact.separation = separation;
-        contact.normal = normal;
+        // clamp to reference face (easy to cull)
+        contact.position = point.v - normalFront * separation;
+        contact.feature = point.fp;
 
-        // slide contact point onto reference face (easy to cull)
-        contact.position = clipPoints2[i].v - normalFront * separation;
-        contact.feature = clipPoints2[i].fp;
+        contact.normal = normal;
+        contact.separation = separation;
 
         contact.r1 = contact.position - body1->position;
         contact.r2 = contact.position - body2->position;

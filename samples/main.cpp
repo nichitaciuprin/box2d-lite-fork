@@ -113,7 +113,8 @@ static void Demo1(Body* b, Joint* j)
     b++; body_s_count++;
 
     b->Set({ 0.5f, 0.5f }, 1.0f);
-    b->position = { 0.60f, 0.0f };
+    // b->position = { 0.60f, 0.0f };
+    b->position = { -0.60f, 0.0f };
     b->rotation = -MATH_PI/4;
     // b->rotation = -0.3f;
     world.Add(b);
