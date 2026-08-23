@@ -101,18 +101,18 @@ static int ClipSegmentToLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POI
         {
             vOut[0] = vIn[0];
             vOut[1] = vIn[1];
-            vOut[1].v = Lerp(vIn[0].v, vIn[1].v, dist0 / (dist0 - dist1));
             vOut[1].fp.e.edge1out = clipEdge;
             vOut[1].fp.e.edge2out = NO_EDGE;
+            vOut[1].v = Lerp(vIn[0].v, vIn[1].v, dist0 / (dist0 - dist1));
             return 2;
         }
         case 2:
         {
             vOut[0] = vIn[1];
             vOut[1] = vIn[0];
-            vOut[1].v = Lerp(vIn[0].v, vIn[1].v, dist0 / (dist0 - dist1));
             vOut[1].fp.e.edge1in = clipEdge;
             vOut[1].fp.e.edge2in = NO_EDGE;
+            vOut[1].v = Lerp(vIn[0].v, vIn[1].v, dist0 / (dist0 - dist1));
             return 2;
         }
         case 3:
