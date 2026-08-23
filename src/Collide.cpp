@@ -91,6 +91,17 @@ static int ClipSegmentToLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POI
     float distance0 = Dot(normal, vIn[0].v) - offset;
     float distance1 = Dot(normal, vIn[1].v) - offset;
 
+    // int state = 0;
+    // if (distance0 < 0.0f) state += 1;
+    // if (distance1 < 0.0f) state += 2;
+    // switch (state)
+    // {
+    //     case 0: break;
+    //     case 1: break;
+    //     case 2: break;
+    //     case 3: break;
+    // }
+
     if (distance0 < 0.0f)
     {
         if (distance1 < 0.0f)
@@ -101,12 +112,12 @@ static int ClipSegmentToLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POI
         }
         else
         {
-            vOut[0] = vIn[0];
             float t = distance0 / (distance0 - distance1);
             vOut[1].v = Lerp(vIn[0].v, vIn[1].v, t);
             vOut[1].fp = vIn[1].fp;
             vOut[1].fp.e.edge1out = clipEdge;
             vOut[1].fp.e.edge2out = NO_EDGE;
+            vOut[0] = vIn[0];
             return 2;
         }
     }
@@ -114,12 +125,12 @@ static int ClipSegmentToLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POI
     {
         if (distance1 < 0.0f)
         {
-            vOut[0] = vIn[1];
             float t = distance0 / (distance0 - distance1);
             vOut[1].v = Lerp(vIn[0].v, vIn[1].v, t);
             vOut[1].fp = vIn[0].fp;
             vOut[1].fp.e.edge1in = clipEdge;
             vOut[1].fp.e.edge2in = NO_EDGE;
+            vOut[0] = vIn[1];
             return 2;
         }
         else
