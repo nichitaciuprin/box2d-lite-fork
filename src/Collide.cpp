@@ -88,12 +88,12 @@ static int ClipSegmentToLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POI
     int numOut = 0;
 
     // Calculate the distance of end points to the line
-    float distance0 = Dot(normal, vIn[0].v) - offset;
-    float distance1 = Dot(normal, vIn[1].v) - offset;
+    float dist0 = Dot(normal, vIn[0].v) - offset;
+    float dist1 = Dot(normal, vIn[1].v) - offset;
 
     int state = 0;
-    if (distance0 < 0.0f) state += 1;
-    if (distance1 < 0.0f) state += 2;
+    if (dist0 < 0.0f) state += 1;
+    if (dist1 < 0.0f) state += 2;
 
     switch (state)
     {
@@ -101,7 +101,7 @@ static int ClipSegmentToLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POI
         {
             vOut[0] = vIn[0];
             vOut[1] = vIn[1];
-            vOut[1].v = Lerp(vIn[0].v, vIn[1].v, distance0 / (distance0 - distance1));
+            vOut[1].v = Lerp(vIn[0].v, vIn[1].v, dist0 / (dist0 - dist1));
             vOut[1].fp.e.edge1out = clipEdge;
             vOut[1].fp.e.edge2out = NO_EDGE;
             return 2;
@@ -110,7 +110,7 @@ static int ClipSegmentToLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POI
         {
             vOut[0] = vIn[1];
             vOut[1] = vIn[0];
-            vOut[1].v = Lerp(vIn[0].v, vIn[1].v, distance0 / (distance0 - distance1));
+            vOut[1].v = Lerp(vIn[0].v, vIn[1].v, dist0 / (dist0 - dist1));
             vOut[1].fp.e.edge1in = clipEdge;
             vOut[1].fp.e.edge2in = NO_EDGE;
             return 2;
