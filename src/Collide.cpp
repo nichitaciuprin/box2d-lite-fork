@@ -79,10 +79,8 @@ static void ComputeIncidentEdge(const Body* body, Vec2 normal, ClipVertex& v0, C
     v0.v = pos + rot * v0.v;
     v1.v = pos + rot * v1.v;
 }
-static int ClipSegmentToLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POINTS], Vec2 normal, float offset, char clipEdge)
+static bool ClipLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POINTS], Vec2 normal, float offset, char clipEdge)
 {
-    int numOut = 0;
-
     // Calculate the distance of end points to the line
     float dist0 = Dot(normal, vIn[0].v) - offset;
     float dist1 = Dot(normal, vIn[1].v) - offset;
@@ -100,7 +98,7 @@ static int ClipSegmentToLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POI
             vOut[1].fp.e.edge1out = clipEdge;
             vOut[1].fp.e.edge2out = NO_EDGE;
             vOut[1].v = Lerp(vIn[0].v, vIn[1].v, dist0 / (dist0 - dist1));
-            return 2;
+            return false;
         }
         case 2:
         {
@@ -109,7 +107,7 @@ static int ClipSegmentToLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POI
             vOut[1].fp.e.edge1in = clipEdge;
             vOut[1].fp.e.edge2in = NO_EDGE;
             vOut[1].v = Lerp(vIn[0].v, vIn[1].v, dist0 / (dist0 - dist1));
-            return 2;
+            return false;
             // vOut[0] = vIn[0];
             // vOut[1] = vIn[1];
             // vOut[0].fp.e.edge1in = clipEdge;
@@ -121,9 +119,9 @@ static int ClipSegmentToLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POI
         {
             vOut[0] = vIn[0];
             vOut[1] = vIn[1];
-            return 2;
+            return false;
         }
-        default: return 0;
+        default: return true;
     }
 }
 static bool Sat(const Body* body1, const Body* body2, Vec2& normal, float& dist, Axis& axis)
@@ -246,11 +244,8 @@ int Collide(Contact* contacts, Body* body1, Body* body2)
         break;
     }
 
-    // clips segment
-
-    int np;
-    np = ClipSegmentToLine(clipPoints0, clipPoints1, +normalSide, sidePos, edgePos); if (np < MAX_POINTS) return 0;
-    np = ClipSegmentToLine(clipPoints1, clipPoints2, -normalSide, sideNeg, edgeNeg); if (np < MAX_POINTS) return 0;
+    if (ClipLine(clipPoints0, clipPoints1, +normalSide, sidePos, edgePos)) return 0;
+    if (ClipLine(clipPoints1, clipPoints2, -normalSide, sideNeg, edgeNeg)) return 0;
 
     // removes points ouside referance box
 
