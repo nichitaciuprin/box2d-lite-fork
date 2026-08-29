@@ -77,15 +77,11 @@ public:
     void ApplyImpulse();
 };
 
-// This is used by std::set
 inline bool operator < (const ArbiterKey& a1, const ArbiterKey& a2)
 {
-    if (a1.body1 < a2.body1)
-        return true;
-
-    if (a1.body1 == a2.body1 && a1.body2 < a2.body2)
-        return true;
-
+    if (a1.body1 < a2.body1) return true;
+    if (a1.body1 > a2.body1) return false;
+    if (a1.body2 < a2.body2) return true;
     return false;
 }
 
