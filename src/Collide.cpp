@@ -109,7 +109,7 @@ static bool ClipLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POINTS], Ve
             // vOut[0].fp.e.edge1in = clipEdge;
             // vOut[0].fp.e.edge2in = NO_EDGE;
             // vOut[0].v = Lerp(vIn[0].v, vIn[1].v, dist0 / (dist0 - dist1));
-            // return 2;
+            // return false;
         }
         case 3:
         {
