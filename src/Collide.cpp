@@ -169,7 +169,7 @@ static bool Sat(const Body* body1, const Body* body2, Vec2& normal, float& dist,
     return true;
 }
 
-int Collide(Contact* contacts, Body* body1, Body* body2)
+int Collide(Contact* contacts, const Body* body1, const Body* body2)
 {
     Vec2 pos1 = body1->position;
     Vec2 pos2 = body2->position;

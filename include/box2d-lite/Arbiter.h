@@ -89,4 +89,4 @@ inline bool operator < (const ArbiterKey& a1, const ArbiterKey& a2)
     return false;
 }
 
-int Collide(Contact* contacts, Body* body1, Body* body2);
+int Collide(Contact* contacts, const Body* body1, const Body* body2);
