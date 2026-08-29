@@ -149,6 +149,7 @@ static bool Sat(const Body* body1, const Body* body2, Vec2& normal, float& dist,
     // todo double check tr ta
     // tr makes axis switch if diff significant
     // ta makes axis switch to for smaller body
+
     const float tr = 0.95f; // tolerance relative
     const float ta = 0.01f; // tolerance absolute
 
