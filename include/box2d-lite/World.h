@@ -9,6 +9,7 @@ using std::pair;
 
 #include "Arbiter.h"
 
+#include "box2d-lite/Config.h"
 #include "box2d-lite/Joint.h"
 
 typedef pair<ArbiterKey, Arbiter> ArbPair;
@@ -25,10 +26,6 @@ struct Impulse
 struct World
 {
 public:
-    static bool accumulateImpulses;
-    static bool warmStarting;
-    static bool positionCorrection;
-
     Vec2 gravity;
     int iterations;
 
@@ -132,7 +129,7 @@ public:
             auto a_old = &iter->second;
             auto a_new = &newArb;
 
-            if (World::warmStarting)
+            if (Config::warmStarting)
             {
                 for (int i = 0; i < a_new->numContacts; i++)
                 for (int j = 0; j < a_old->numContacts; j++)

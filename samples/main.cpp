@@ -9,6 +9,8 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 
+#include "box2d-lite/Config.h"
+
 #include "box2d-lite/MathUtils.h"
 
 #include "box2d-lite/Body.h"
@@ -17,10 +19,6 @@
 #include "box2d-lite/Joint.h"
 
 #include "box2d-lite/World.h"
-
-bool World::accumulateImpulses = true;
-bool World::warmStarting = true;
-bool World::positionCorrection = true;
 
 // box schema
 //
@@ -850,15 +848,15 @@ void Keyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
             break;
 
         case GLFW_KEY_A:
-            World::accumulateImpulses = !World::accumulateImpulses;
+            Config::accumulateImpulses = !Config::accumulateImpulses;
             break;
 
         case GLFW_KEY_S:
-            World::positionCorrection = !World::positionCorrection;
+            Config::positionCorrection = !Config::positionCorrection;
             break;
 
         case GLFW_KEY_D:
-            World::warmStarting = !World::warmStarting;
+            Config::warmStarting = !Config::warmStarting;
             break;
 
         case GLFW_KEY_SPACE:
@@ -1008,9 +1006,9 @@ void Draw()
     DrawText(5, 35, "Keys: 1-9 Demos, Space to Launch the Bomb");
 
     char buffer[64];
-    sprintf(buffer, "(A) Accumulation %s",        World::accumulateImpulses ? "ON" : "OFF"); DrawText(5, 65,  buffer);
-    sprintf(buffer, "(S) Position Correction %s", World::positionCorrection ? "ON" : "OFF"); DrawText(5, 95,  buffer);
-    sprintf(buffer, "(D) Warm Starting %s",       World::warmStarting       ? "ON" : "OFF"); DrawText(5, 125, buffer);
+    sprintf(buffer, "(A) Accumulation %s",        Config::accumulateImpulses ? "ON" : "OFF"); DrawText(5, 65,  buffer);
+    sprintf(buffer, "(S) Position Correction %s", Config::positionCorrection ? "ON" : "OFF"); DrawText(5, 95,  buffer);
+    sprintf(buffer, "(D) Warm Starting %s",       Config::warmStarting       ? "ON" : "OFF"); DrawText(5, 125, buffer);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();

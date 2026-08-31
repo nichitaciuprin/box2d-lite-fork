@@ -73,7 +73,7 @@ void Arbiter::PreStep(float dti)
         c->massNormalInv  = 1.0f / massNormal;
         c->massTangentInv = 1.0f / massTangent;
 
-        if (World::positionCorrection)
+        if (Config::positionCorrection)
         {
             float allowedPenetration = 0.01f;
             float biasFactor = 0.2f;

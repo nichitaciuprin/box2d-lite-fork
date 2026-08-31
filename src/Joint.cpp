@@ -56,12 +56,12 @@ void Joint::PreStep(float inv_dt)
     Vec2 p2 = body2->position + r2;
     Vec2 dp = p2 - p1;
 
-    if (World::positionCorrection)
+    if (Config::positionCorrection)
         bias = -biasFactor * inv_dt * dp;
     else
         bias = { 0.0f, 0.0f };
 
-    if (World::warmStarting)
+    if (Config::warmStarting)
     {
         // Apply accumulated impulse.
         body1->velocityLinear -= P * body1->massInv;
