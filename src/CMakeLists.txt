@@ -1,6 +1,5 @@
 set(BOX2D_SOURCE_FILES
 	Arbiter.cpp
-	Collide.cpp
 	Joint.cpp)
 
 set(BOX2D_HEADER_FILES
