@@ -2,8 +2,7 @@ set(BOX2D_SOURCE_FILES
 	Arbiter.cpp
 	Body.cpp
 	Collide.cpp
-	Joint.cpp
-	World.cpp)
+	Joint.cpp)
 
 set(BOX2D_HEADER_FILES
 	../include/box2d-lite/Arbiter.h

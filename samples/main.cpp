@@ -21,6 +21,11 @@
 #include "GLFW/glfw3.h"
 
 #include "box2d-lite/World.h"
+
+bool World::accumulateImpulses = true;
+bool World::warmStarting = true;
+bool World::positionCorrection = true;
+
 #include "box2d-lite/Body.h"
 #include "box2d-lite/Joint.h"
 
