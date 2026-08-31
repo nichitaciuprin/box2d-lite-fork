@@ -107,6 +107,14 @@ struct OrientedRectangle
     float rotation;
 };
 
+template <typename T>
+inline void Swap(T& a, T& b)
+{
+    T tmp = a;
+    a = b;
+    b = tmp;
+}
+
 inline void PrintVec2(Vec2 v)
 {
     printf("{ %f, %f }\n", v.x, v.y);

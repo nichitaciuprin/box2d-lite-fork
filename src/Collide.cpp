@@ -29,14 +29,6 @@ struct ClipVertex
     FeaturePair fp;
 };
 
-template <typename T>
-inline void Swap(T& a, T& b)
-{
-    T tmp = a;
-    a = b;
-    b = tmp;
-}
-
 static void ComputeIncidentEdge(const Body* body, Vec2 normal, ClipVertex& v0, ClipVertex& v1)
 {
     Vec2 pos = body->position;
