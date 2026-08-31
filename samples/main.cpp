@@ -35,7 +35,6 @@ bool World::positionCorrection = true;
 //    |        |
 //   v3 ------ v4
 //        e3
-
 enum Axis
 {
     FACE_A_X,
@@ -43,13 +42,11 @@ enum Axis
     FACE_B_X,
     FACE_B_Y
 };
-
 struct ClipVertex
 {
     Vec2 v;
     FeaturePair fp;
 };
-
 static void ComputeIncidentEdge(const Body* body, Vec2 normal, ClipVertex& v0, ClipVertex& v1)
 {
     Vec2 pos = body->position;
@@ -177,7 +174,6 @@ static bool Sat(const Body* body1, const Body* body2, Vec2& normal, float& dist,
 
     return true;
 }
-
 int Collide(Contact* contacts, const Body* body1, const Body* body2)
 {
     Vec2 pos1 = body1->position;
