@@ -3,6 +3,24 @@
 #include "box2d-lite/Body.h"
 #include "box2d-lite/World.h"
 
+Arbiter::Arbiter(Body* b1, Body* b2)
+{
+    if (b1 < b2)
+    {
+        body1 = b1;
+        body2 = b2;
+    }
+    else
+    {
+        body1 = b2;
+        body2 = b1;
+    }
+
+    numContacts = Collide(contacts, body1, body2);
+
+    friction = sqrtf(body1->friction * body2->friction);
+}
+
 Vec2 Arbiter::CalcRelativeVelocity(Contact* c, Body* b1, Body* b2)
 {
     // return
@@ -23,24 +41,6 @@ void Arbiter::UpdateVelocity(Contact* c, Body* b1, Body* b2, Vec2 impulse)
     b2->velocityLinear += impulse * b2->massInv;
     b1->velocityAngular -= Cross(c->r1, impulse) * b1->inertiaInv;
     b2->velocityAngular += Cross(c->r2, impulse) * b2->inertiaInv;
-}
-
-Arbiter::Arbiter(Body* b1, Body* b2)
-{
-    if (b1 < b2)
-    {
-        body1 = b1;
-        body2 = b2;
-    }
-    else
-    {
-        body1 = b2;
-        body2 = b1;
-    }
-
-    numContacts = Collide(contacts, body1, body2);
-
-    friction = sqrtf(body1->friction * body2->friction);
 }
 
 void Arbiter::PreStep(float dti)
