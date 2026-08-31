@@ -1,7 +1,5 @@
 #pragma once
 
-#include "MathUtils.h"
-
 struct Body;
 
 enum EdgeNumbers
