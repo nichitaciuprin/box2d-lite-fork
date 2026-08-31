@@ -73,6 +73,10 @@ public:
     Arbiter(Body* b1, Body* b2);
     void PreStep(float inv_dt);
     void ApplyImpulse();
+
+private:
+    Vec2 CalcRelativeVelocity(Contact* c, Body* b1, Body* b2);
+    void UpdateVelocity(Contact* c, Body* b1, Body* b2, Vec2 impulse);
 };
 
 inline bool operator < (const ArbiterKey& a1, const ArbiterKey& a2)

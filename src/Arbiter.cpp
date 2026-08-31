@@ -3,7 +3,7 @@
 #include "box2d-lite/Body.h"
 #include "box2d-lite/World.h"
 
-static inline Vec2 CalcRelativeVelocity(Contact* c, Body* b1, Body* b2)
+Vec2 Arbiter::CalcRelativeVelocity(Contact* c, Body* b1, Body* b2)
 {
     // return
     // b2->velocity + Cross(b2->velocityAngular, c->r2) -
@@ -17,7 +17,7 @@ static inline Vec2 CalcRelativeVelocity(Contact* c, Body* b1, Body* b2)
     Vec2 vel2 = b2->velocityLinear + RotateLeft(c->r2) * b2->velocityAngular;
     return vel2 - vel1;
 }
-static inline void UpdateVelocity(Contact* c, Body* b1, Body* b2, Vec2 impulse)
+void Arbiter::UpdateVelocity(Contact* c, Body* b1, Body* b2, Vec2 impulse)
 {
     b1->velocityLinear -= impulse * b1->massInv;
     b2->velocityLinear += impulse * b2->massInv;
