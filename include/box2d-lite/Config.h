@@ -1,8 +1,8 @@
 #pragma once
 
-struct Config
+namespace Config
 {
-    static bool accumulateImpulses;
-    static bool warmStarting;
-    static bool positionCorrection;
+    extern bool accumulateImpulses;
+    extern bool warmStarting;
+    extern bool positionCorrection;
 };
