@@ -1,6 +1,3 @@
-#define _CRT_SECURE_NO_WARNINGS
-#include <stdio.h>
-
 #include "imgui/imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl2.h"
@@ -9,14 +6,16 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+
 #include "box2d-lite/World.h"
+#include "box2d-lite/Body.h"
+#include "box2d-lite/Joint.h"
 
 bool World::accumulateImpulses = true;
 bool World::warmStarting = true;
 bool World::positionCorrection = true;
-
-#include "box2d-lite/Body.h"
-#include "box2d-lite/Joint.h"
 
 namespace
 {
