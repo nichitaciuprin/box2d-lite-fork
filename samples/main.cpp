@@ -11,9 +11,10 @@
 
 #include "box2d-lite/MathUtils.h"
 #include "box2d-lite/Arbiter.h"
-#include "box2d-lite/World.h"
 #include "box2d-lite/Body.h"
 #include "box2d-lite/Joint.h"
+
+#include "box2d-lite/World.h"
 
 bool World::accumulateImpulses = true;
 bool World::warmStarting = true;

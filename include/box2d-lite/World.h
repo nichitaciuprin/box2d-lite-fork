@@ -12,7 +12,6 @@ using std::pair;
 
 #include "Arbiter.h"
 
-#include "box2d-lite/Body.h"
 #include "box2d-lite/Joint.h"
 
 typedef pair<ArbiterKey, Arbiter> ArbPair;
