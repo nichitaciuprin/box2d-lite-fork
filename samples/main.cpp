@@ -9,6 +9,8 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 
+#include "box2d-lite/MathUtils.h"
+#include "box2d-lite/Arbiter.h"
 #include "box2d-lite/World.h"
 #include "box2d-lite/Body.h"
 #include "box2d-lite/Joint.h"

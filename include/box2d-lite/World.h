@@ -10,7 +10,6 @@ using std::vector;
 using std::map;
 using std::pair;
 
-#include "MathUtils.h"
 #include "Arbiter.h"
 
 #include "box2d-lite/Body.h"
