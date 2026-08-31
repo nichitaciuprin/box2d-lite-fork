@@ -56,7 +56,7 @@ namespace
     World world(gravity, iterations);
 }
 
-static void LaunchBomb()
+void LaunchBomb()
 {
     if (!bomb)
     {
@@ -73,13 +73,13 @@ static void LaunchBomb()
     bomb->velocityAngular = Random(-20.0f, 20.0f);
 }
 
-static void AddGround(Body* b)
+void AddGround(Body* b)
 {
     b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
     b->position = { 0.0f, b->scale.y * -0.5f };
     world.Add(b);
 }
-static void AddBox(Vec2 coord)
+void AddBox(Vec2 coord)
 {
     auto b = &body_s[body_s_count];
     // b->Set(Vec2(1.0f, 1.0f), 200.0f);
@@ -89,7 +89,7 @@ static void AddBox(Vec2 coord)
     body_s_count++;
 }
 
-static void Demo1(Body* b, Joint* j)
+void Demo1(Body* b, Joint* j)
 {
     // AddGround(b);
     // b++; body_s_count++;
@@ -114,7 +114,7 @@ static void Demo1(Body* b, Joint* j)
     world.Add(b);
     b++; body_s_count++;
 }
-static void Demo2(Body* b, Joint* j)
+void Demo2(Body* b, Joint* j)
 {
     auto b1 = b;
     AddGround(b);
@@ -132,7 +132,7 @@ static void Demo2(Body* b, Joint* j)
     world.Add(j);
     joint_s_count++;
 }
-static void Demo3(Body* b, Joint* j)
+void Demo3(Body* b, Joint* j)
 {
     AddGround(b);
     ++b; ++body_s_count;
@@ -181,7 +181,7 @@ static void Demo3(Body* b, Joint* j)
     // world.Add(b);
     // ++b; ++body_s_count;
 }
-static void Demo4(Body* b, Joint* j)
+void Demo4(Body* b, Joint* j)
 {
     AddGround(b);
     ++b; ++body_s_count;
@@ -196,7 +196,7 @@ static void Demo4(Body* b, Joint* j)
         ++b; ++body_s_count;
     }
 }
-static void Demo5(Body* b, Joint* j)
+void Demo5(Body* b, Joint* j)
 {
     AddGround(b);
     ++b; ++body_s_count;
@@ -221,7 +221,7 @@ static void Demo5(Body* b, Joint* j)
         x += Vec2(0.5625f, 2.0f);
     }
 }
-static void Demo6(Body* b, Joint* j)
+void Demo6(Body* b, Joint* j)
 {
     Body* b1 = b;
     AddGround(b);
@@ -256,7 +256,7 @@ static void Demo6(Body* b, Joint* j)
 
     joint_s_count += 1;
 }
-static void Demo7(Body* b, Joint* j)
+void Demo7(Body* b, Joint* j)
 {
     AddGround(b);
     ++b; ++body_s_count;
@@ -306,7 +306,7 @@ static void Demo7(Body* b, Joint* j)
     world.Add(j);
     ++j; ++joint_s_count;
 }
-static void Demo8(Body* b, Joint* j)
+void Demo8(Body* b, Joint* j)
 {
     Body* b1 = b;
     AddGround(b);
@@ -379,7 +379,7 @@ static void Demo8(Body* b, Joint* j)
     world.Add(j);
     ++j; ++joint_s_count;
 }
-static void Demo9(Body* b, Joint* j)
+void Demo9(Body* b, Joint* j)
 {
     Body* b1 = b;
     AddGround(b);
@@ -453,7 +453,7 @@ void (*demos[])(Body* b, Joint* j) =
     Demo9
 };
 
-static void InitDemo(int index)
+void InitDemo(int index)
 {
     world.Clear();
     body_s_count = 0;
@@ -532,11 +532,11 @@ Vec2 GetMousePosition()
     glfwGetCursorPos(window, &xpos, &ypos);
     return ScreenToWorld(xpos, ypos);
 }
-static void ErrorCallback(int error, const char* description)
+void ErrorCallback(int error, const char* description)
 {
     printf("GLFW error %d: %s\n", error, description);
 }
-static void SetProj()
+void SetProj()
 {
     glViewport(0, 0, width, height);
     glMatrixMode(GL_PROJECTION);
@@ -554,13 +554,13 @@ static void SetProj()
         glOrtho(-zoom, zoom, -zoom / aspect + pan_y, zoom / aspect + pan_y, -1.0, 1.0);
     }
 }
-static void Reshape(GLFWwindow*, int w, int h)
+void Reshape(GLFWwindow*, int w, int h)
 {
     width = w;
     height = h > 0 ? h : 1;
     SetProj();
 }
-static void Keyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
+void Keyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (action != GLFW_PRESS) return;
 
@@ -607,7 +607,7 @@ static void Keyboard(GLFWwindow* window, int key, int scancode, int action, int 
             break;
     }
 }
-static void Mouse(GLFWwindow* window, int button, int action, int mods)
+void Mouse(GLFWwindow* window, int button, int action, int mods)
 {
     if (action != GLFW_PRESS) return;
     if (button != GLFW_MOUSE_BUTTON_LEFT) return;
@@ -632,7 +632,7 @@ static void Mouse(GLFWwindow* window, int button, int action, int mods)
         selectedBodyIndex = -1;
     }
 }
-static void DrawText(int x, int y, const char* string)
+void DrawText(int x, int y, const char* string)
 {
     ImVec2 p;
     p.x = float(x);
@@ -642,7 +642,7 @@ static void DrawText(int x, int y, const char* string)
     ImGui::TextColored(ImColor(230, 153, 153, 255), "%s", string);
     ImGui::End();
 }
-static void DrawPoint(Vec2 p)
+void DrawPoint(Vec2 p)
 {
     glPointSize(4.0f);
     glColor3f(1.0f, 0.0f, 0.0f);
@@ -651,7 +651,7 @@ static void DrawPoint(Vec2 p)
     glEnd();
     glPointSize(1.0f);
 }
-static void DrawLine(Vec2 p0, Vec2 p1)
+void DrawLine(Vec2 p0, Vec2 p1)
 {
     glColor3f(0.0f, 1.0f, 0.0f);
     glBegin(GL_LINES);
@@ -659,7 +659,7 @@ static void DrawLine(Vec2 p0, Vec2 p1)
     glVertex2f(p1.x, p1.y);
     glEnd();
 }
-static void DrawBody(Body* body, bool selected)
+void DrawBody(Body* body, bool selected)
 {
     Mat22 R(body->rotation);
     Vec2 p = body->position;
@@ -681,7 +681,7 @@ static void DrawBody(Body* body, bool selected)
     glVertex2f(v4.x, v4.y);
     glEnd();
 }
-static void DrawJoint(Joint* joint)
+void DrawJoint(Joint* joint)
 {
     Body* b1 = joint->body1;
     Body* b2 = joint->body2;
@@ -703,7 +703,7 @@ static void DrawJoint(Joint* joint)
     glVertex2f(p2.x, p2.y);
     glEnd();
 }
-static void DrawArbiter(Arbiter* arbiter)
+void DrawArbiter(Arbiter* arbiter)
 {
     glPointSize(4.0f);
     glColor3f(1.0f, 0.0f, 0.0f);
@@ -718,7 +718,7 @@ static void DrawArbiter(Arbiter* arbiter)
     glEnd();
     glPointSize(1.0f);
 }
-static void Draw()
+void Draw()
 {
     auto mousePos = GetMousePosition();
 
@@ -770,7 +770,7 @@ static void Draw()
     ImGui::Render();
     ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 }
-static void InitWindow()
+void InitWindow()
 {
     glfwSetErrorCallback(ErrorCallback);
 
