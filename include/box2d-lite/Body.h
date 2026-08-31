@@ -1,7 +1,5 @@
 #pragma once
 
-#include "MathUtils.h"
-
 struct Body
 {
     Vec2 position;
