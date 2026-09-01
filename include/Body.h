@@ -35,11 +35,6 @@ struct Body
         inertia = FLT_MAX;
         inertiaInv = 0.0f;
     }
-
-    void AddForce(Vec2 force_)
-    {
-        force += force_;
-    }
 };
 
 void BodySet(Body* body, Vec2 scale_, float mass_)
