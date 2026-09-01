@@ -1,8 +1,8 @@
 #include "box2d-lite/MathUtils.h"
 #include "box2d-lite/Config.h"
+
 #include "box2d-lite/Joint.h"
 #include "box2d-lite/Body.h"
-// #include "box2d-lite/World.h"
 
 void Joint::Set(Body* b1, Body* b2, const Vec2& anchor)
 {
