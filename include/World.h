@@ -8,9 +8,9 @@ public:
     Vec2 gravity;
     int iterations;
 
-    std::vector<Body*> bodies;
-    std::vector<Joint*> joints;
-    std::map<ArbiterKey, Arbiter> arbiters;
+    vector<Body*> bodies;
+    vector<Joint*> joints;
+    map<ArbiterKey, Arbiter> arbiters;
 
     World(Vec2 gravity, int iterations) : gravity(gravity), iterations(iterations) {}
 
