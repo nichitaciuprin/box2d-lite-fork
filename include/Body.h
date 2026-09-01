@@ -36,7 +36,7 @@ struct Body
         inertiaInv = 0.0f;
     }
 
-    void Set(const Vec2& scale_, float mass_)
+    void Set(Vec2 scale_, float mass_)
     {
         position = { 0.0f, 0.0f };
         rotation = 0.0f;
@@ -64,8 +64,8 @@ struct Body
         inertia = mass * (scale.x * scale.x + scale.y * scale.y) / 12.0f;
         inertiaInv = 1.0f / inertia;
     }
-    void AddForce(const Vec2& f)
+    void AddForce(Vec2 force_)
     {
-        force += f;
+        force += force_;
     }
 };
