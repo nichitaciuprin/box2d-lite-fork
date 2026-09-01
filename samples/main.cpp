@@ -639,7 +639,7 @@ void Demo2(Body* b, Joint* j)
     world.Add(b2);
     b++; body_s_count++;
 
-    j->Set(b1, b2, { 0.0f, 11.0f });
+    *j = JointCreate(b1, b2, { 0.0f, 11.0f });
     world.Add(j);
     joint_s_count++;
 }
@@ -763,7 +763,7 @@ void Demo6(Body* b, Joint* j)
     world.Add(b5);
     b++; body_s_count++;
 
-    j->Set(b1, b2, { 0.0f, 1.0f });
+    *j = JointCreate(b1, b2, { 0.0f, 1.0f });
     world.Add(j);
     joint_s_count++;
 }
@@ -803,7 +803,7 @@ void Demo7(Body* b, Joint* j)
 
     for (int i = 0; i < numPlanks; ++i)
     {
-        j->Set(body_s+i, body_s+i+1, { -9.125f + 1.25f * i, 5.0f });
+        *j = JointCreate(body_s+i, body_s+i+1, { -9.125f + 1.25f * i, 5.0f });
         j->softness = softness;
         j->biasFactor = biasFactor;
 
@@ -811,7 +811,7 @@ void Demo7(Body* b, Joint* j)
         j++; joint_s_count++;
     }
 
-    j->Set(body_s + numPlanks, body_s, { -9.125f + 1.25f * numPlanks, 5.0f });
+    *j = JointCreate(body_s + numPlanks, body_s, { -9.125f + 1.25f * numPlanks, 5.0f });
     j->softness = softness;
     j->biasFactor = biasFactor;
     world.Add(j);
@@ -855,7 +855,7 @@ void Demo8(Body* b, Joint* j)
     world.Add(b);
     b++; body_s_count++;
 
-    j->Set(b1, b3, { -2.0f, 1.0f });
+    *j = JointCreate(b1, b3, { -2.0f, 1.0f });
     world.Add(j);
     j++; joint_s_count++;
 
@@ -865,7 +865,7 @@ void Demo8(Body* b, Joint* j)
     world.Add(b);
     b++; body_s_count++;
 
-    j->Set(b2, b4, { -7.0f, 15.0f });
+    *j = JointCreate(b2, b4, { -7.0f, 15.0f });
     world.Add(j);
     j++; joint_s_count++;
 
@@ -876,7 +876,7 @@ void Demo8(Body* b, Joint* j)
     world.Add(b);
     b++; body_s_count++;
 
-    j->Set(b1, b5, { 6.0f, 2.6f });
+    *j = JointCreate(b1, b5, { 6.0f, 2.6f });
     world.Add(j);
     j++; joint_s_count++;
 
@@ -886,7 +886,7 @@ void Demo8(Body* b, Joint* j)
     world.Add(b);
     b++; body_s_count++;
 
-    j->Set(b5, b6, { 7.0f, 3.5f });
+    *j = JointCreate(b5, b6, { 7.0f, 3.5f });
     world.Add(j);
     j++; joint_s_count++;
 }
@@ -925,7 +925,7 @@ void Demo9(Body* b, Joint* j)
         b->rotation = 0.0f;
         world.Add(b);
 
-        j->Set(b1, b, { float(i), y });
+        *j = JointCreate(b1, b, { float(i), y });
         j->softness = softness;
         j->biasFactor = biasFactor;
         world.Add(j);
