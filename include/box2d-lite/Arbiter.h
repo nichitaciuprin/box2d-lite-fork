@@ -1,5 +1,19 @@
 #pragma once
 
+// box schema
+//
+//   ^ y
+//   |
+//   + --> x
+//
+//        e1
+//   v2 ------ v1
+//    |        |
+// e2 |        | e4
+//    |        |
+//   v3 ------ v4
+//        e3
+
 enum EdgeNumbers
 {
     NO_EDGE,
@@ -7,6 +21,13 @@ enum EdgeNumbers
     EDGE2,
     EDGE3,
     EDGE4
+};
+enum Axis
+{
+    FACE_A_X,
+    FACE_A_Y,
+    FACE_B_X,
+    FACE_B_Y
 };
 struct Edges
 {
@@ -19,6 +40,11 @@ union FeaturePair
 {
     Edges e;
     int value;
+};
+struct ClipVertex
+{
+    Vec2 v;
+    FeaturePair fp;
 };
 
 struct Contact

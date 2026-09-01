@@ -16,31 +16,6 @@
 #include "box2d-lite/Joint.h"
 #include "box2d-lite/World.h"
 
-// box schema
-//
-//   ^ y
-//   |
-//   + --> x
-//
-//        e1
-//   v2 ------ v1
-//    |        |
-// e2 |        | e4
-//    |        |
-//   v3 ------ v4
-//        e3
-enum Axis
-{
-    FACE_A_X,
-    FACE_A_Y,
-    FACE_B_X,
-    FACE_B_Y
-};
-struct ClipVertex
-{
-    Vec2 v;
-    FeaturePair fp;
-};
 static void ComputeIncidentEdge(const Body* body, Vec2 normal, ClipVertex& v0, ClipVertex& v1)
 {
     Vec2 pos = body->position;
