@@ -31,20 +31,14 @@ struct Vec2
     Vec2() {}
     Vec2(float x, float y) : x(x), y(y) {}
 
-    void Set(float x_, float y_)
-    {
-        x = x_;
-        y = y_;
-    }
+    // void Set(float x_, float y_)
+    // {
+    //     x = x_;
+    //     y = y_;
+    // }
 
-    Vec2 operator +()
-    {
-        return Vec2(+x, +y);
-    }
-    Vec2 operator -()
-    {
-        return Vec2(-x, -y);
-    }
+    Vec2 operator + () { return Vec2(+x, +y); }
+    Vec2 operator - () { return Vec2(-x, -y); }
 
     void operator += (const Vec2& v)
     {
