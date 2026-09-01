@@ -94,7 +94,7 @@ public:
 
             if (b1->massInv == 0.0f && b2->massInv == 0.0f) continue;
 
-            Arbiter newArb(b1, b2);
+            Arbiter newArb = ArbiterCreate(b1, b2);
             ArbiterKey key(b1, b2);
 
             if (newArb.numContacts == 0)

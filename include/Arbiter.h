@@ -269,24 +269,6 @@ public:
     Body* body2;
     float friction; // Combined friction
 
-    Arbiter(Body* b1, Body* b2)
-    {
-        if (b1 < b2)
-        {
-            body1 = b1;
-            body2 = b2;
-        }
-        else
-        {
-            body1 = b2;
-            body2 = b1;
-        }
-
-        numContacts = Collide(contacts, body1, body2);
-
-        friction = sqrtf(body1->friction * body2->friction);
-    }
-
     void PreStep(float dti)
     {
         for (int i = 0; i < numContacts; i++)
@@ -366,7 +348,6 @@ public:
         }
     }
 
-
 private:
     Vec2 CalcRelativeVelocity(Contact* c, Body* b1, Body* b2)
     {
@@ -390,6 +371,28 @@ private:
         b2->velocityAngular += Cross(c->r2, impulse) * b2->inertiaInv;
     }
 };
+
+Arbiter ArbiterCreate(Body* b1, Body* b2)
+{
+    Arbiter arb;
+
+    if (b1 < b2)
+    {
+        arb.body1 = b1;
+        arb.body2 = b2;
+    }
+    else
+    {
+        arb.body1 = b2;
+        arb.body2 = b1;
+    }
+
+    arb.numContacts = Collide(arb.contacts, arb.body1, arb.body2);
+
+    arb.friction = sqrtf(arb.body1->friction * arb.body2->friction);
+
+    return arb;
+}
 
 inline bool operator < (const ArbiterKey& a1, const ArbiterKey& a2)
 {
