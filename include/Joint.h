@@ -3,8 +3,10 @@
 struct Joint
 {
     Mat22 M;
-    Vec2 localAnchor1, localAnchor2;
-    Vec2 r1, r2;
+    Vec2 localAnchor1;
+    Vec2 localAnchor2;
+    Vec2 r1;
+    Vec2 r2;
     Vec2 bias;
     Vec2 P;		// accumulated impulse
     Body* body1;
@@ -14,25 +16,25 @@ struct Joint
 
     Joint() : body1(0), body2(0), P(0.0f, 0.0f), biasFactor(0.2f), softness(0.0f) {}
 
-    void Set(Body* b1, Body* b2, const Vec2& anchor)
+    void Set(Body* b1, Body* b2, Vec2 anchor)
     {
         body1 = b1;
         body2 = b2;
 
-        Mat22 Rot1(body1->rotation);
-        Mat22 Rot2(body2->rotation);
+        Mat22 Rot1 = Mat22(body1->rotation);
+        Mat22 Rot2 = Mat22(body2->rotation);
         Mat22 Rot1T = Rot1.Transpose();
         Mat22 Rot2T = Rot2.Transpose();
 
         localAnchor1 = Rot1T * (anchor - body1->position);
         localAnchor2 = Rot2T * (anchor - body2->position);
 
-        P.Set(0.0f, 0.0f);
+        P = { 0.0f, 0.0f };
 
         softness = 0.0f;
         biasFactor = 0.2f;
     }
-    void PreStep(float inv_dt)
+    void PreStep(float dti)
     {
         // Pre-compute anchors, mass matrix, and bias.
         Mat22 Rot1(body1->rotation);
@@ -45,17 +47,24 @@ struct Joint
         // invM = [(1/m1 + 1/m2) * eye(2) - skew(r1) * invI1 * skew(r1) - skew(r2) * invI2 * skew(r2)]
         //      = [1/m1+1/m2     0    ] + invI1 * [r1.y*r1.y -r1.x*r1.y] + invI2 * [r1.y*r1.y -r1.x*r1.y]
         //        [    0     1/m1+1/m2]           [-r1.x*r1.y r1.x*r1.x]           [-r1.x*r1.y r1.x*r1.x]
+
         Mat22 K1;
-        K1.col1.x = body1->massInv + body2->massInv;	K1.col2.x = 0.0f;
-        K1.col1.y = 0.0f;								K1.col2.y = body1->massInv + body2->massInv;
+        K1.col1.x = body1->massInv + body2->massInv;
+        K1.col2.x = 0.0f;
+        K1.col1.y = 0.0f;
+        K1.col2.y = body1->massInv + body2->massInv;
 
         Mat22 K2;
-        K2.col1.x =  body1->inertiaInv * r1.y * r1.y;		K2.col2.x = -body1->inertiaInv * r1.x * r1.y;
-        K2.col1.y = -body1->inertiaInv * r1.x * r1.y;		K2.col2.y =  body1->inertiaInv * r1.x * r1.x;
+        K2.col1.x =  body1->inertiaInv * r1.y * r1.y;
+        K2.col2.x = -body1->inertiaInv * r1.x * r1.y;
+        K2.col1.y = -body1->inertiaInv * r1.x * r1.y;
+        K2.col2.y =  body1->inertiaInv * r1.x * r1.x;
 
         Mat22 K3;
-        K3.col1.x =  body2->inertiaInv * r2.y * r2.y;		K3.col2.x = -body2->inertiaInv * r2.x * r2.y;
-        K3.col1.y = -body2->inertiaInv * r2.x * r2.y;		K3.col2.y =  body2->inertiaInv * r2.x * r2.x;
+        K3.col1.x =  body2->inertiaInv * r2.y * r2.y;
+        K3.col2.x = -body2->inertiaInv * r2.x * r2.y;
+        K3.col1.y = -body2->inertiaInv * r2.x * r2.y;
+        K3.col2.y =  body2->inertiaInv * r2.x * r2.x;
 
         Mat22 K = K1 + K2 + K3;
         K.col1.x += softness;
@@ -68,13 +77,12 @@ struct Joint
         Vec2 dp = p2 - p1;
 
         if (Config::positionCorrection)
-            bias = -biasFactor * inv_dt * dp;
+            bias = -biasFactor * dti * dp;
         else
             bias = { 0.0f, 0.0f };
 
         if (Config::warmStarting)
         {
-            // Apply accumulated impulse.
             body1->velocityLinear -= P * body1->massInv;
             body2->velocityLinear += P * body2->massInv;
             body1->velocityAngular -= Cross(r1, P) * body1->inertiaInv;
