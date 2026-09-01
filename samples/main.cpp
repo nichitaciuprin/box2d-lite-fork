@@ -233,7 +233,8 @@ void Demo3(Body* b, Joint* j)
     b++; body_s_count++;
 
     float friction[5] = { 0.75f, 0.5f, 0.35f, 0.1f, 0.0f };
-    for (int i = 0; i < 5; ++i)
+
+    for (int i = 0; i < 5; i++)
     {
         *b = BodyCreate({ 0.5f, 0.5f }, 25.0f);
         b->friction = friction[i];
@@ -253,7 +254,7 @@ void Demo4(Body* b, Joint* j)
     AddGround(b);
     b++; body_s_count++;
 
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i < 10; i++)
     {
         *b = BodyCreate({ 1.0f, 1.0f }, 1.0f);
         b->friction = 0.2f;
@@ -270,7 +271,7 @@ void Demo5(Body* b, Joint* j)
 
     Vec2 x = { -6.0f, 0.75f };
 
-    for (int i = 0; i < 12; ++i)
+    for (int i = 0; i < 12; i++)
     {
         Vec2 y = x;
 
@@ -320,8 +321,7 @@ void Demo6(Body* b, Joint* j)
 
     j->Set(b1, b2, { 0.0f, 1.0f });
     world.Add(j);
-
-    joint_s_count += 1;
+    joint_s_count++;
 }
 void Demo7(Body* b, Joint* j)
 {
@@ -384,7 +384,7 @@ void Demo8(Body* b, Joint* j)
     world.Add(b);
     b++; body_s_count++;
 
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i < 10; i++)
     {
         *b = BodyCreate({ 0.2f, 2.0f }, 10.0f);
         b->position = { -6.0f + 1.0f * i, 11.125f };
