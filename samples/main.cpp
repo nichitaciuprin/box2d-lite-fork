@@ -9,12 +9,12 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 
-#include "box2d-lite/Config.h"
-#include "box2d-lite/MathUtils.h"
-#include "box2d-lite/Body.h"
-#include "box2d-lite/Arbiter.h"
-#include "box2d-lite/Joint.h"
-#include "box2d-lite/World.h"
+#include "Config.h"
+#include "MathUtils.h"
+#include "Body.h"
+#include "Arbiter.h"
+#include "Joint.h"
+#include "World.h"
 
 namespace
 {
