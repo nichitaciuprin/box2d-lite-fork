@@ -18,6 +18,70 @@ using std::pair;
 
 #include "Config.h"
 #include "MathUtils.h"
+
+// box schema
+//
+//   ^ y
+//   |
+//   + --> x
+//
+//        e1
+//   v2 ------ v1
+//    |        |
+// e2 |        | e4
+//    |        |
+//   v3 ------ v4
+//        e3
+
+enum EdgeNumbers
+{
+    NO_EDGE,
+    EDGE1,
+    EDGE2,
+    EDGE3,
+    EDGE4
+};
+enum Axis
+{
+    FACE_A_X,
+    FACE_A_Y,
+    FACE_B_X,
+    FACE_B_Y
+};
+struct Edges
+{
+    char edge1in;
+    char edge1out;
+    char edge2in;
+    char edge2out;
+};
+union FeaturePair
+{
+    Edges e;
+    int value;
+};
+struct ClipVertex
+{
+    Vec2 v;
+    FeaturePair fp;
+};
+struct Contact
+{
+    Contact() : Pn(0.0f), Pt(0.0f) {}
+
+    Vec2 position;
+    Vec2 normal;
+    Vec2 r1;
+    Vec2 r2;
+    float separation;
+    float Pn;	// accumulated normal impulse
+    float Pt;	// accumulated tangent impulse
+    float massNormalInv;
+    float massTangentInv;
+    float bias;
+    FeaturePair feature;
+};
+
 #include "Body.h"
 #include "Arbiter.h"
 #include "Joint.h"
