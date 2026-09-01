@@ -351,7 +351,7 @@ public:
     }
 };
 
-void ApplyImpulse(Arbiter& arb)
+void ArbiterApplyImpulse(Arbiter& arb)
 {
     for (int i = 0; i < arb.numContacts; i++)
     {
