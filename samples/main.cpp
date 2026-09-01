@@ -144,15 +144,15 @@ void LaunchBomb()
 
 void AddGround(Body* b)
 {
-    b->Set(Vec2(100.0f, 20.0f), FLT_MAX);
+    b->Set({ 100.0f, 20.0f }, FLT_MAX);
     b->position = { 0.0f, b->scale.y * -0.5f };
     world.Add(b);
 }
 void AddBox(Vec2 coord)
 {
     auto b = &body_s[body_s_count];
-    // b->Set(Vec2(1.0f, 1.0f), 200.0f);
-    b->Set(Vec2(1.0f, 1.0f), 10.0f);
+    // b->Set({ 1.0f, 1.0f }, 200.0f);
+    b->Set({ 1.0f, 1.0f }, 10.0f);
     b->position = coord;
     world.Add(b);
     body_s_count++;
@@ -164,11 +164,9 @@ void Demo1(Body* b, Joint* j)
     // b++; body_s_count++;
 
     // b->Set({ 1.0f, 1.0f }, 1.0f);
-    // b->position.Set(0.0f, 4.0f);
+    // b->position = { 0.0f, 4.0f };
     // world.Add(b);
     // b++; body_s_count++;
-
-
 
     b->Set({ 1.0f, 1.0f }, FLT_MAX);
     b->position = { 0.0f, 0.0f };
@@ -178,7 +176,7 @@ void Demo1(Body* b, Joint* j)
     b->Set({ 0.5f, 0.5f }, 1.0f);
     // b->position = { 0.60f, 0.0f };
     b->position = { -0.60f, 0.0f };
-    b->rotation = -MATH_PI/4;
+    b->rotation = -MATH_PI / 4;
     // b->rotation = -0.3f;
     world.Add(b);
     b++; body_s_count++;
@@ -207,29 +205,29 @@ void Demo3(Body* b, Joint* j)
     b++; body_s_count++;
 
     b->Set({ 13.0f, 0.25f }, FLT_MAX);
-    b->position.Set(-2.0f, 11.0f);
+    b->position = { -2.0f, 11.0f };
     b->rotation = -0.25f;
     world.Add(b);
     b++; body_s_count++;
 
     b->Set({ 0.25f, 1.0f }, FLT_MAX);
-    b->position.Set(5.25f, 9.5f);
+    b->position = { 5.25f, 9.5f };
     world.Add(b);
     b++; body_s_count++;
 
     b->Set({ 13.0f, 0.25f }, FLT_MAX);
-    b->position.Set(2.0f, 7.0f);
+    b->position = { 2.0f, 7.0f };
     b->rotation = 0.25f;
     world.Add(b);
     b++; body_s_count++;
 
     b->Set({ 0.25f, 1.0f }, FLT_MAX);
-    b->position.Set(-5.25f, 5.5f);
+    b->position = { -5.25f, 5.5f };
     world.Add(b);
     b++; body_s_count++;
 
     b->Set({ 13.0f, 0.25f }, FLT_MAX);
-    b->position.Set(-2.0f, 3.0f);
+    b->position = { -2.0f, 3.0f };
     b->rotation = -0.25f;
     world.Add(b);
     b++; body_s_count++;
