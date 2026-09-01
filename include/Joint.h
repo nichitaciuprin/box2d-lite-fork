@@ -14,10 +14,12 @@ struct Joint
     float biasFactor;
     float softness;
 
-    Joint() : body1(0), body2(0), P(0.0f, 0.0f), biasFactor(0.2f), softness(0.0f) {}
-
     void Set(Body* b1, Body* b2, Vec2 anchor)
     {
+        P = { 0.0f, 0.0f };
+        softness = 0.0f;
+        biasFactor = 0.2f;
+
         body1 = b1;
         body2 = b2;
 
@@ -28,11 +30,6 @@ struct Joint
 
         localAnchor1 = Rot1T * (anchor - body1->position);
         localAnchor2 = Rot2T * (anchor - body2->position);
-
-        P = { 0.0f, 0.0f };
-
-        softness = 0.0f;
-        biasFactor = 0.2f;
     }
 };
 
