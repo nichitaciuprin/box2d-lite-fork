@@ -2,12 +2,6 @@
 
 typedef pair<ArbiterKey, Arbiter> ArbPair;
 
-struct Impulse
-{
-    Vec2 position;
-    Vec2 velocity;
-};
-
 struct World
 {
 public:
