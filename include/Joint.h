@@ -17,6 +17,7 @@ struct Joint
     void Set(Body* b1, Body* b2, Vec2 anchor)
     {
         P = { 0.0f, 0.0f };
+
         softness = 0.0f;
         biasFactor = 0.2f;
 
@@ -32,6 +33,28 @@ struct Joint
         localAnchor2 = Rot2T * (anchor - body2->position);
     }
 };
+
+Joint JointCreate(Body* b1, Body* b2, Vec2 anchor)
+{
+    Joint joint;
+
+    joint.P = { 0.0f, 0.0f };
+    joint.softness = 0.0f;
+    joint.biasFactor = 0.2f;
+
+    joint.body1 = b1;
+    joint.body2 = b2;
+
+    Mat22 Rot1 = Mat22(b1->rotation);
+    Mat22 Rot2 = Mat22(b2->rotation);
+    Mat22 Rot1T = Rot1.Transpose();
+    Mat22 Rot2T = Rot2.Transpose();
+
+    joint.localAnchor1 = Rot1T * (anchor - b1->position);
+    joint.localAnchor2 = Rot2T * (anchor - b2->position);
+
+    return joint;
+}
 
 void JointPreStep(Joint* joint, float dti)
 {
