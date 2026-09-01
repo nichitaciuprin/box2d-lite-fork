@@ -144,15 +144,15 @@ void LaunchBomb()
 
 void AddGround(Body* b)
 {
-    BodySet(b, { 100.0f, 20.0f }, FLT_MAX);
+    *b = BodyCreate({ 100.0f, 20.0f }, FLT_MAX);
     b->position = { 0.0f, b->scale.y * -0.5f };
     world.Add(b);
 }
 void AddBox(Vec2 coord)
 {
     auto b = &body_s[body_s_count];
-    // BodySet(b, { 1.0f, 1.0f }, 200.0f);
-    BodySet(b, { 1.0f, 1.0f }, 10.0f);
+    // *b = BodyCreate({ 1.0f, 1.0f }, 200.0f);
+    *b = BodyCreate({ 1.0f, 1.0f }, 10.0f);
     b->position = coord;
     world.Add(b);
     body_s_count++;
@@ -163,17 +163,17 @@ void Demo1(Body* b, Joint* j)
     // AddGround(b);
     // b++; body_s_count++;
 
-    // BodySet(b, { 1.0f, 1.0f }, 1.0f);
+    // *b = BodyCreate({ 1.0f, 1.0f }, 1.0f);
     // b->position = { 0.0f, 4.0f };
     // world.Add(b);
     // b++; body_s_count++;
 
-    BodySet(b, { 1.0f, 1.0f }, FLT_MAX);
+    *b = BodyCreate({ 1.0f, 1.0f }, FLT_MAX);
     b->position = { 0.0f, 0.0f };
     world.Add(b);
     b++; body_s_count++;
 
-    BodySet(b, { 0.5f, 0.5f }, 1.0f);
+    *b = BodyCreate({ 0.5f, 0.5f }, 1.0f);
     // b->position = { 0.60f, 0.0f };
     b->position = { -0.60f, 0.0f };
     b->rotation = -MATH_PI / 4;
@@ -188,7 +188,7 @@ void Demo2(Body* b, Joint* j)
     b++; body_s_count++;
 
     auto b2 = b;
-    BodySet(b2, { 1.0f, 1.0f }, 100.0f);
+    *b2 = BodyCreate({ 1.0f, 1.0f }, 100.0f);
     b2->friction = 0.2f;
     b2->position = { 9.0f, 11.0f };
     b2->rotation = 0.0f;
@@ -204,29 +204,29 @@ void Demo3(Body* b, Joint* j)
     AddGround(b);
     b++; body_s_count++;
 
-    BodySet(b, { 13.0f, 0.25f }, FLT_MAX);
+    *b = BodyCreate({ 13.0f, 0.25f }, FLT_MAX);
     b->position = { -2.0f, 11.0f };
     b->rotation = -0.25f;
     world.Add(b);
     b++; body_s_count++;
 
-    BodySet(b, { 0.25f, 1.0f }, FLT_MAX);
+    *b = BodyCreate({ 0.25f, 1.0f }, FLT_MAX);
     b->position = { 5.25f, 9.5f };
     world.Add(b);
     b++; body_s_count++;
 
-    BodySet(b, { 13.0f, 0.25f }, FLT_MAX);
+    *b = BodyCreate({ 13.0f, 0.25f }, FLT_MAX);
     b->position = { 2.0f, 7.0f };
     b->rotation = 0.25f;
     world.Add(b);
     b++; body_s_count++;
 
-    BodySet(b, { 0.25f, 1.0f }, FLT_MAX);
+    *b = BodyCreate({ 0.25f, 1.0f }, FLT_MAX);
     b->position = { -5.25f, 5.5f };
     world.Add(b);
     b++; body_s_count++;
 
-    BodySet(b, { 13.0f, 0.25f }, FLT_MAX);
+    *b = BodyCreate({ 13.0f, 0.25f }, FLT_MAX);
     b->position = { -2.0f, 3.0f };
     b->rotation = -0.25f;
     world.Add(b);
@@ -235,14 +235,14 @@ void Demo3(Body* b, Joint* j)
     float friction[5] = { 0.75f, 0.5f, 0.35f, 0.1f, 0.0f };
     for (int i = 0; i < 5; ++i)
     {
-        BodySet(b, { 0.5f, 0.5f }, 25.0f);
+        *b = BodyCreate({ 0.5f, 0.5f }, 25.0f);
         b->friction = friction[i];
         b->position = { -7.5f + 2.0f * i, 14.0f };
         world.Add(b);
         b++; body_s_count++;
     }
 
-    // BodySet(b, { 0.5f, 0.5f }, 25.0f);
+    // *b = BodyCreate({ 0.5f, 0.5f }, 25.0f);
     // b->friction = 100.75f;
     // b->position = { -7.5f + 2.0f, 14.0f };
     // world.Add(b);
@@ -255,7 +255,7 @@ void Demo4(Body* b, Joint* j)
 
     for (int i = 0; i < 10; ++i)
     {
-        BodySet(b, { 1.0f, 1.0f }, 1.0f);
+        *b = BodyCreate({ 1.0f, 1.0f }, 1.0f);
         b->friction = 0.2f;
         float x = Random(-0.1f, 0.1f);
         b->position = { x, 0.51f + 1.05f * i };
@@ -276,7 +276,7 @@ void Demo5(Body* b, Joint* j)
 
         for (int j = i; j < 12; j++)
         {
-            BodySet(b, { 1.0f, 1.0f }, 10.0f);
+            *b = BodyCreate({ 1.0f, 1.0f }, 10.0f);
             b->friction = 0.2f;
             b->position = y;
             world.Add(b);
@@ -295,25 +295,25 @@ void Demo6(Body* b, Joint* j)
     b++; body_s_count++;
 
     Body* b2 = b;
-    BodySet(b2, { 12.0f, 0.25f }, 100.0f);
+    *b2 = BodyCreate({ 12.0f, 0.25f }, 100.0f);
     b2->position = { 0.0f, 1.0f };
     world.Add(b2);
     b++; body_s_count++;
 
     Body* b3 = b;
-    BodySet(b3, { 0.5f, 0.5f }, 25.0f);
+    *b3 = BodyCreate({ 0.5f, 0.5f }, 25.0f);
     b3->position = { -5.0f, 2.0f };
     world.Add(b3);
     b++; body_s_count++;
 
     Body* b4 = b;
-    BodySet(b4, { 0.5f, 0.5f }, 25.0f);
+    *b4 = BodyCreate({ 0.5f, 0.5f }, 25.0f);
     b4->position = { -5.5f, 2.0f };
     world.Add(b4);
     b++; body_s_count++;
 
     Body* b5 = b;
-    BodySet(b5, { 1.0f, 1.0f }, 100.0f);
+    *b5 = BodyCreate({ 1.0f, 1.0f }, 100.0f);
     b5->position = { 5.5f, 15.0f };
     world.Add(b5);
     b++; body_s_count++;
@@ -333,7 +333,7 @@ void Demo7(Body* b, Joint* j)
 
     for (int i = 0; i < numPlanks; i++)
     {
-        BodySet(b, { 1.0f, 0.25f }, mass);
+        *b = BodyCreate({ 1.0f, 0.25f }, mass);
         b->friction = 0.2f;
         b->position = { -8.5f + 1.25f * i, 5.0f };
         world.Add(b);
@@ -379,34 +379,34 @@ void Demo8(Body* b, Joint* j)
     AddGround(b);
     b++; body_s_count++;
 
-    BodySet(b, { 12.0f, 0.5f }, FLT_MAX);
+    *b = BodyCreate({ 12.0f, 0.5f }, FLT_MAX);
     b->position = { -1.5f, 10.0f };
     world.Add(b);
     b++; body_s_count++;
 
     for (int i = 0; i < 10; ++i)
     {
-        BodySet(b, { 0.2f, 2.0f }, 10.0f);
+        *b = BodyCreate({ 0.2f, 2.0f }, 10.0f);
         b->position = { -6.0f + 1.0f * i, 11.125f };
         b->friction = 0.1f;
         world.Add(b);
         b++; body_s_count++;
     }
 
-    BodySet(b, { 14.0f, 0.5f }, FLT_MAX);
+    *b = BodyCreate({ 14.0f, 0.5f }, FLT_MAX);
     b->position = { 1.0f, 6.0f };
     b->rotation = 0.3f;
     world.Add(b);
     b++; body_s_count++;
 
     Body* b2 = b;
-    BodySet(b, { 0.5f, 3.0f }, FLT_MAX);
+    *b = BodyCreate({ 0.5f, 3.0f }, FLT_MAX);
     b->position = { -7.0f, 4.0f };
     world.Add(b);
     b++; body_s_count++;
 
     Body* b3 = b;
-    BodySet(b, { 12.0f, 0.25f }, 20.0f);
+    *b = BodyCreate({ 12.0f, 0.25f }, 20.0f);
     b->position = { -0.9f, 1.0f };
     world.Add(b);
     b++; body_s_count++;
@@ -416,7 +416,7 @@ void Demo8(Body* b, Joint* j)
     j++; joint_s_count++;
 
     Body* b4 = b;
-    BodySet(b, { 0.5f, 0.5f }, 10.0f);
+    *b = BodyCreate({ 0.5f, 0.5f }, 10.0f);
     b->position = { -10.0f, 15.0f };
     world.Add(b);
     b++; body_s_count++;
@@ -426,7 +426,7 @@ void Demo8(Body* b, Joint* j)
     j++; joint_s_count++;
 
     Body* b5 = b;
-    BodySet(b, { 2.0f, 2.0f }, 20.0f);
+    *b = BodyCreate({ 2.0f, 2.0f }, 20.0f);
     b->position = { 6.0f, 2.5f };
     b->friction = 0.1f;
     world.Add(b);
@@ -437,7 +437,7 @@ void Demo8(Body* b, Joint* j)
     j++; joint_s_count++;
 
     Body* b6 = b;
-    BodySet(b, { 2.0f, 0.2f }, 10.0f);
+    *b = BodyCreate({ 2.0f, 0.2f }, 10.0f);
     b->position = { 6.0f, 3.6f };
     world.Add(b);
     b++; body_s_count++;
@@ -475,7 +475,7 @@ void Demo9(Body* b, Joint* j)
 
     for (int i = 0; i < 15; i++)
     {
-        BodySet(b, { 0.75f, 0.25f }, mass);
+        *b = BodyCreate({ 0.75f, 0.25f }, mass);
         b->friction = 0.2f;
         b->position = { 0.5f + i, y };
         b->rotation = 0.0f;
