@@ -39,30 +39,8 @@ struct Vec2
 
     Vec2 operator + () { return Vec2(+x, +y); }
     Vec2 operator - () { return Vec2(-x, -y); }
-
-    void operator += (const Vec2& v)
-    {
-        x += v.x;
-        y += v.y;
-    }
-
-    void operator -= (const Vec2& v)
-    {
-        x -= v.x;
-        y -= v.y;
-    }
-
-    void operator *= (float a)
-    {
-        x *= a;
-        y *= a;
-    }
-
-    float Length() const
-    {
-        return sqrtf(x * x + y * y);
-    }
 };
+
 struct Mat22
 {
     Mat22() {}
@@ -158,6 +136,9 @@ inline float LengthSqrt(const Vec2& a)
 {
     return Dot(a, a);
 }
+
+inline void operator += (Vec2& l, Vec2 r) { l.x += r.x; l.y += r.y; };
+inline void operator -= (Vec2& l, Vec2 r) { l.x -= r.x; l.y -= r.y; };
 
 inline Vec2 operator * (const Mat22& A, const Vec2& v)
 {
