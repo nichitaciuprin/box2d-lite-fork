@@ -96,6 +96,14 @@ struct Body
     float inertia;
     float inertiaInv;
 };
+struct Arbiter
+{
+    Contact contacts[MAX_POINTS];
+    int numContacts;
+    Body* body1;
+    Body* body2;
+    float friction; // Combined friction
+};
 struct ArbiterKey
 {
     Body* body1;

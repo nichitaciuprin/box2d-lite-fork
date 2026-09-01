@@ -64,7 +64,7 @@ public:
         }
 
         {
-            for (auto& arbiter : arbiters) arbiter.second.PreStep(dti);
+            for (auto& arbiter : arbiters) ArbiterPreStep(arbiter.second, dti);
             for (auto& joint : joints) joint->PreStep(dti);
         }
         for (int i = 0; i < iterations; i++)
