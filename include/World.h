@@ -64,7 +64,7 @@ public:
         for (int i = 0; i < iterations; i++)
         {
             for (auto& arbiter : arbiters) ArbiterApplyImpulse(arbiter.second);
-            for (auto& joint : joints) joint->ApplyImpulse();
+            for (auto& joint : joints) JointApplyImpulse(joint);
         }
 
         for (auto& body : bodies)

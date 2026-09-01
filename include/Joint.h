@@ -34,22 +34,6 @@ struct Joint
         softness = 0.0f;
         biasFactor = 0.2f;
     }
-    void ApplyImpulse()
-    {
-        Vec2 dv = body2->velocityLinear + Cross(body2->velocityAngular, r2) - body1->velocityLinear - Cross(body1->velocityAngular, r1);
-
-        Vec2 impulse;
-
-        impulse = M * (bias - dv - softness * P);
-
-        body1->velocityLinear -= body1->massInv * impulse;
-        body1->velocityAngular -= body1->inertiaInv * Cross(r1, impulse);
-
-        body2->velocityLinear += body2->massInv * impulse;
-        body2->velocityAngular += body2->inertiaInv * Cross(r2, impulse);
-
-        P += impulse;
-    }
 };
 
 void JointPreStep(Joint* joint, float dti)
@@ -110,4 +94,18 @@ void JointPreStep(Joint* joint, float dti)
     {
         joint->P = { 0.0f, 0.0f };
     }
+}
+void JointApplyImpulse(Joint* joint)
+{
+    Vec2 dv = joint->body2->velocityLinear + Cross(joint->body2->velocityAngular, joint->r2) - joint->body1->velocityLinear - Cross(joint->body1->velocityAngular, joint->r1);
+
+    Vec2 impulse = joint->M * (joint->bias - dv - joint->softness * joint->P);
+
+    joint->body1->velocityLinear -= joint->body1->massInv * impulse;
+    joint->body1->velocityAngular -= joint->body1->inertiaInv * Cross(joint->r1, impulse);
+
+    joint->body2->velocityLinear += joint->body2->massInv * impulse;
+    joint->body2->velocityAngular += joint->body2->inertiaInv * Cross(joint->r2, impulse);
+
+    joint->P += impulse;
 }
