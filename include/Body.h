@@ -50,20 +50,19 @@ struct Body
 
         friction = 0.2f;
 
-        mass = mass_;
-
-        if (mass < FLT_MAX)
+        if (mass_ == FLT_MAX)
         {
-            massInv = 1.0f / mass;
-            inertia = mass * (scale.x * scale.x + scale.y * scale.y) / 12.0f;
-            inertiaInv = 1.0f / inertia;
-        }
-        else
-        {
+            mass = FLT_MAX;
             massInv = 0.0f;
             inertia = FLT_MAX;
             inertiaInv = 0.0f;
+            return;
         }
+
+        mass = mass_;
+        massInv = 1.0f / mass;
+        inertia = mass * (scale.x * scale.x + scale.y * scale.y) / 12.0f;
+        inertiaInv = 1.0f / inertia;
     }
     void AddForce(const Vec2& f)
     {
