@@ -89,7 +89,13 @@ private:
         Vec2 vel2 = b2->velocityLinear + RotateLeft(c->r2) * b2->velocityAngular;
         return vel2 - vel1;
     }
-    void UpdateVelocity(Contact* c, Body* b1, Body* b2, Vec2 impulse);
+    void UpdateVelocity(Contact* c, Body* b1, Body* b2, Vec2 impulse)
+    {
+        b1->velocityLinear -= impulse * b1->massInv;
+        b2->velocityLinear += impulse * b2->massInv;
+        b1->velocityAngular -= Cross(c->r1, impulse) * b1->inertiaInv;
+        b2->velocityAngular += Cross(c->r2, impulse) * b2->inertiaInv;
+    }
 };
 
 inline bool operator < (const ArbiterKey& a1, const ArbiterKey& a2)

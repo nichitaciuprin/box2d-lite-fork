@@ -22,14 +22,6 @@ Arbiter::Arbiter(Body* b1, Body* b2)
     friction = sqrtf(body1->friction * body2->friction);
 }
 
-void Arbiter::UpdateVelocity(Contact* c, Body* b1, Body* b2, Vec2 impulse)
-{
-    b1->velocityLinear -= impulse * b1->massInv;
-    b2->velocityLinear += impulse * b2->massInv;
-    b1->velocityAngular -= Cross(c->r1, impulse) * b1->inertiaInv;
-    b2->velocityAngular += Cross(c->r2, impulse) * b2->inertiaInv;
-}
-
 void Arbiter::PreStep(float dti)
 {
     for (int i = 0; i < numContacts; i++)
