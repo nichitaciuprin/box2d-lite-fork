@@ -9,6 +9,13 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 
+#include <vector>
+#include <map>
+
+using std::vector;
+using std::map;
+using std::pair;
+
 #include "Config.h"
 #include "MathUtils.h"
 #include "Body.h"

@@ -1,16 +1,6 @@
 #pragma once
 
-#include <vector>
-#include <map>
-
-using std::vector;
-using std::map;
-using std::pair;
-
 typedef pair<ArbiterKey, Arbiter> ArbPair;
-
-struct Body;
-struct Joint;
 
 struct Impulse
 {
@@ -144,8 +134,4 @@ public:
             *a_old = *a_new;
         }
     }
-
-
-private:
-    // void BroadPhase();
 };

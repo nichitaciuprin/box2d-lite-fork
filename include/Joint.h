@@ -1,9 +1,5 @@
 #pragma once
 
-#include "MathUtils.h"
-
-struct Body;
-
 struct Joint
 {
     Mat22 M;
