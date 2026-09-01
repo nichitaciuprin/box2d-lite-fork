@@ -130,7 +130,7 @@ void LaunchBomb()
     if (!bomb)
     {
         bomb = body_s + body_s_count;
-        BodySet(bomb, { 1.0f, 1.0f }, 50.0f);
+        *bomb = BodyCreate({ 1.0f, 1.0f }, 50.0f);
         bomb->friction = 0.2f;
         world.Add(bomb);
         body_s_count++;
