@@ -123,40 +123,29 @@ struct ArbiterKey
         }
     }
 };
-
-Body BodyCreate(Vec2 scale_, float mass_)
+struct Joint
 {
-    Body body;
+    Mat22 M;
+    Vec2 localAnchor1;
+    Vec2 localAnchor2;
+    Vec2 r1;
+    Vec2 r2;
+    Vec2 bias;
+    Vec2 P;		// accumulated impulse
+    Body* body1;
+    Body* body2;
+    float biasFactor;
+    float softness;
+};
 
-    body.position = { 0.0f, 0.0f };
-    body.rotation = 0.0f;
-    body.scale = scale_;
-
-    body.velocityLinear = { 0.0f, 0.0f };
-    body.velocityAngular = 0.0f;
-
-    body.force = { 0.0f, 0.0f };
-    body.torque = 0.0f;
-
-    body.friction = 0.2f;
-
-    if (mass_ == FLT_MAX)
-    {
-        body.mass = FLT_MAX;
-        body.massInv = 0.0f;
-        body.inertia = FLT_MAX;
-        body.inertiaInv = 0.0f;
-    }
-    else
-    {
-        body.mass = mass_;
-        body.massInv = 1.0f / body.mass;
-        body.inertia = body.mass * (body.scale.x * body.scale.x + body.scale.y * body.scale.y) / 12.0f;
-        body.inertiaInv = 1.0f / body.inertia;
-    }
-
-    return body;
+inline bool operator < (const ArbiterKey& a1, const ArbiterKey& a2)
+{
+    if (a1.body1 < a2.body1) return true;
+    if (a1.body1 > a2.body1) return false;
+    if (a1.body2 < a2.body2) return true;
+    return false;
 }
+
 void BodyAddForce(Body& body, Vec2 force_)
 {
     body.force += force_;
@@ -500,6 +489,135 @@ void ArbiterApplyImpulse(Arbiter& arb)
         }
     }
 }
+void JointPreStep(Joint* joint, float dti)
+{
+    // Pre-compute anchors, mass matrix, and bias.
+    Mat22 Rot1 = Mat22(joint->body1->rotation);
+    Mat22 Rot2 = Mat22(joint->body2->rotation);
+
+    joint->r1 = Rot1 * joint->localAnchor1;
+    joint->r2 = Rot2 * joint->localAnchor2;
+
+    // deltaV = deltaV0 + K * impulse
+    // invM = [(1/m1 + 1/m2) * eye(2) - skew(r1) * invI1 * skew(r1) - skew(r2) * invI2 * skew(r2)]
+    //      = [1/m1+1/m2     0    ] + invI1 * [r1.y*r1.y -r1.x*r1.y] + invI2 * [r1.y*r1.y -r1.x*r1.y]
+    //        [    0     1/m1+1/m2]           [-r1.x*r1.y r1.x*r1.x]           [-r1.x*r1.y r1.x*r1.x]
+
+    Mat22 K1;
+    K1.col1.x = joint->body1->massInv + joint->body2->massInv;
+    K1.col2.x = 0.0f;
+    K1.col1.y = 0.0f;
+    K1.col2.y = joint->body1->massInv + joint->body2->massInv;
+
+    Mat22 K2;
+    K2.col1.x =  joint->body1->inertiaInv * joint->r1.y * joint->r1.y;
+    K2.col2.x = -joint->body1->inertiaInv * joint->r1.x * joint->r1.y;
+    K2.col1.y = -joint->body1->inertiaInv * joint->r1.x * joint->r1.y;
+    K2.col2.y =  joint->body1->inertiaInv * joint->r1.x * joint->r1.x;
+
+    Mat22 K3;
+    K3.col1.x =  joint->body2->inertiaInv * joint->r2.y * joint->r2.y;
+    K3.col2.x = -joint->body2->inertiaInv * joint->r2.x * joint->r2.y;
+    K3.col1.y = -joint->body2->inertiaInv * joint->r2.x * joint->r2.y;
+    K3.col2.y =  joint->body2->inertiaInv * joint->r2.x * joint->r2.x;
+
+    Mat22 K = K1 + K2 + K3;
+    K.col1.x += joint->softness;
+    K.col2.y += joint->softness;
+
+    joint->M = K.Invert();
+
+    Vec2 p1 = joint->body1->position + joint->r1;
+    Vec2 p2 = joint->body2->position + joint->r2;
+    Vec2 dp = p2 - p1;
+
+    if (Config::positionCorrection)
+        joint->bias = -joint->biasFactor * dti * dp;
+    else
+        joint->bias = { 0.0f, 0.0f };
+
+    if (Config::warmStarting)
+    {
+        joint->body1->velocityLinear -= joint->P * joint->body1->massInv;
+        joint->body2->velocityLinear += joint->P * joint->body2->massInv;
+        joint->body1->velocityAngular -= Cross(joint->r1, joint->P) * joint->body1->inertiaInv;
+        joint->body2->velocityAngular += Cross(joint->r2, joint->P) * joint->body2->inertiaInv;
+    }
+    else
+    {
+        joint->P = { 0.0f, 0.0f };
+    }
+}
+void JointApplyImpulse(Joint* joint)
+{
+    Vec2 dv = joint->body2->velocityLinear + Cross(joint->body2->velocityAngular, joint->r2) - joint->body1->velocityLinear - Cross(joint->body1->velocityAngular, joint->r1);
+
+    Vec2 impulse = joint->M * (joint->bias - dv - joint->softness * joint->P);
+
+    joint->body1->velocityLinear -= joint->body1->massInv * impulse;
+    joint->body1->velocityAngular -= joint->body1->inertiaInv * Cross(joint->r1, impulse);
+
+    joint->body2->velocityLinear += joint->body2->massInv * impulse;
+    joint->body2->velocityAngular += joint->body2->inertiaInv * Cross(joint->r2, impulse);
+
+    joint->P += impulse;
+}
+
+Body BodyCreate(Vec2 scale_, float mass_)
+{
+    Body body;
+
+    body.position = { 0.0f, 0.0f };
+    body.rotation = 0.0f;
+    body.scale = scale_;
+
+    body.velocityLinear = { 0.0f, 0.0f };
+    body.velocityAngular = 0.0f;
+
+    body.force = { 0.0f, 0.0f };
+    body.torque = 0.0f;
+
+    body.friction = 0.2f;
+
+    if (mass_ == FLT_MAX)
+    {
+        body.mass = FLT_MAX;
+        body.massInv = 0.0f;
+        body.inertia = FLT_MAX;
+        body.inertiaInv = 0.0f;
+    }
+    else
+    {
+        body.mass = mass_;
+        body.massInv = 1.0f / body.mass;
+        body.inertia = body.mass * (body.scale.x * body.scale.x + body.scale.y * body.scale.y) / 12.0f;
+        body.inertiaInv = 1.0f / body.inertia;
+    }
+
+    return body;
+}
+Joint JointCreate(Body* b1, Body* b2, Vec2 anchor)
+{
+    Joint joint;
+
+    joint.P = { 0.0f, 0.0f };
+
+    joint.softness = 0.0f;
+    joint.biasFactor = 0.2f;
+
+    joint.body1 = b1;
+    joint.body2 = b2;
+
+    Mat22 Rot1 = Mat22(b1->rotation);
+    Mat22 Rot2 = Mat22(b2->rotation);
+    Mat22 Rot1T = Rot1.Transpose();
+    Mat22 Rot2T = Rot2.Transpose();
+
+    joint.localAnchor1 = Rot1T * (anchor - b1->position);
+    joint.localAnchor2 = Rot2T * (anchor - b2->position);
+
+    return joint;
+}
 Arbiter ArbiterCreate(Body* b1, Body* b2)
 {
     Arbiter arb;
@@ -521,15 +639,7 @@ Arbiter ArbiterCreate(Body* b1, Body* b2)
 
     return arb;
 }
-inline bool operator < (const ArbiterKey& a1, const ArbiterKey& a2)
-{
-    if (a1.body1 < a2.body1) return true;
-    if (a1.body1 > a2.body1) return false;
-    if (a1.body2 < a2.body2) return true;
-    return false;
-}
 
-#include "Joint.h"
 #include "World.h"
 
 namespace
