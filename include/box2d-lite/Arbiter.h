@@ -332,7 +332,24 @@ public:
     Body* body2;
     float friction; // Combined friction
 
-    Arbiter(Body* b1, Body* b2);
+    Arbiter(Body* b1, Body* b2)
+    {
+        if (b1 < b2)
+        {
+            body1 = b1;
+            body2 = b2;
+        }
+        else
+        {
+            body1 = b2;
+            body2 = b1;
+        }
+
+        numContacts = Collide(contacts, body1, body2);
+
+        friction = sqrtf(body1->friction * body2->friction);
+    }
+
     void PreStep(float dti)
     {
         for (int i = 0; i < numContacts; i++)
