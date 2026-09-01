@@ -18,7 +18,24 @@ struct Joint
 
     Joint() : body1(0), body2(0), P(0.0f, 0.0f), biasFactor(0.2f), softness(0.0f) {}
 
-    void Set(Body* body1, Body* body2, const Vec2& anchor);
+    void Set(Body* b1, Body* b2, const Vec2& anchor)
+    {
+        body1 = b1;
+        body2 = b2;
+
+        Mat22 Rot1(body1->rotation);
+        Mat22 Rot2(body2->rotation);
+        Mat22 Rot1T = Rot1.Transpose();
+        Mat22 Rot2T = Rot2.Transpose();
+
+        localAnchor1 = Rot1T * (anchor - body1->position);
+        localAnchor2 = Rot2T * (anchor - body2->position);
+
+        P.Set(0.0f, 0.0f);
+
+        softness = 0.0f;
+        biasFactor = 0.2f;
+    }
     void PreStep(float inv_dt)
     {
         // Pre-compute anchors, mass matrix, and bias.
@@ -72,7 +89,6 @@ struct Joint
             P = { 0.0f, 0.0f };
         }
     }
-
     void ApplyImpulse()
     {
         Vec2 dv = body2->velocityLinear + Cross(body2->velocityAngular, r2) - body1->velocityLinear - Cross(body1->velocityAngular, r1);

@@ -1,8 +1,7 @@
-set(BOX2D_SOURCE_FILES
-    Config.cpp
-	Joint.cpp)
+set(BOX2D_SOURCE_FILES Config.cpp)
 
 set(BOX2D_HEADER_FILES
+    ../include/box2d-lite/Config.h
 	../include/box2d-lite/Arbiter.h
 	../include/box2d-lite/Body.h
 	../include/box2d-lite/Joint.h
