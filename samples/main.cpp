@@ -138,7 +138,7 @@ void LaunchBomb()
 
     bomb->position = { Random(-15.0f, 15.0f), 15.0f };
     bomb->rotation = Random(-1.5f, 1.5f);
-    bomb->velocityLinear = -1.5f * bomb->position;
+    bomb->velocityLinear = bomb->position * -1.5f;
     bomb->velocityAngular = Random(-20.0f, 20.0f);
 }
 
@@ -151,7 +151,6 @@ void AddGround(Body* b)
 void AddBox(Vec2 coord)
 {
     auto b = &body_s[body_s_count];
-    // *b = BodyCreate({ 1.0f, 1.0f }, 200.0f);
     *b = BodyCreate({ 1.0f, 1.0f }, 10.0f);
     b->position = coord;
     world.Add(b);
