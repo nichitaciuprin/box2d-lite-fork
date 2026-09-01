@@ -1,7 +1,5 @@
 #pragma once
 
-struct Body;
-
 enum EdgeNumbers
 {
     NO_EDGE,
@@ -17,7 +15,6 @@ struct Edges
     char edge2in;
     char edge2out;
 };
-
 union FeaturePair
 {
     Edges e;
