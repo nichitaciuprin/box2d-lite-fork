@@ -59,7 +59,7 @@ public:
 
         {
             for (auto& arbiter : arbiters) ArbiterPreStep(arbiter.second, dti);
-            for (auto& joint : joints) joint->PreStep(dti);
+            for (auto& joint : joints) JointPreStep(joint, dti);
         }
         for (int i = 0; i < iterations; i++)
         {
