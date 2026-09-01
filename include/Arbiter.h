@@ -241,25 +241,6 @@ static int Collide(Contact* contacts, const Body* body1, const Body* body2)
     return numContacts;
 }
 
-struct ArbiterKey
-{
-    Body* body1;
-    Body* body2;
-
-    ArbiterKey(Body* b1, Body* b2)
-    {
-        if (b1 < b2)
-        {
-            body1 = b1;
-            body2 = b2;
-        }
-        else
-        {
-            body1 = b2;
-            body2 = b1;
-        }
-    }
-};
 struct Arbiter
 {
 public:
