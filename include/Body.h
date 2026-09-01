@@ -18,33 +18,39 @@ struct Body
 
     Body()
     {
-        position.Set(0.0f, 0.0f);
+        position = { 0.0f, 0.0f };
         rotation = 0.0f;
-        velocityLinear.Set(0.0f, 0.0f);
+        scale = { 1.0f, 1.0f };
+
+        velocityLinear = { 0.0f, 0.0f };
         velocityAngular = 0.0f;
-        force.Set(0.0f, 0.0f);
+
+        force = { 0.0f, 0.0f };
         torque = 0.0f;
+
         friction = 0.2f;
 
-        scale.Set(1.0f, 1.0f);
         mass = FLT_MAX;
         massInv = 0.0f;
         inertia = FLT_MAX;
         inertiaInv = 0.0f;
     }
 
-    void Set(const Vec2& w, float m)
+    void Set(const Vec2& scale_, float mass_)
     {
-        position.Set(0.0f, 0.0f);
+        position = { 0.0f, 0.0f };
         rotation = 0.0f;
-        velocityLinear.Set(0.0f, 0.0f);
+        scale = scale_;
+
+        velocityLinear = { 0.0f, 0.0f };
         velocityAngular = 0.0f;
-        force.Set(0.0f, 0.0f);
+
+        force = { 0.0f, 0.0f };
         torque = 0.0f;
+
         friction = 0.2f;
 
-        scale = w;
-        mass = m;
+        mass = mass_;
 
         if (mass < FLT_MAX)
         {
