@@ -18,8 +18,6 @@
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 #define PANIC { fprintf(stderr, "\033[91mPANIC %s:%d \n\033[0m" , __FILENAME__, __LINE__); _Exit(-1); }
 
-static constexpr int MAX_POINTS = 2;
-
 #define MATH_PI 3.14159265358979323846f
 
 struct Vec2
@@ -163,7 +161,7 @@ inline Vec2 operator + (Vec2 l, Vec2 r) { return { l.x + r.x, l.y + r.y }; }
 inline Vec2 operator - (Vec2 l, Vec2 r) { return { l.x - r.x, l.y - r.y }; }
 
 inline Vec2 operator * (Vec2 l, float r) { return { l.x * r, l.y * r }; }
-inline Vec2 operator * (float l, Vec2 r) { return { l * r.x, l * r.y }; }
+inline Vec2 operator / (Vec2 l, float r) { return { l.x / r, l.y / r }; }
 
 inline Vec2 operator * (Mat22 l, Vec2 r) { return { l.col1.x * r.x + l.col2.x * r.y, l.col1.y * r.x + l.col2.y * r.y }; }
 

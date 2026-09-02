@@ -33,6 +33,8 @@ using std::pair;
 //   v3 ------ v4
 //        e3
 
+static constexpr int MAX_POINTS = 2;
+
 enum EdgeNumbers
 {
     NO_EDGE,
@@ -532,7 +534,7 @@ void JointPreStep(Joint* joint, float dti)
     Vec2 dp = p2 - p1;
 
     if (Config::positionCorrection)
-        joint->bias = -joint->biasFactor * dti * dp;
+        joint->bias = dp * -joint->biasFactor * dti;
     else
         joint->bias = { 0.0f, 0.0f };
 
@@ -552,13 +554,13 @@ void JointApplyImpulse(Joint* joint)
 {
     Vec2 dv = joint->body2->velocityLinear + Cross(joint->body2->velocityAngular, joint->r2) - joint->body1->velocityLinear - Cross(joint->body1->velocityAngular, joint->r1);
 
-    Vec2 impulse = joint->M * (joint->bias - dv - joint->softness * joint->P);
+    Vec2 impulse = joint->M * (joint->bias - dv - joint->P * joint->softness);
 
-    joint->body1->velocityLinear -= joint->body1->massInv * impulse;
-    joint->body1->velocityAngular -= joint->body1->inertiaInv * Cross(joint->r1, impulse);
+    joint->body1->velocityLinear -= impulse * joint->body1->massInv;
+    joint->body1->velocityAngular -= Cross(joint->r1, impulse) * joint->body1->inertiaInv;
 
-    joint->body2->velocityLinear += joint->body2->massInv * impulse;
-    joint->body2->velocityAngular += joint->body2->inertiaInv * Cross(joint->r2, impulse);
+    joint->body2->velocityLinear += impulse * joint->body2->massInv;
+    joint->body2->velocityAngular += Cross(joint->r2, impulse) * joint->body2->inertiaInv;
 
     joint->P += impulse;
 }
@@ -677,7 +679,7 @@ namespace
     int selectedBodyIndex = -1;
     Vec2 selectedBodyPoint;
 
-    World world(gravity, iterations);
+    World world = World(gravity, iterations);
 }
 
 void LaunchBomb()
@@ -1280,14 +1282,14 @@ void DrawLine(Vec2 p0, Vec2 p1)
 }
 void DrawBody(Body* body, bool selected)
 {
-    Mat22 R = FromAngle(body->rotation);
+    Mat22 r = FromAngle(body->rotation);
     Vec2 p = body->position;
-    Vec2 h = 0.5f * body->scale;
+    Vec2 h = body->scale * 0.5f;
 
-    Vec2 v1 = p + R * (Vec2){ -h.x, -h.y };
-    Vec2 v2 = p + R * (Vec2){ +h.x, -h.y };
-    Vec2 v3 = p + R * (Vec2){ +h.x, +h.y };
-    Vec2 v4 = p + R * (Vec2){ -h.x, +h.y };
+    Vec2 v1 = p + r * (Vec2){ -h.x, -h.y };
+    Vec2 v2 = p + r * (Vec2){ +h.x, -h.y };
+    Vec2 v3 = p + r * (Vec2){ +h.x, +h.y };
+    Vec2 v4 = p + r * (Vec2){ -h.x, +h.y };
 
     if (selected)          glColor3f(1.0f, 0.0f, 0.0f);
     else if (body == bomb) glColor3f(0.4f, 0.9f, 0.4f);
