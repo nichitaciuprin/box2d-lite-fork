@@ -27,9 +27,6 @@ const float k_pi = 3.14159265358979323846264f;
 struct Vec2
 {
     float x, y;
-
-    Vec2 operator + () { return { +x, +y }; }
-    Vec2 operator - () { return { -x, -y }; }
 };
 
 struct Mat22
@@ -127,6 +124,9 @@ inline float LengthSqrt(const Vec2& a)
 {
     return Dot(a, a);
 }
+
+static inline Vec2 operator + (Vec2 r) { return { +r.x, +r.y }; }
+static inline Vec2 operator - (Vec2 r) { return { -r.x, -r.y }; }
 
 inline void operator += (Vec2& l, Vec2 r) { l.x += r.x; l.y += r.y; };
 inline void operator -= (Vec2& l, Vec2 r) { l.x -= r.x; l.y -= r.y; };
