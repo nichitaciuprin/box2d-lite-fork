@@ -41,11 +41,6 @@ struct Mat22
     }
 
     Mat22(Vec2 col1, Vec2 col2) : col1(col1), col2(col2) {}
-
-    Mat22 Transpose() const
-    {
-        return Mat22({ col1.x, col2.x }, { col1.y, col2.y });
-    }
 };
 
 struct OrientedRectangle
@@ -143,6 +138,10 @@ inline float LengthSqrt(Vec2 a)
 inline Mat22 Abs(Mat22 A)
 {
     return Mat22(Abs(A.col1), Abs(A.col2));
+}
+inline Mat22 Transpose(Mat22 m)
+{
+    return { { m.col1.x, m.col2.x }, { m.col1.y, m.col2.y } };
 }
 inline Mat22 Invert(Mat22 m)
 {

@@ -156,7 +156,7 @@ void ComputeIncidentEdge(const Body* body, Vec2 normal, ClipVertex& v0, ClipVert
     Vec2 scaleh = body->scale * 0.5f;
     Mat22 rot = Mat22(body->rotation);
 
-    normal = rot.Transpose() * normal;
+    normal = Transpose(rot) * normal;
 
     if (Abs(normal.x) > Abs(normal.y))
     {
@@ -241,12 +241,12 @@ bool Sat(const Body* body1, const Body* body2, Vec2& normal, float& dist, Axis& 
     Vec2 scale2 = body2->scale * 0.5f;
     Mat22 rot1 = Mat22(body1->rotation);
     Mat22 rot2 = Mat22(body2->rotation);
-    Mat22 rot1i = rot1.Transpose();
-    Mat22 rot2i = rot2.Transpose();
+    Mat22 rot1i = Transpose(rot1);
+    Mat22 rot2i = Transpose(rot2);
     Vec2 d1 = rot1i * (pos2 - pos1);
     Vec2 d2 = rot2i * (pos2 - pos1);
     Mat22 rotc = Abs(rot1i * rot2);
-    Mat22 rotci = rotc.Transpose();
+    Mat22 rotci = Transpose(rotc);
     Vec2 face1 = Abs(d1) - scale1 - rotc  * scale2;
     Vec2 face2 = Abs(d2) - scale2 - rotci * scale1;
 
@@ -610,8 +610,8 @@ Joint JointCreate(Body* b1, Body* b2, Vec2 anchor)
 
     Mat22 Rot1 = Mat22(b1->rotation);
     Mat22 Rot2 = Mat22(b2->rotation);
-    Mat22 Rot1T = Rot1.Transpose();
-    Mat22 Rot2T = Rot2.Transpose();
+    Mat22 Rot1T = Transpose(Rot1);
+    Mat22 Rot2T = Transpose(Rot2);
 
     joint.localAnchor1 = Rot1T * (anchor - b1->position);
     joint.localAnchor2 = Rot2T * (anchor - b2->position);
