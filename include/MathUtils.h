@@ -128,10 +128,10 @@ inline float LengthSqrt(const Vec2& a)
 inline Vec2 operator + (Vec2 r) { return { +r.x, +r.y }; }
 inline Vec2 operator - (Vec2 r) { return { -r.x, -r.y }; }
 
-inline Vec2 operator + (const Vec2& a, const Vec2& b) { return { a.x + b.x, a.y + b.y }; };
-inline Vec2 operator - (const Vec2& a, const Vec2& b) { return { a.x - b.x, a.y - b.y }; };
-inline Vec2 operator * (float s, const Vec2& v) { return { s * v.x, s * v.y }; };
-inline Vec2 operator * (const Vec2& v, float s) { return { v.x * s, v.y * s }; }
+inline Vec2 operator + (Vec2 a, Vec2 b) { return { a.x + b.x, a.y + b.y }; }
+inline Vec2 operator - (Vec2 a, Vec2 b) { return { a.x - b.x, a.y - b.y }; }
+inline Vec2 operator * (Vec2 v, float s) { return { v.x * s, v.y * s }; }
+inline Vec2 operator * (float s, Vec2 v) { return { s * v.x, s * v.y }; }
 
 inline Vec2 operator * (const Mat22& A, const Vec2& v) { return { A.col1.x * v.x + A.col2.x * v.y, A.col1.y * v.x + A.col2.y * v.y }; }
 
