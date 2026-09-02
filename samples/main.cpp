@@ -899,7 +899,7 @@ void Demo7(Body* b, Joint* j)
     float dampingRatio = 0.7f;
 
     // frequency in radians
-    float omega = 2.0f * k_pi * frequencyHz;
+    float omega = 2.0f * MATH_PI * frequencyHz;
 
     // damping coefficient
     float d = 2.0f * mass * dampingRatio * omega;
@@ -1013,7 +1013,7 @@ void Demo9(Body* b, Joint* j)
     float dampingRatio = 0.7f;
 
     // frequency in radians
-    float omega = 2.0f * k_pi * frequencyHz;
+    float omega = 2.0f * MATH_PI * frequencyHz;
 
     // damping coefficient
     float d = 2.0f * mass * dampingRatio * omega;

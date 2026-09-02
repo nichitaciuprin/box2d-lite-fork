@@ -22,8 +22,6 @@ static constexpr int MAX_POINTS = 2;
 
 #define MATH_PI 3.14159265358979323846f
 
-const float k_pi = 3.14159265358979323846264f;
-
 struct Vec2
 {
     float x, y;
