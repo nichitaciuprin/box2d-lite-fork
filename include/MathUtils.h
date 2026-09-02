@@ -28,9 +28,6 @@ struct Vec2
 {
     float x, y;
 
-    Vec2() {}
-    Vec2(float x, float y) : x(x), y(y) {}
-
     Vec2 operator + () { return { +x, +y }; }
     Vec2 operator - () { return { -x, -y }; }
 };
@@ -49,7 +46,7 @@ struct Mat22
 
     Mat22 Transpose() const
     {
-        return Mat22(Vec2(col1.x, col2.x), Vec2(col1.y, col2.y));
+        return Mat22({ col1.x, col2.x }, { col1.y, col2.y });
     }
 
     Mat22 Invert() const
@@ -151,7 +148,7 @@ inline Vec2 operator * (const Vec2& v, float s)
     return { v.x * s, v.y * s };
 }
 
-inline Vec2 operator * (const Mat22& A, const Vec2& v) { return Vec2(A.col1.x * v.x + A.col2.x * v.y, A.col1.y * v.x + A.col2.y * v.y); }
+inline Vec2 operator * (const Mat22& A, const Vec2& v) { return { A.col1.x * v.x + A.col2.x * v.y, A.col1.y * v.x + A.col2.y * v.y }; }
 
 inline Mat22 operator + (const Mat22& A, const Mat22& B) { return Mat22(A.col1 + B.col1, A.col2 + B.col2); }
 inline Mat22 operator * (const Mat22& A, const Mat22& B) { return Mat22(A * B.col1, A * B.col2); }
@@ -162,7 +159,7 @@ inline float Abs(float a)
 }
 inline Vec2 Abs(const Vec2& a)
 {
-    return Vec2(fabsf(a.x), fabsf(a.y));
+    return { fabsf(a.x), fabsf(a.y) };
 }
 inline Mat22 Abs(const Mat22& A)
 {
