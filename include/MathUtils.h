@@ -174,10 +174,10 @@ inline Vec2 operator - (Vec2 a, Vec2 b) { return { a.x - b.x, a.y - b.y }; }
 inline Vec2 operator * (Vec2 v, float s) { return { v.x * s, v.y * s }; }
 inline Vec2 operator * (float s, Vec2 v) { return { s * v.x, s * v.y }; }
 
-inline Vec2 operator * (const Mat22& A, const Vec2& v) { return { A.col1.x * v.x + A.col2.x * v.y, A.col1.y * v.x + A.col2.y * v.y }; }
+inline Vec2 operator * (Mat22 A, Vec2 v) { return { A.col1.x * v.x + A.col2.x * v.y, A.col1.y * v.x + A.col2.y * v.y }; }
 
-inline Mat22 operator + (const Mat22& A, const Mat22& B) { return Mat22(A.col1 + B.col1, A.col2 + B.col2); }
-inline Mat22 operator * (const Mat22& A, const Mat22& B) { return Mat22(A * B.col1, A * B.col2); }
+inline Mat22 operator + (Mat22 A, Mat22 B) { return Mat22(A.col1 + B.col1, A.col2 + B.col2); }
+inline Mat22 operator * (Mat22 A, Mat22 B) { return Mat22(A * B.col1, A * B.col2); }
 
 inline void operator += (Vec2& l, Vec2 r) { l.x += r.x; l.y += r.y; };
 inline void operator -= (Vec2& l, Vec2 r) { l.x -= r.x; l.y -= r.y; };
