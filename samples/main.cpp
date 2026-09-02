@@ -837,10 +837,10 @@ void Demo5(Body* b, Joint* j)
             world.Add(b);
             b++; body_s_count++;
 
-            y += Vec2(1.125f, 0.0f);
+            y += { 1.125f, 0.0f };
         }
 
-        x += Vec2(0.5625f, 2.0f);
+        x += { 0.5625f, 2.0f };
     }
 }
 void Demo6(Body* b, Joint* j)
@@ -1284,10 +1284,10 @@ void DrawBody(Body* body, bool selected)
     Vec2 p = body->position;
     Vec2 h = 0.5f * body->scale;
 
-    Vec2 v1 = p + R * Vec2(-h.x, -h.y);
-    Vec2 v2 = p + R * Vec2(+h.x, -h.y);
-    Vec2 v3 = p + R * Vec2(+h.x, +h.y);
-    Vec2 v4 = p + R * Vec2(-h.x, +h.y);
+    Vec2 v1 = p + R * (Vec2){ -h.x, -h.y };
+    Vec2 v2 = p + R * (Vec2){ +h.x, -h.y };
+    Vec2 v3 = p + R * (Vec2){ +h.x, +h.y };
+    Vec2 v4 = p + R * (Vec2){ -h.x, +h.y };
 
     if (selected)          glColor3f(1.0f, 0.0f, 0.0f);
     else if (body == bomb) glColor3f(0.4f, 0.9f, 0.4f);

@@ -31,14 +31,8 @@ struct Vec2
     Vec2() {}
     Vec2(float x, float y) : x(x), y(y) {}
 
-    // void Set(float x_, float y_)
-    // {
-    //     x = x_;
-    //     y = y_;
-    // }
-
-    Vec2 operator + () { return Vec2(+x, +y); }
-    Vec2 operator - () { return Vec2(-x, -y); }
+    Vec2 operator + () { return { +x, +y }; }
+    Vec2 operator - () { return { -x, -y }; }
 };
 
 struct Mat22
@@ -118,19 +112,19 @@ inline float Cross(const Vec2& a, const Vec2& b)
 }
 inline Vec2 Cross(const Vec2& a, float s)
 {
-    return Vec2(s * a.y, -s * a.x);
+    return { s * a.y, -s * a.x };
 }
 inline Vec2 Cross(float s, const Vec2& a)
 {
-    return Vec2(-s * a.y, s * a.x);
+    return { -s * a.y, s * a.x };
 }
 inline Vec2 RotateLeft(const Vec2& a)
 {
-    return Vec2(-a.y, +a.x);
+    return { -a.y, +a.x };
 }
 inline Vec2 RotateRight(const Vec2& a)
 {
-    return Vec2(+a.y, -a.x);
+    return { +a.y, -a.x };
 }
 inline float LengthSqrt(const Vec2& a)
 {
@@ -140,35 +134,27 @@ inline float LengthSqrt(const Vec2& a)
 inline void operator += (Vec2& l, Vec2 r) { l.x += r.x; l.y += r.y; };
 inline void operator -= (Vec2& l, Vec2 r) { l.x -= r.x; l.y -= r.y; };
 
-inline Vec2 operator * (const Mat22& A, const Vec2& v)
-{
-    return Vec2(A.col1.x * v.x + A.col2.x * v.y, A.col1.y * v.x + A.col2.y * v.y);
-}
 inline Vec2 operator + (const Vec2& a, const Vec2& b)
 {
-    return Vec2(a.x + b.x, a.y + b.y);
+    return { a.x + b.x, a.y + b.y };
 }
 inline Vec2 operator - (const Vec2& a, const Vec2& b)
 {
-    return Vec2(a.x - b.x, a.y - b.y);
+    return { a.x - b.x, a.y - b.y };
 }
 inline Vec2 operator * (float s, const Vec2& v)
 {
-    return Vec2(s * v.x, s * v.y);
+    return { s * v.x, s * v.y };
 }
 inline Vec2 operator * (const Vec2& v, float s)
 {
-    return Vec2(v.x * s, v.y * s);
+    return { v.x * s, v.y * s };
 }
 
-inline Mat22 operator + (const Mat22& A, const Mat22& B)
-{
-    return Mat22(A.col1 + B.col1, A.col2 + B.col2);
-}
-inline Mat22 operator * (const Mat22& A, const Mat22& B)
-{
-    return Mat22(A * B.col1, A * B.col2);
-}
+inline Vec2 operator * (const Mat22& A, const Vec2& v) { return Vec2(A.col1.x * v.x + A.col2.x * v.y, A.col1.y * v.x + A.col2.y * v.y); }
+
+inline Mat22 operator + (const Mat22& A, const Mat22& B) { return Mat22(A.col1 + B.col1, A.col2 + B.col2); }
+inline Mat22 operator * (const Mat22& A, const Mat22& B) { return Mat22(A * B.col1, A * B.col2); }
 
 inline float Abs(float a)
 {
