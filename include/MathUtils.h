@@ -46,27 +46,6 @@ struct Mat22
     {
         return Mat22({ col1.x, col2.x }, { col1.y, col2.y });
     }
-
-    Mat22 Invert() const
-    {
-        Mat22 m;
-
-        float a = col1.x;
-        float b = col2.x;
-        float c = col1.y;
-        float d = col2.y;
-
-        float det = a * d - b * c;
-        assert(det != 0.0f);
-        float deti = 1.0f / det;
-
-        m.col1.x =  deti * d;
-        m.col2.x = -deti * b;
-        m.col1.y = -deti * c;
-        m.col2.y =  deti * a;
-
-        return m;
-    }
 };
 
 struct OrientedRectangle
@@ -164,6 +143,24 @@ inline float LengthSqrt(Vec2 a)
 inline Mat22 Abs(Mat22 A)
 {
     return Mat22(Abs(A.col1), Abs(A.col2));
+}
+inline Mat22 Invert(Mat22 m)
+{
+    float a = m.col1.x;
+    float b = m.col2.x;
+    float c = m.col1.y;
+    float d = m.col2.y;
+
+    float det = a * d - b * c;
+    assert(det != 0.0f);
+    float deti = 1.0f / det;
+
+    m.col1.x =  deti * d;
+    m.col2.x = -deti * b;
+    m.col1.y = -deti * c;
+    m.col2.y =  deti * a;
+
+    return m;
 }
 
 inline Vec2 operator + (Vec2 r) { return { +r.x, +r.y }; }

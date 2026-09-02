@@ -525,7 +525,7 @@ void JointPreStep(Joint* joint, float dti)
     K.col1.x += joint->softness;
     K.col2.y += joint->softness;
 
-    joint->M = K.Invert();
+    joint->M = Invert(K);
 
     Vec2 p1 = joint->body1->position + joint->r1;
     Vec2 p2 = joint->body2->position + joint->r2;
