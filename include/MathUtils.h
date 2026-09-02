@@ -33,12 +33,6 @@ struct Mat22
     Vec2 col1, col2;
 
     Mat22() {}
-    Mat22(float angle)
-    {
-        float c = cosf(angle), s = sinf(angle);
-        col1.x = c; col2.x = -s;
-        col1.y = s; col2.y = c;
-    }
 
     Mat22(Vec2 col1, Vec2 col2) : col1(col1), col2(col2) {}
 };

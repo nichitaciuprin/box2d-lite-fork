@@ -1280,7 +1280,7 @@ void DrawLine(Vec2 p0, Vec2 p1)
 }
 void DrawBody(Body* body, bool selected)
 {
-    Mat22 R(body->rotation);
+    Mat22 R = FromAngle(body->rotation);
     Vec2 p = body->position;
     Vec2 h = 0.5f * body->scale;
 
@@ -1305,8 +1305,8 @@ void DrawJoint(Joint* joint)
     Body* b1 = joint->body1;
     Body* b2 = joint->body2;
 
-    Mat22 R1(b1->rotation);
-    Mat22 R2(b2->rotation);
+    Mat22 R1 = FromAngle(b1->rotation);
+    Mat22 R2 = FromAngle(b2->rotation);
 
     Vec2 x1 = b1->position;
     Vec2 p1 = x1 + R1 * joint->localAnchor1;
