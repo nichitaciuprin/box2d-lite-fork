@@ -159,16 +159,16 @@ inline Mat22 FromAngle(float rad)
 inline Vec2 operator + (Vec2 r) { return { +r.x, +r.y }; }
 inline Vec2 operator - (Vec2 r) { return { -r.x, -r.y }; }
 
-inline Vec2 operator + (Vec2 a, Vec2 b) { return { a.x + b.x, a.y + b.y }; }
-inline Vec2 operator - (Vec2 a, Vec2 b) { return { a.x - b.x, a.y - b.y }; }
+inline Vec2 operator + (Vec2 l, Vec2 r) { return { l.x + r.x, l.y + r.y }; }
+inline Vec2 operator - (Vec2 l, Vec2 r) { return { l.x - r.x, l.y - r.y }; }
 
 inline Vec2 operator * (Vec2 l, float r) { return { l.x * r, l.y * r }; }
 inline Vec2 operator * (float l, Vec2 r) { return { l * r.x, l * r.y }; }
 
-inline Vec2 operator * (Mat22 A, Vec2 v) { return { A.col1.x * v.x + A.col2.x * v.y, A.col1.y * v.x + A.col2.y * v.y }; }
+inline Vec2 operator * (Mat22 l, Vec2 r) { return { l.col1.x * r.x + l.col2.x * r.y, l.col1.y * r.x + l.col2.y * r.y }; }
 
-inline Mat22 operator + (Mat22 A, Mat22 B) { return { A.col1 + B.col1, A.col2 + B.col2 }; }
-inline Mat22 operator * (Mat22 A, Mat22 B) { return { A * B.col1, A * B.col2 }; }
+inline Mat22 operator + (Mat22 l, Mat22 r) { return { l.col1 + r.col1, l.col2 + r.col2 }; }
+inline Mat22 operator * (Mat22 l, Mat22 r) { return { l * r.col1, l * r.col2 }; }
 
 inline void operator += (Vec2& l, Vec2 r) { l.x += r.x; l.y += r.y; };
 inline void operator -= (Vec2& l, Vec2 r) { l.x -= r.x; l.y -= r.y; };
@@ -181,11 +181,11 @@ inline float Random()
     r = 2.0f * r - 1.0f;
     return r;
 }
-inline float Random(float lo, float hi)
+inline float Random(float min, float max)
 {
     float r = (float)rand();
     r /= RAND_MAX;
-    r = (hi - lo) * r + lo;
+    r = (max - min) * r + min;
     return r;
 }
 
