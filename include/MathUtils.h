@@ -31,10 +31,6 @@ struct Vec2
 struct Mat22
 {
     Vec2 col1, col2;
-
-    Mat22() {}
-
-    Mat22(Vec2 col1, Vec2 col2) : col1(col1), col2(col2) {}
 };
 
 struct OrientedRectangle
@@ -131,7 +127,7 @@ inline float LengthSqrt(Vec2 a)
 
 inline Mat22 Abs(Mat22 A)
 {
-    return Mat22(Abs(A.col1), Abs(A.col2));
+    return { Abs(A.col1), Abs(A.col2) };
 }
 inline Mat22 Transpose(Mat22 m)
 {
@@ -172,8 +168,8 @@ inline Vec2 operator * (float s, Vec2 v) { return { s * v.x, s * v.y }; }
 
 inline Vec2 operator * (Mat22 A, Vec2 v) { return { A.col1.x * v.x + A.col2.x * v.y, A.col1.y * v.x + A.col2.y * v.y }; }
 
-inline Mat22 operator + (Mat22 A, Mat22 B) { return Mat22(A.col1 + B.col1, A.col2 + B.col2); }
-inline Mat22 operator * (Mat22 A, Mat22 B) { return Mat22(A * B.col1, A * B.col2); }
+inline Mat22 operator + (Mat22 A, Mat22 B) { return { A.col1 + B.col1, A.col2 + B.col2 }; }
+inline Mat22 operator * (Mat22 A, Mat22 B) { return { A * B.col1, A * B.col2 }; }
 
 inline void operator += (Vec2& l, Vec2 r) { l.x += r.x; l.y += r.y; };
 inline void operator -= (Vec2& l, Vec2 r) { l.x -= r.x; l.y -= r.y; };
