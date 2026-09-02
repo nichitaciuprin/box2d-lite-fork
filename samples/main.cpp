@@ -16,8 +16,8 @@ using std::vector;
 using std::map;
 using std::pair;
 
-#include "Config.h"
 #include "MathUtils.h"
+#include "Config.h"
 
 // box schema
 //
@@ -664,8 +664,9 @@ namespace
 
     int demoIndex = 0;
 
-    Vec2 gravity = { 0.0f, -10.0f };
-    int iterations = 10;
+    // Vec2 gravity = { 0.0f, -10.0f };
+    // int iterations = 10;
+
     Body body_s[200];
     Joint joint_s[100];
     int body_s_count = 0;
@@ -679,7 +680,7 @@ namespace
     int selectedBodyIndex = -1;
     Vec2 selectedBodyPoint;
 
-    World world = World(gravity, iterations);
+    World world = World(Config::gravity, Config::iterations);
 }
 
 void LaunchBomb()
