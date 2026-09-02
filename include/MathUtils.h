@@ -28,9 +28,10 @@ struct Vec2
 {
     float x, y;
 };
-
 struct Mat22
 {
+    Vec2 col1, col2;
+
     Mat22() {}
     Mat22(float angle)
     {
@@ -39,7 +40,7 @@ struct Mat22
         col1.y = s; col2.y = c;
     }
 
-    Mat22(const Vec2& col1, const Vec2& col2) : col1(col1), col2(col2) {}
+    Mat22(Vec2 col1, Vec2 col2) : col1(col1), col2(col2) {}
 
     Mat22 Transpose() const
     {
@@ -48,18 +49,26 @@ struct Mat22
 
     Mat22 Invert() const
     {
-        float a = col1.x, b = col2.x, c = col1.y, d = col2.y;
-        Mat22 B;
+        Mat22 m;
+
+        float a = col1.x;
+        float b = col2.x;
+        float c = col1.y;
+        float d = col2.y;
+
         float det = a * d - b * c;
         assert(det != 0.0f);
-        det = 1.0f / det;
-        B.col1.x =  det * d;	B.col2.x = -det * b;
-        B.col1.y = -det * c;	B.col2.y =  det * a;
-        return B;
-    }
+        float deti = 1.0f / det;
 
-    Vec2 col1, col2;
+        m.col1.x =  deti * d;
+        m.col2.x = -deti * b;
+        m.col1.y = -deti * c;
+        m.col2.y =  deti * a;
+
+        return m;
+    }
 };
+
 struct OrientedRectangle
 {
     Vec2 position;
@@ -80,78 +89,9 @@ inline void PrintVec2(Vec2 v)
     printf("{ %f, %f }\n", v.x, v.y);
 }
 
-inline float Lerp(float a, float b, float t)
-{
-    return a + (b - a) * t;
-}
-inline float LerpInverse(float a, float b, float x)
-{
-    return (x - a) / (b - a);
-}
-inline Vec2 Lerp(Vec2 a, Vec2 b, float t)
-{
-    a.x = Lerp(a.x, b.x, t);
-    a.y = Lerp(a.y, b.y, t);
-    return a;
-}
-
-
-inline float Dot(const Vec2& a, const Vec2& b)
-{
-    return a.x * b.x + a.y * b.y;
-}
-inline float Cross(const Vec2& a, const Vec2& b)
-{
-    return a.x * b.y - a.y * b.x;
-}
-inline Vec2 Cross(const Vec2& a, float s)
-{
-    return { s * a.y, -s * a.x };
-}
-inline Vec2 Cross(float s, const Vec2& a)
-{
-    return { -s * a.y, s * a.x };
-}
-inline Vec2 RotateLeft(const Vec2& a)
-{
-    return { -a.y, +a.x };
-}
-inline Vec2 RotateRight(const Vec2& a)
-{
-    return { +a.y, -a.x };
-}
-inline float LengthSqrt(const Vec2& a)
-{
-    return Dot(a, a);
-}
-
-inline Vec2 operator + (Vec2 r) { return { +r.x, +r.y }; }
-inline Vec2 operator - (Vec2 r) { return { -r.x, -r.y }; }
-
-inline Vec2 operator + (Vec2 a, Vec2 b) { return { a.x + b.x, a.y + b.y }; }
-inline Vec2 operator - (Vec2 a, Vec2 b) { return { a.x - b.x, a.y - b.y }; }
-inline Vec2 operator * (Vec2 v, float s) { return { v.x * s, v.y * s }; }
-inline Vec2 operator * (float s, Vec2 v) { return { s * v.x, s * v.y }; }
-
-inline Vec2 operator * (const Mat22& A, const Vec2& v) { return { A.col1.x * v.x + A.col2.x * v.y, A.col1.y * v.x + A.col2.y * v.y }; }
-
-inline Mat22 operator + (const Mat22& A, const Mat22& B) { return Mat22(A.col1 + B.col1, A.col2 + B.col2); }
-inline Mat22 operator * (const Mat22& A, const Mat22& B) { return Mat22(A * B.col1, A * B.col2); }
-
-inline void operator += (Vec2& l, Vec2 r) { l.x += r.x; l.y += r.y; };
-inline void operator -= (Vec2& l, Vec2 r) { l.x -= r.x; l.y -= r.y; };
-
 inline float Abs(float a)
 {
     return a > 0.0f ? a : -a;
-}
-inline Vec2 Abs(const Vec2& a)
-{
-    return { fabsf(a.x), fabsf(a.y) };
-}
-inline Mat22 Abs(const Mat22& A)
-{
-    return Mat22(Abs(A.col1), Abs(A.col2));
 }
 inline float Sign(float x)
 {
@@ -169,6 +109,78 @@ inline float Clamp(float a, float low, float high)
 {
     return Max(low, Min(a, high));
 }
+inline float Lerp(float a, float b, float t)
+{
+    return a + (b - a) * t;
+}
+inline float LerpInverse(float a, float b, float x)
+{
+    return (x - a) / (b - a);
+}
+
+inline Vec2 Abs(Vec2 a)
+{
+    return { fabsf(a.x), fabsf(a.y) };
+}
+inline float Dot(Vec2 a, Vec2 b)
+{
+    return a.x * b.x + a.y * b.y;
+}
+inline float Cross(Vec2 a, Vec2 b)
+{
+    return a.x * b.y - a.y * b.x;
+}
+inline Vec2 Cross(Vec2 a, float s)
+{
+    return { s * a.y, -s * a.x };
+}
+inline Vec2 Cross(float s, Vec2 a)
+{
+    return { -s * a.y, s * a.x };
+}
+inline Vec2 RotateLeft(Vec2 a)
+{
+    return { -a.y, +a.x };
+}
+inline Vec2 RotateRight(Vec2 a)
+{
+    return { +a.y, -a.x };
+}
+inline Vec2 Lerp(Vec2 a, Vec2 b, float t)
+{
+    a.x = Lerp(a.x, b.x, t);
+    a.y = Lerp(a.y, b.y, t);
+    return a;
+}
+inline float Length(Vec2 a)
+{
+    return sqrtf(Dot(a, a));
+}
+inline float LengthSqrt(Vec2 a)
+{
+    return Dot(a, a);
+}
+
+inline Mat22 Abs(Mat22 A)
+{
+    return Mat22(Abs(A.col1), Abs(A.col2));
+}
+
+inline Vec2 operator + (Vec2 r) { return { +r.x, +r.y }; }
+inline Vec2 operator - (Vec2 r) { return { -r.x, -r.y }; }
+
+inline Vec2 operator + (Vec2 a, Vec2 b) { return { a.x + b.x, a.y + b.y }; }
+inline Vec2 operator - (Vec2 a, Vec2 b) { return { a.x - b.x, a.y - b.y }; }
+inline Vec2 operator * (Vec2 v, float s) { return { v.x * s, v.y * s }; }
+inline Vec2 operator * (float s, Vec2 v) { return { s * v.x, s * v.y }; }
+
+inline Vec2 operator * (const Mat22& A, const Vec2& v) { return { A.col1.x * v.x + A.col2.x * v.y, A.col1.y * v.x + A.col2.y * v.y }; }
+
+inline Mat22 operator + (const Mat22& A, const Mat22& B) { return Mat22(A.col1 + B.col1, A.col2 + B.col2); }
+inline Mat22 operator * (const Mat22& A, const Mat22& B) { return Mat22(A * B.col1, A * B.col2); }
+
+inline void operator += (Vec2& l, Vec2 r) { l.x += r.x; l.y += r.y; };
+inline void operator -= (Vec2& l, Vec2 r) { l.x -= r.x; l.y -= r.y; };
 
 inline float Random()
 {
