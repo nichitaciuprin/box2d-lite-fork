@@ -154,7 +154,7 @@ void ComputeIncidentEdge(const Body* body, Vec2 normal, ClipVertex& v0, ClipVert
 {
     Vec2 pos = body->position;
     Vec2 scaleh = body->scale * 0.5f;
-    Mat22 rot = Mat22(body->rotation);
+    Mat22 rot = FromAngle(body->rotation);
 
     normal = Transpose(rot) * normal;
 
@@ -239,8 +239,8 @@ bool Sat(const Body* body1, const Body* body2, Vec2& normal, float& dist, Axis& 
     Vec2 pos2 = body2->position;
     Vec2 scale1 = body1->scale * 0.5f;
     Vec2 scale2 = body2->scale * 0.5f;
-    Mat22 rot1 = Mat22(body1->rotation);
-    Mat22 rot2 = Mat22(body2->rotation);
+    Mat22 rot1 = FromAngle(body1->rotation);
+    Mat22 rot2 = FromAngle(body2->rotation);
     Mat22 rot1i = Transpose(rot1);
     Mat22 rot2i = Transpose(rot2);
     Vec2 d1 = rot1i * (pos2 - pos1);
@@ -283,8 +283,8 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
     Vec2 pos2 = body2->position;
     Vec2 scaleh1 = body1->scale * 0.5f;
     Vec2 scaleh2 = body2->scale * 0.5f;
-    Mat22 rot1 = Mat22(body1->rotation);
-    Mat22 rot2 = Mat22(body2->rotation);
+    Mat22 rot1 = FromAngle(body1->rotation);
+    Mat22 rot2 = FromAngle(body2->rotation);
 
     Vec2 normal; float dist; Axis axis;
     auto hit = Sat(body1, body2, normal, dist, axis);
@@ -492,8 +492,8 @@ void ArbiterApplyImpulse(Arbiter& arb)
 void JointPreStep(Joint* joint, float dti)
 {
     // Pre-compute anchors, mass matrix, and bias.
-    Mat22 Rot1 = Mat22(joint->body1->rotation);
-    Mat22 Rot2 = Mat22(joint->body2->rotation);
+    Mat22 Rot1 = FromAngle(joint->body1->rotation);
+    Mat22 Rot2 = FromAngle(joint->body2->rotation);
 
     joint->r1 = Rot1 * joint->localAnchor1;
     joint->r2 = Rot2 * joint->localAnchor2;
@@ -608,8 +608,8 @@ Joint JointCreate(Body* b1, Body* b2, Vec2 anchor)
     joint.body1 = b1;
     joint.body2 = b2;
 
-    Mat22 Rot1 = Mat22(b1->rotation);
-    Mat22 Rot2 = Mat22(b2->rotation);
+    Mat22 Rot1 = FromAngle(b1->rotation);
+    Mat22 Rot2 = FromAngle(b2->rotation);
     Mat22 Rot1T = Transpose(Rot1);
     Mat22 Rot2T = Transpose(Rot2);
 

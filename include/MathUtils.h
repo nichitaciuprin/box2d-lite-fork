@@ -161,6 +161,12 @@ inline Mat22 Invert(Mat22 m)
 
     return m;
 }
+inline Mat22 FromAngle(float rad)
+{
+    float cos = cosf(rad);
+    float sin = sinf(rad);
+    return { { cos, sin }, { -sin, cos } };
+}
 
 inline Vec2 operator + (Vec2 r) { return { +r.x, +r.y }; }
 inline Vec2 operator - (Vec2 r) { return { -r.x, -r.y }; }
