@@ -664,13 +664,11 @@ namespace
 
     int demoIndex = 0;
 
-    // Vec2 gravity = { 0.0f, -10.0f };
-    // int iterations = 10;
-
     Body body_s[200];
     Joint joint_s[100];
     int body_s_count = 0;
     int joint_s_count = 0;
+
     Body* bomb = NULL;
 
     int closeBodyIndex = -1;
@@ -680,7 +678,7 @@ namespace
     int selectedBodyIndex = -1;
     Vec2 selectedBodyPoint;
 
-    World world = World(Config::gravity, Config::iterations);
+    World world;
 }
 
 void LaunchBomb()

@@ -5,14 +5,9 @@ typedef pair<ArbiterKey, Arbiter> ArbPair;
 struct World
 {
 public:
-    Vec2 gravity;
-    int iterations;
-
     vector<Body*> bodies;
     vector<Joint*> joints;
     map<ArbiterKey, Arbiter> arbiters;
-
-    World(Vec2 gravity, int iterations) : gravity(gravity), iterations(iterations) {}
 
     void Clear()
     {
@@ -48,7 +43,7 @@ public:
         {
             if (body->massInv == 0.0f) continue;
 
-            body->velocityLinear += gravity * dt;
+            body->velocityLinear += Config::gravity * dt;
 
             body->velocityLinear  += body->force  * body->massInv    * dt;
             body->velocityAngular += body->torque * body->inertiaInv * dt;
@@ -61,7 +56,7 @@ public:
             for (auto& arbiter : arbiters) ArbiterPreStep(arbiter.second, dti);
             for (auto& joint : joints) JointPreStep(joint, dti);
         }
-        for (int i = 0; i < iterations; i++)
+        for (int i = 0; i < Config::iterations; i++)
         {
             for (auto& arbiter : arbiters) ArbiterApplyImpulse(arbiter.second);
             for (auto& joint : joints) JointApplyImpulse(joint);
