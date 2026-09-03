@@ -615,13 +615,13 @@ void BodyApplyImpulse(Body* body, Vec2 position, Vec2 velocity)
     body->velocityAngular += velocityAngularNew;
 }
 
-Body BodyCreate(Vec2 scale_, float mass_)
+Body BodyCreate(Vec2 scale, float mass)
 {
     Body body;
 
     body.position = { 0.0f, 0.0f };
     body.rotation = 0.0f;
-    body.scale = scale_;
+    body.scale = scale;
 
     body.velocityLinear = { 0.0f, 0.0f };
     body.velocityAngular = 0.0f;
@@ -631,7 +631,7 @@ Body BodyCreate(Vec2 scale_, float mass_)
 
     body.friction = 0.2f;
 
-    if (mass_ == FLT_MAX)
+    if (mass == FLT_MAX)
     {
         body.mass = FLT_MAX;
         body.massInv = 0.0f;
@@ -640,13 +640,21 @@ Body BodyCreate(Vec2 scale_, float mass_)
     }
     else
     {
-        body.mass = mass_;
+        body.mass = mass;
         body.massInv = 1.0f / body.mass;
         body.inertia = body.mass * (body.scale.x * body.scale.x + body.scale.y * body.scale.y) / 12.0f;
         body.inertiaInv = 1.0f / body.inertia;
     }
 
     return body;
+}
+void BodyCreate2(Body* b, Vec2 position, float rotation, Vec2 scale, float mass)
+{
+    *b = BodyCreate(scale, mass);
+    b->position = position;
+    b->rotation = rotation;
+    bodies.push_back(b);
+    b++; body_s_count++;
 }
 Joint JointCreate(Body* b1, Body* b2, Vec2 anchor)
 {
@@ -877,33 +885,11 @@ void Demo3(Body* b, Joint* j)
     AddGround(b);
     b++; body_s_count++;
 
-    *b = BodyCreate({ 13.0f, 0.25f }, FLT_MAX);
-    b->position = { -2.0f, 11.0f };
-    b->rotation = -0.25f;
-    AddBody(b);
-    b++; body_s_count++;
-
-    *b = BodyCreate({ 0.25f, 1.0f }, FLT_MAX);
-    b->position = { 5.25f, 9.5f };
-    AddBody(b);
-    b++; body_s_count++;
-
-    *b = BodyCreate({ 13.0f, 0.25f }, FLT_MAX);
-    b->position = { 2.0f, 7.0f };
-    b->rotation = 0.25f;
-    AddBody(b);
-    b++; body_s_count++;
-
-    *b = BodyCreate({ 0.25f, 1.0f }, FLT_MAX);
-    b->position = { -5.25f, 5.5f };
-    AddBody(b);
-    b++; body_s_count++;
-
-    *b = BodyCreate({ 13.0f, 0.25f }, FLT_MAX);
-    b->position = { -2.0f, 3.0f };
-    b->rotation = -0.25f;
-    AddBody(b);
-    b++; body_s_count++;
+    BodyCreate2(b, { -2.0f, 11.0f }, -0.25f, { 13.0f, 0.25f }, FLT_MAX);  b++; body_s_count++;
+    BodyCreate2(b, { 5.25f, 9.5f }, 0.0f, { 0.25f, 1.0f }, FLT_MAX);      b++; body_s_count++;
+    BodyCreate2(b, { 2.0f, 7.0f }, 0.25f, { 13.0f, 0.25f }, FLT_MAX);     b++; body_s_count++;
+    BodyCreate2(b, { -5.25f, 5.5f }, 0.0f, { 0.25f, 1.0f }, FLT_MAX);     b++; body_s_count++;
+    BodyCreate2(b, { -2.0f, 3.0f }, -0.25f, { 13.0f, 0.25f }, FLT_MAX);   b++; body_s_count++;
 
     float friction[5] = { 0.75f, 0.5f, 0.35f, 0.1f, 0.0f };
 
@@ -912,7 +898,7 @@ void Demo3(Body* b, Joint* j)
         *b = BodyCreate({ 0.5f, 0.5f }, 25.0f);
         b->friction = friction[i];
         b->position = { -7.5f + 2.0f * i, 14.0f };
-        AddBody(b);
+        bodies.push_back(b);
         b++; body_s_count++;
     }
 
