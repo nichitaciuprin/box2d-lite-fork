@@ -150,6 +150,10 @@ inline bool operator < (const ArbiterKey& a1, const ArbiterKey& a2)
     return false;
 }
 
+vector<Body*> bodies;
+vector<Joint*> joints;
+map<ArbiterKey, Arbiter> arbiters;
+
 void ComputeIncidentEdge(const Body* body, Vec2 normal, ClipVertex& v0, ClipVertex& v1)
 {
     Vec2 pos = body->position;
@@ -566,6 +570,15 @@ void BodyAddForce(Body& body, Vec2 force)
 {
     body.force += force;
 }
+void BodyApplyImpulse(Body* body, Vec2 position, Vec2 velocity)
+{
+    auto velocityLinearNew = velocity;
+    auto velocityAngularNew = Cross(position - body->position, velocity);
+    // body->velocityLinear += velocityLinearNew * body->massInv;
+    // body->velocityAngular += velocityAngularNew * body->inertiaInv;
+    body->velocityLinear += velocityLinearNew;
+    body->velocityAngular += velocityAngularNew;
+}
 
 Body BodyCreate(Vec2 scale_, float mass_)
 {
@@ -644,118 +657,95 @@ Arbiter ArbiterCreate(Body* b1, Body* b2)
     return arb;
 }
 
-struct World
+void BroadPhase()
 {
-public:
-    vector<Body*> bodies;
-    vector<Joint*> joints;
-    map<ArbiterKey, Arbiter> arbiters;
+    // O(n^2) broad-phase
 
-    void Add(Joint* joint)
+    for (int i =   0; i < (int)bodies.size(); i++)
+    for (int j = i+1; j < (int)bodies.size(); j++)
     {
-        joints.push_back(joint);
-    }
-    void ApplyImpulse(Body* body, Vec2 position, Vec2 velocity)
-    {
-        auto velocityLinearNew = velocity;
-        auto velocityAngularNew = Cross(position - body->position, velocity);
-        // body->velocityLinear += velocityLinearNew * body->massInv;
-        // body->velocityAngular += velocityAngularNew * body->inertiaInv;
-        body->velocityLinear += velocityLinearNew;
-        body->velocityAngular += velocityAngularNew;
-    }
+        Body* b1 = bodies[i];
+        Body* b2 = bodies[j];
 
-    void Step(float dt)
-    {
-        float dti = dt > 0.0f ? 1.0f / dt : 0.0f;
+        if (b1->massInv == 0.0f && b2->massInv == 0.0f) continue;
 
-        BroadPhase();
+        Arbiter newArb = ArbiterCreate(b1, b2);
+        ArbiterKey key(b1, b2);
 
-        for (auto& body : bodies)
+        if (newArb.numContacts == 0)
         {
-            if (body->massInv == 0.0f) continue;
-
-            body->velocityLinear += Config::gravity * dt;
-
-            body->velocityLinear  += body->force  * body->massInv    * dt;
-            body->velocityAngular += body->torque * body->inertiaInv * dt;
-
-            body->force = { 0.0f, 0.0f };
-            body->torque = 0.0f;
+            arbiters.erase(key);
+            continue;
         }
 
+        auto iter = arbiters.find(key);
+
+        if (iter == arbiters.end())
         {
-            for (auto& arbiter : arbiters) ArbiterPreStep(arbiter.second, dti);
-            for (auto& joint : joints) JointPreStep(joint, dti);
-        }
-        for (int i = 0; i < Config::iterations; i++)
-        {
-            for (auto& arbiter : arbiters) ArbiterApplyImpulse(arbiter.second);
-            for (auto& joint : joints) JointApplyImpulse(joint);
+            arbiters.insert(ArbPair(key, newArb));
+            continue;
         }
 
-        for (auto& body : bodies)
+        auto a_old = &iter->second;
+        auto a_new = &newArb;
+
+        if (Config::warmStarting)
         {
-            if (body->massInv == 0.0f) continue;
-
-            body->position += body->velocityLinear  * dt;
-            body->rotation += body->velocityAngular * dt;
-        }
-    }
-
-    void BroadPhase()
-    {
-        // O(n^2) broad-phase
-
-        for (int i =   0; i < (int)bodies.size(); i++)
-        for (int j = i+1; j < (int)bodies.size(); j++)
-        {
-            Body* b1 = bodies[i];
-            Body* b2 = bodies[j];
-
-            if (b1->massInv == 0.0f && b2->massInv == 0.0f) continue;
-
-            Arbiter newArb = ArbiterCreate(b1, b2);
-            ArbiterKey key(b1, b2);
-
-            if (newArb.numContacts == 0)
+            for (int i = 0; i < a_new->numContacts; i++)
+            for (int j = 0; j < a_old->numContacts; j++)
             {
-                arbiters.erase(key);
-                continue;
+                auto& c_new = a_new->contacts[i];
+                auto& c_old = a_old->contacts[j];
+
+                if (c_new.feature.value != c_old.feature.value) continue;
+
+                c_new.Pn = c_old.Pn;
+                c_new.Pt = c_old.Pt;
+
+                break;
             }
-
-            auto iter = arbiters.find(key);
-
-            if (iter == arbiters.end())
-            {
-                arbiters.insert(ArbPair(key, newArb));
-                continue;
-            }
-
-            auto a_old = &iter->second;
-            auto a_new = &newArb;
-
-            if (Config::warmStarting)
-            {
-                for (int i = 0; i < a_new->numContacts; i++)
-                for (int j = 0; j < a_old->numContacts; j++)
-                {
-                    auto& c_new = a_new->contacts[i];
-                    auto& c_old = a_old->contacts[j];
-
-                    if (c_new.feature.value != c_old.feature.value) continue;
-
-                    c_new.Pn = c_old.Pn;
-                    c_new.Pt = c_old.Pt;
-
-                    break;
-                }
-            }
-
-            *a_old = *a_new;
         }
+
+        *a_old = *a_new;
     }
-};
+}
+void Step(float dt)
+{
+    float dti = dt > 0.0f ? 1.0f / dt : 0.0f;
+
+    BroadPhase();
+
+    for (auto& body : bodies)
+    {
+        if (body->massInv == 0.0f) continue;
+
+        body->velocityLinear += Config::gravity * dt;
+
+        body->velocityLinear  += body->force  * body->massInv    * dt;
+        body->velocityAngular += body->torque * body->inertiaInv * dt;
+
+        body->force = { 0.0f, 0.0f };
+        body->torque = 0.0f;
+    }
+
+    {
+        for (auto& arbiter : arbiters) ArbiterPreStep(arbiter.second, dti);
+        for (auto& joint : joints) JointPreStep(joint, dti);
+    }
+    for (int i = 0; i < Config::iterations; i++)
+    {
+        for (auto& arbiter : arbiters) ArbiterApplyImpulse(arbiter.second);
+        for (auto& joint : joints) JointApplyImpulse(joint);
+    }
+
+    for (auto& body : bodies)
+    {
+        if (body->massInv == 0.0f) continue;
+
+        body->position += body->velocityLinear  * dt;
+        body->rotation += body->velocityAngular * dt;
+    }
+}
 
 namespace
 {
@@ -790,26 +780,24 @@ namespace
 
     int selectedBodyIndex = -1;
     Vec2 selectedBodyPoint;
-
-    World world;
 }
 
 void Clear()
 {
-    world.bodies.clear();
-    world.joints.clear();
-    world.arbiters.clear();
+    bodies.clear();
+    joints.clear();
+    arbiters.clear();
     body_s_count = 0;
     joint_s_count = 0;
     bomb = NULL;
 }
 void AddBody(Body* body)
 {
-    world.bodies.push_back(body);
+    bodies.push_back(body);
 }
 void AddJoint(Joint* joint)
 {
-    world.joints.push_back(joint);
+    joints.push_back(joint);
 }
 void AddGround(Body* b)
 {
@@ -1217,9 +1205,9 @@ void SelectBody(Vec2 mousePos)
     Vec2 offset0;
     float offset0_ls = FLT_MAX;
 
-    for (size_t i = 0; i < world.bodies.size(); i++)
+    for (size_t i = 0; i < bodies.size(); i++)
     {
-        auto body = world.bodies[i];
+        auto body = bodies[i];
 
         if (body->mass == FLT_MAX) continue;
 
@@ -1371,10 +1359,10 @@ void Mouse(GLFWwindow* window, int button, int action, int mods)
     }
     else
     {
-        auto body = world.bodies[selectedBodyIndex];
+        auto body = bodies[selectedBodyIndex];
         auto point = selectedBodyPoint;
         auto velocity = mousePosition - point;
-        world.ApplyImpulse(body, point, velocity);
+        BodyApplyImpulse(body, point, velocity);
         selectedBodyIndex = -1;
     }
 }
@@ -1507,7 +1495,7 @@ void Draw()
     for (int i = 0; i < joint_s_count; i++)
         DrawJoint(joint_s + i);
 
-    for (auto& i : world.arbiters)
+    for (auto& i : arbiters)
         DrawArbiter(&i.second);
 
     // DrawPoint({ 0.246447, 0.000000 });
@@ -1569,7 +1557,7 @@ int main()
     InitWindow();
 
     // InitDemo(0);
-    // world.BroadPhase();
+    // BroadPhase();
     // pause = true;
 
     InitDemo(3);
@@ -1583,8 +1571,8 @@ int main()
         auto update = !pause || forward; forward = false;
         if (update)
         {
-            world.Step(timestep);
-            // world.BroadPhase();
+            Step(timestep);
+            // BroadPhase();
         }
 
         Draw();
