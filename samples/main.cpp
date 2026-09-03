@@ -150,10 +150,6 @@ inline bool operator < (const ArbiterKey& a1, const ArbiterKey& a2)
     return false;
 }
 
-void BodyAddForce(Body& body, Vec2 force)
-{
-    body.force += force;
-}
 void ComputeIncidentEdge(const Body* body, Vec2 normal, ClipVertex& v0, ClipVertex& v1)
 {
     Vec2 pos = body->position;
@@ -565,6 +561,10 @@ void JointApplyImpulse(Joint* joint)
     joint->body2->velocityAngular += Cross(joint->r2, impulse) * joint->body2->inertiaInv;
 
     joint->P += impulse;
+}
+void BodyAddForce(Body& body, Vec2 force)
+{
+    body.force += force;
 }
 
 Body BodyCreate(Vec2 scale_, float mass_)
