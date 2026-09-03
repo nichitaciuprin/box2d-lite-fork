@@ -150,6 +150,41 @@ inline bool operator < (const ArbiterKey& a1, const ArbiterKey& a2)
     return false;
 }
 
+namespace
+{
+    int width = 1280;
+    int height = 720;
+    float zoom = 10.0f;
+    float pan_y = 8.0f;
+    GLFWwindow* window = NULL;
+
+    // int width = 1280;
+    // int height = 720;
+    // float zoom = 2.0f;
+    // float pan_y = 0.0f;
+    // GLFWwindow* window = NULL;
+
+    float timestep = 1.0f / 60.0f;
+    bool pause = false;
+    bool forward = false;
+
+    int demoIndex = 0;
+
+    Body body_s[200];
+    Joint joint_s[100];
+    int body_s_count = 0;
+    int joint_s_count = 0;
+
+    Body* bomb = NULL;
+
+    int closeBodyIndex = -1;
+    Vec2 closeBodyPoint;
+    Vec2 closeBodyOffset;
+
+    int selectedBodyIndex = -1;
+    Vec2 selectedBodyPoint;
+}
+
 vector<Body*> bodies;
 vector<Joint*> joints;
 map<ArbiterKey, Arbiter> arbiters;
@@ -745,41 +780,6 @@ void Step(float dt)
         body->position += body->velocityLinear  * dt;
         body->rotation += body->velocityAngular * dt;
     }
-}
-
-namespace
-{
-    int width = 1280;
-    int height = 720;
-    float zoom = 10.0f;
-    float pan_y = 8.0f;
-    GLFWwindow* window = NULL;
-
-    // int width = 1280;
-    // int height = 720;
-    // float zoom = 2.0f;
-    // float pan_y = 0.0f;
-    // GLFWwindow* window = NULL;
-
-    float timestep = 1.0f / 60.0f;
-    bool pause = false;
-    bool forward = false;
-
-    int demoIndex = 0;
-
-    Body body_s[200];
-    Joint joint_s[100];
-    int body_s_count = 0;
-    int joint_s_count = 0;
-
-    Body* bomb = NULL;
-
-    int closeBodyIndex = -1;
-    Vec2 closeBodyPoint;
-    Vec2 closeBodyOffset;
-
-    int selectedBodyIndex = -1;
-    Vec2 selectedBodyPoint;
 }
 
 void Clear()
