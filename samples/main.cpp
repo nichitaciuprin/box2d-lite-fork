@@ -98,6 +98,20 @@ struct Body
     float inertia;
     float inertiaInv;
 };
+struct Joint
+{
+    Mat22 M;
+    Vec2 localAnchor1;
+    Vec2 localAnchor2;
+    Vec2 r1;
+    Vec2 r2;
+    Vec2 bias;
+    Vec2 P;		// accumulated impulse
+    Body* body1;
+    Body* body2;
+    float biasFactor;
+    float softness;
+};
 struct Arbiter
 {
     Contact contacts[MAX_POINTS];
@@ -124,20 +138,6 @@ struct ArbiterKey
             body2 = b1;
         }
     }
-};
-struct Joint
-{
-    Mat22 M;
-    Vec2 localAnchor1;
-    Vec2 localAnchor2;
-    Vec2 r1;
-    Vec2 r2;
-    Vec2 bias;
-    Vec2 P;		// accumulated impulse
-    Body* body1;
-    Body* body2;
-    float biasFactor;
-    float softness;
 };
 
 typedef pair<ArbiterKey, Arbiter> ArbPair;
