@@ -1144,7 +1144,7 @@ void Demo9(Body* b, Joint* j)
     float dampingRatio = 0.7f;
 
     // frequency in radians
-    float omega = 2.0f * MATH_PI * frequencyHz;
+    float omega = frequencyHz * MATH_PI * 2.0f;
 
     // damping coefficient
     float d = 2.0f * mass * dampingRatio * omega;
@@ -1153,8 +1153,8 @@ void Demo9(Body* b, Joint* j)
     float k = mass * omega * omega;
 
     // magic formulas
-    float softness = 1.0f / (d + timestep * k);
-    float biasFactor = timestep * k / (d + timestep * k);
+    float softness =           1.0f / (d + k * timestep);
+    float biasFactor = k * timestep / (d + k * timestep);
 
     const float y = 12.0f;
 
