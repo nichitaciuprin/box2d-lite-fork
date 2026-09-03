@@ -150,9 +150,9 @@ inline bool operator < (const ArbiterKey& a1, const ArbiterKey& a2)
     return false;
 }
 
-void BodyAddForce(Body& body, Vec2 force_)
+void BodyAddForce(Body& body, Vec2 force)
 {
-    body.force += force_;
+    body.force += force;
 }
 void ComputeIncidentEdge(const Body* body, Vec2 normal, ClipVertex& v0, ClipVertex& v1)
 {
