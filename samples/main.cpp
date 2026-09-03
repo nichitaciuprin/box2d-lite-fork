@@ -183,11 +183,12 @@ namespace
 
     int selectedBodyIndex = -1;
     Vec2 selectedBodyPoint;
+
+    vector<Body*> bodies;
+    vector<Joint*> joints;
+    map<ArbiterKey, Arbiter> arbiters;
 }
 
-vector<Body*> bodies;
-vector<Joint*> joints;
-map<ArbiterKey, Arbiter> arbiters;
 
 void ComputeIncidentEdge(const Body* body, Vec2 normal, ClipVertex& v0, ClipVertex& v1)
 {
@@ -429,7 +430,7 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
 
     return numContacts;
 }
-Vec2 CalcRelativeVelocity(Contact* c, Body* b1, Body* b2)
+Vec2 CalcRelativeVelocity(const Contact* c, Body* b1, Body* b2)
 {
     // return
     // b2->velocity + Cross(b2->velocityAngular, c->r2) -
@@ -443,7 +444,7 @@ Vec2 CalcRelativeVelocity(Contact* c, Body* b1, Body* b2)
     Vec2 vel2 = b2->velocityLinear + RotateLeft(c->r2) * b2->velocityAngular;
     return vel2 - vel1;
 }
-void UpdateVelocity(Contact* c, Body* b1, Body* b2, Vec2 impulse)
+void UpdateVelocity(const Contact* c, Body* b1, Body* b2, Vec2 impulse)
 {
     b1->velocityLinear -= impulse * b1->massInv;
     b2->velocityLinear += impulse * b2->massInv;
