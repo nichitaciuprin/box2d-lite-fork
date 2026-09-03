@@ -1035,10 +1035,7 @@ void Demo8(Body* b, Joint* j)
     AddGround(b);
     b++; body_s_count++;
 
-    *b = BodyCreate({ 12.0f, 0.5f }, FLT_MAX);
-    b->position = { -1.5f, 10.0f };
-    bodies.push_back(b);
-    b++; body_s_count++;
+    *b = BodyCreate({ 12.0f, 0.5f }, FLT_MAX); b->position = { -1.5f, 10.0f }; bodies.push_back(b); b++; body_s_count++;
 
     for (int i = 0; i < 10; i++)
     {
@@ -1049,58 +1046,18 @@ void Demo8(Body* b, Joint* j)
         b++; body_s_count++;
     }
 
-    *b = BodyCreate({ 14.0f, 0.5f }, FLT_MAX);
-    b->position = { 1.0f, 6.0f };
-    b->rotation = 0.3f;
-    bodies.push_back(b);
-    b++; body_s_count++;
+    *b = BodyCreate({ 14.0f, 0.5f }, FLT_MAX); b->position = { 1.0f, 6.0f }; b->rotation = 0.3f; bodies.push_back(b); b++; body_s_count++;
 
-    Body* b2 = b;
-    *b = BodyCreate({ 0.5f, 3.0f }, FLT_MAX);
-    b->position = { -7.0f, 4.0f };
-    bodies.push_back(b);
-    b++; body_s_count++;
+    Body* b2 = b; *b = BodyCreate({ 0.5f, 3.0f }, FLT_MAX); b->position = { -7.0f, 4.0f }; bodies.push_back(b); b++; body_s_count++;
+    Body* b3 = b; *b = BodyCreate({ 12.0f, 0.25f }, 20.0f); b->position = { -0.9f, 1.0f }; bodies.push_back(b); b++; body_s_count++;
+    Body* b4 = b; *b = BodyCreate({ 0.5f, 0.5f }, 10.0f); b->position = { -10.0f, 15.0f }; bodies.push_back(b); b++; body_s_count++;
+    Body* b5 = b; *b = BodyCreate({ 2.0f, 2.0f }, 20.0f); b->position = { 6.0f, 2.5f }; b->friction = 0.1f; bodies.push_back(b); b++; body_s_count++;
+    Body* b6 = b; *b = BodyCreate({ 2.0f, 0.2f }, 10.0f); b->position = { 6.0f, 3.6f }; bodies.push_back(b); b++; body_s_count++;
 
-    Body* b3 = b;
-    *b = BodyCreate({ 12.0f, 0.25f }, 20.0f);
-    b->position = { -0.9f, 1.0f };
-    bodies.push_back(b);
-    b++; body_s_count++;
-
-    *j = JointCreate(b1, b3, { -2.0f, 1.0f });
-    joints.push_back(j);
-    j++; joint_s_count++;
-
-    Body* b4 = b;
-    *b = BodyCreate({ 0.5f, 0.5f }, 10.0f);
-    b->position = { -10.0f, 15.0f };
-    bodies.push_back(b);
-    b++; body_s_count++;
-
-    *j = JointCreate(b2, b4, { -7.0f, 15.0f });
-    joints.push_back(j);
-    j++; joint_s_count++;
-
-    Body* b5 = b;
-    *b = BodyCreate({ 2.0f, 2.0f }, 20.0f);
-    b->position = { 6.0f, 2.5f };
-    b->friction = 0.1f;
-    bodies.push_back(b);
-    b++; body_s_count++;
-
-    *j = JointCreate(b1, b5, { 6.0f, 2.6f });
-    joints.push_back(j);
-    j++; joint_s_count++;
-
-    Body* b6 = b;
-    *b = BodyCreate({ 2.0f, 0.2f }, 10.0f);
-    b->position = { 6.0f, 3.6f };
-    bodies.push_back(b);
-    b++; body_s_count++;
-
-    *j = JointCreate(b5, b6, { 7.0f, 3.5f });
-    joints.push_back(j);
-    j++; joint_s_count++;
+    *j = JointCreate(b1, b3, { -2.0f, 1.0f });  joints.push_back(j); j++; joint_s_count++;
+    *j = JointCreate(b2, b4, { -7.0f, 15.0f }); joints.push_back(j); j++; joint_s_count++;
+    *j = JointCreate(b1, b5, { 6.0f, 2.6f });   joints.push_back(j); j++; joint_s_count++;
+    *j = JointCreate(b5, b6, { 7.0f, 3.5f });   joints.push_back(j); j++; joint_s_count++;
 }
 void Demo9(Body* b, Joint* j)
 {
@@ -1110,7 +1067,6 @@ void Demo9(Body* b, Joint* j)
 
     float mass = 10.0f;
 
-    // Tuning
     float frequencyHz = 4.0f;
     float dampingRatio = 0.7f;
 
