@@ -651,12 +651,6 @@ public:
     vector<Joint*> joints;
     map<ArbiterKey, Arbiter> arbiters;
 
-    void Clear()
-    {
-        bodies.clear();
-        joints.clear();
-        arbiters.clear();
-    }
     void Add(Body* body)
     {
         bodies.push_back(body);
@@ -1196,13 +1190,18 @@ void (*demos[])(Body* b, Joint* j) =
     Demo9
 };
 
-void InitDemo(int index)
+void Clear()
 {
-    world.Clear();
+    world.bodies.clear();
+    world.joints.clear();
+    world.arbiters.clear();
     body_s_count = 0;
     joint_s_count = 0;
     bomb = NULL;
-
+}
+void InitDemo(int index)
+{
+    Clear();
     demoIndex = index;
     demos[index](body_s, joint_s);
 }
