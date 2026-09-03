@@ -839,26 +839,11 @@ void LaunchBomb()
 
 void Demo1(Body* b, Joint* j)
 {
-    // AddGround(b);
-    // b++; body_s_count++;
+    AddGround(b); b++; body_s_count++;
+    BodyCreate2(b, { 0.0f, 4.0f }, 0.0f, { 1.0f, 1.0f }, 1.0f); b++; body_s_count++;
 
-    // *b = BodyCreate({ 1.0f, 1.0f }, 1.0f);
-    // b->position = { 0.0f, 4.0f };
-    // bodies.push_back(b);
-    // b++; body_s_count++;
-
-    *b = BodyCreate({ 1.0f, 1.0f }, FLT_MAX);
-    b->position = { 0.0f, 0.0f };
-    bodies.push_back(b);
-    b++; body_s_count++;
-
-    *b = BodyCreate({ 0.5f, 0.5f }, 1.0f);
-    // b->position = { 0.60f, 0.0f };
-    b->position = { -0.60f, 0.0f };
-    b->rotation = -MATH_PI / 4;
-    // b->rotation = -0.3f;
-    bodies.push_back(b);
-    b++; body_s_count++;
+    // BodyCreateStatic(b, { 0.0f, 0.0f }, 0.0f, { 1.0f, 1.0f }); b++; body_s_count++;
+    // BodyCreate2(b, { -0.60f, 0.0f }, -MATH_PI / 4, { 0.5f, 0.5f }, 1.0f); b++; body_s_count++;
 }
 void Demo2(Body* b, Joint* j)
 {
