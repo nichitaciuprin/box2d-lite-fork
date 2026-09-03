@@ -189,7 +189,6 @@ namespace
     map<ArbiterKey, Arbiter> arbiters;
 }
 
-
 void ComputeIncidentEdge(const Body* body, Vec2 normal, ClipVertex& v0, ClipVertex& v1)
 {
     Vec2 pos = body->position;
