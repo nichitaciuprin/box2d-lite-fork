@@ -1017,7 +1017,7 @@ void Demo9(Body* b, Joint* j)
     float omega = frequencyHz * MATH_PI * 2.0f;
 
     // damping coefficient
-    float d = 2.0f * mass * dampingRatio * omega;
+    float d = omega * dampingRatio * mass * 2.0f;
 
     // spring stiffness
     float k = mass * omega * omega;
