@@ -1005,10 +1005,10 @@ void Demo8(Body* b, Joint* j)
 
     b5->friction = 0.1f;
 
-    *j = JointCreate(b1, b3, { -2.0f, 1.0f });  joints.push_back(j); j++; joint_s_count++;
-    *j = JointCreate(b2, b4, { -7.0f, 15.0f }); joints.push_back(j); j++; joint_s_count++;
-    *j = JointCreate(b1, b5, { 6.0f, 2.6f });   joints.push_back(j); j++; joint_s_count++;
-    *j = JointCreate(b5, b6, { 7.0f, 3.5f });   joints.push_back(j); j++; joint_s_count++;
+    JointCreate2(j, b1, b3, { -2.0f, 1.0f });  joints.push_back(j); j++; joint_s_count++;
+    JointCreate2(j, b2, b4, { -7.0f, 15.0f }); joints.push_back(j); j++; joint_s_count++;
+    JointCreate2(j, b1, b5, { 6.0f, 2.6f });   joints.push_back(j); j++; joint_s_count++;
+    JointCreate2(j, b5, b6, { 7.0f, 3.5f });   joints.push_back(j); j++; joint_s_count++;
 }
 void Demo9(Body* b, Joint* j)
 {
