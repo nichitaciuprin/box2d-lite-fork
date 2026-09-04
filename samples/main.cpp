@@ -110,7 +110,7 @@ struct Joint
     float biasFactor;
     float softness;
 };
-struct Arbiter
+struct Collision
 {
     Contact contacts[MAX_POINTS];
     int numContacts;
@@ -138,7 +138,7 @@ struct ArbiterKey
     }
 };
 
-typedef pair<ArbiterKey, Arbiter> ArbPair;
+typedef pair<ArbiterKey, Collision> ArbPair;
 
 inline bool operator < (const ArbiterKey& a1, const ArbiterKey& a2)
 {
@@ -184,7 +184,7 @@ namespace
 
     vector<Body*> bodies;
     vector<Joint*> joints;
-    map<ArbiterKey, Arbiter> arbiters;
+    map<ArbiterKey, Collision> arbiters;
 }
 
 void ComputeIncidentEdge(const Body* body, Vec2 normal, ClipVertex& v0, ClipVertex& v1)
@@ -451,7 +451,7 @@ void UpdateVelocity(const Contact* c, Body* b1, Body* b2, Vec2 impulse)
     b1->velocityAngular -= Cross(c->r1, impulse) * b1->inertiaInv;
     b2->velocityAngular += Cross(c->r2, impulse) * b2->inertiaInv;
 }
-void ArbiterPreStep(Arbiter& arb, float dti)
+void ArbiterPreStep(Collision& arb, float dti)
 {
     for (int i = 0; i < arb.numContacts; i++)
     {
@@ -496,7 +496,7 @@ void ArbiterPreStep(Arbiter& arb, float dti)
         UpdateVelocity(c, arb.body1, arb.body2, impulse);
     }
 }
-void ArbiterApplyImpulse(Arbiter& arb)
+void ArbiterApplyImpulse(Collision& arb)
 {
     for (int i = 0; i < arb.numContacts; i++)
     {
@@ -685,9 +685,9 @@ Joint JointCreate(Body* b1, Body* b2, Vec2 anchor)
 
     return joint;
 }
-Arbiter ArbiterCreate(Body* b1, Body* b2)
+Collision ArbiterCreate(Body* b1, Body* b2)
 {
-    Arbiter arb;
+    Collision arb;
 
     if (b1 < b2)
     {
@@ -719,7 +719,7 @@ void BroadPhase()
 
         if (b1->massInv == 0.0f && b2->massInv == 0.0f) continue;
 
-        Arbiter newArb = ArbiterCreate(b1, b2);
+        Collision newArb = ArbiterCreate(b1, b2);
         ArbiterKey key(b1, b2);
 
         if (newArb.numContacts == 0)
@@ -1362,7 +1362,7 @@ void DrawJoint(Joint* joint)
     glVertex2f(p2.x, p2.y);
     glEnd();
 }
-void DrawArbiter(Arbiter* arbiter)
+void DrawArbiter(Collision* arbiter)
 {
     glPointSize(4.0f);
     glColor3f(1.0f, 0.0f, 0.0f);
