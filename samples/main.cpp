@@ -118,12 +118,12 @@ struct Collision
     Body* body2;
     float friction; // Combined friction
 };
-struct ArbiterKey
+struct CollisionKey
 {
     Body* body1;
     Body* body2;
 
-    ArbiterKey(Body* b1, Body* b2)
+    CollisionKey(Body* b1, Body* b2)
     {
         if (b1 < b2)
         {
@@ -138,9 +138,9 @@ struct ArbiterKey
     }
 };
 
-typedef pair<ArbiterKey, Collision> ArbPair;
+typedef pair<CollisionKey, Collision> ColPair;
 
-inline bool operator < (const ArbiterKey& a1, const ArbiterKey& a2)
+inline bool operator < (const CollisionKey& a1, const CollisionKey& a2)
 {
     if (a1.body1 < a2.body1) return true;
     if (a1.body1 > a2.body1) return false;
@@ -184,7 +184,7 @@ namespace
 
     vector<Body*> bodies;
     vector<Joint*> joints;
-    map<ArbiterKey, Collision> arbiters;
+    map<CollisionKey, Collision> arbiters;
 }
 
 void ComputeIncidentEdge(const Body* body, Vec2 normal, ClipVertex& v0, ClipVertex& v1)
@@ -720,7 +720,7 @@ void BroadPhase()
         if (b1->massInv == 0.0f && b2->massInv == 0.0f) continue;
 
         Collision newArb = ArbiterCreate(b1, b2);
-        ArbiterKey key(b1, b2);
+        CollisionKey key(b1, b2);
 
         if (newArb.numContacts == 0)
         {
@@ -732,7 +732,7 @@ void BroadPhase()
 
         if (iter == arbiters.end())
         {
-            arbiters.insert(ArbPair(key, newArb));
+            arbiters.insert(ColPair(key, newArb));
             continue;
         }
 
