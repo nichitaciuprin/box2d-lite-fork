@@ -841,6 +841,22 @@ void LaunchBomb()
     bomb->velocityAngular = Random(-20.0f, 20.0f);
 }
 
+void CalcJointProp(float mass, float frequencyHz, float dampingRatio, float& softness, float& biasFactor)
+{
+    // frequency in radians
+    float omega = frequencyHz * MATH_PI * 2.0f;
+
+    // damping coefficient
+    float d = omega * dampingRatio * mass * 2.0f;
+
+    // spring stiffness
+    float k = mass * omega * omega;
+
+    // magic formulas
+    softness =           1.0f / (d + k * timestep);
+    biasFactor = k * timestep / (d + k * timestep);
+}
+
 void Demo1(Body* b, Joint* j)
 {
     AddGround(b); b++; body_s_count++;
@@ -931,11 +947,17 @@ void Demo6(Body* b, Joint* j)
 }
 void Demo7(Body* b, Joint* j)
 {
+    float mass = 50.0f;
+    float frequencyHz = 2.0f;
+    float dampingRatio = 0.7f;
+
+    float softness, biasFactor;
+    CalcJointProp(mass, frequencyHz, dampingRatio, softness, biasFactor);
+
     AddGround(b);
     b++; body_s_count++;
 
-    const int numPlanks = 15;
-    float mass = 50.0f;
+    int numPlanks = 15;
 
     for (int i = 0; i < numPlanks; i++)
     {
@@ -943,29 +965,11 @@ void Demo7(Body* b, Joint* j)
         b++; body_s_count++;
     }
 
-    // Tuning
-    float frequencyHz = 2.0f;
-    float dampingRatio = 0.7f;
-
-    // frequency in radians
-    float omega = frequencyHz * MATH_PI * 2.0f;
-
-    // damping coefficient
-    float d = omega * dampingRatio * mass * 2.0f;
-
-    // spring stifness
-    float k = omega * omega * mass;
-
-    // magic formulas
-    float softness = 1.0f / (d + timestep * k);
-    float biasFactor = timestep * k / (d + timestep * k);
-
-    for (int i = 0; i < numPlanks; ++i)
+    for (int i = 0; i < numPlanks; i++)
     {
         *j = JointCreate(body_s+i, body_s+i+1, { -9.125f + 1.25f * i, 5.0f });
         j->softness = softness;
         j->biasFactor = biasFactor;
-
         joints.push_back(j);
         j++; joint_s_count++;
     }
@@ -1005,26 +1009,15 @@ void Demo8(Body* b, Joint* j)
 }
 void Demo9(Body* b, Joint* j)
 {
-    auto b1 = AddGround(b);
-    b++; body_s_count++;
-
     float mass = 10.0f;
-
     float frequencyHz = 4.0f;
     float dampingRatio = 0.7f;
 
-    // frequency in radians
-    float omega = frequencyHz * MATH_PI * 2.0f;
+    float softness, biasFactor;
+    CalcJointProp(mass, frequencyHz, dampingRatio, softness, biasFactor);
 
-    // damping coefficient
-    float d = omega * dampingRatio * mass * 2.0f;
-
-    // spring stiffness
-    float k = mass * omega * omega;
-
-    // magic formulas
-    float softness =           1.0f / (d + k * timestep);
-    float biasFactor = k * timestep / (d + k * timestep);
+    auto b1 = AddGround(b);
+    b++; body_s_count++;
 
     for (int i = 0; i < 15; i++)
     {
