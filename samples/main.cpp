@@ -69,8 +69,6 @@ struct ClipVertex
 };
 struct Contact
 {
-    Contact() : Pn(0.0f), Pt(0.0f) {}
-
     Vec2 position;
     Vec2 normal;
     Vec2 r1;
@@ -407,6 +405,9 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
         if (separation > 0.0f) continue;
 
         auto& contact = contacts[numContacts];
+
+        contact.Pn = 0;
+        contact.Pt = 0;
 
         // clamp to reference face (easy to cull)
         contact.position = point.v - normalFront * separation;
