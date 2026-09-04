@@ -1023,18 +1023,15 @@ void Demo9(Body* b, Joint* j)
     {
         float y = 12.0f;
 
-        *b = BodyCreate({ 0.75f, 0.25f }, mass);
-        b->friction = 0.2f;
-        b->position = { 0.5f + i, y };
-        b->rotation = 0.0f;
-        bodies.push_back(b);
+        auto b2 = BodyCreateDynamic(b, { 0.5f + i, y }, 0.0f, { 0.75f, 0.25f }, mass);
+        b2->friction = 0.2f;
 
-        *j = JointCreate(b1, b, { (float)i, y });
+        *j = JointCreate(b1, b2, { (float)i, y });
         j->softness = softness;
         j->biasFactor = biasFactor;
         joints.push_back(j);
 
-        b1 = b;
+        b1 = b2;
 
         b++; body_s_count++;
         j++; joint_s_count++;
