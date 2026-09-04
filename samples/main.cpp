@@ -649,22 +649,6 @@ Body BodyCreate(Vec2 scale, float mass)
 
     return body;
 }
-Body* BodyCreateDynamic(Body* b, Vec2 position, float rotation, Vec2 scale, float mass)
-{
-    *b = BodyCreate(scale, mass);
-    b->position = position;
-    b->rotation = rotation;
-    bodies.push_back(b);
-    return b;
-}
-Body* BodyCreateStatic(Body* b, Vec2 position, float rotation, Vec2 scale)
-{
-    *b = BodyCreate(scale, FLT_MAX);
-    b->position = position;
-    b->rotation = rotation;
-    bodies.push_back(b);
-    return b;
-}
 Joint JointCreate(Body* b1, Body* b2, Vec2 anchor)
 {
     Joint joint;
@@ -707,6 +691,29 @@ Collision ArbiterCreate(Body* b1, Body* b2)
     arb.friction = sqrtf(arb.body1->friction * arb.body2->friction);
 
     return arb;
+}
+
+Body* BodyCreateDynamic(Body* b, Vec2 position, float rotation, Vec2 scale, float mass)
+{
+    *b = BodyCreate(scale, mass);
+    b->position = position;
+    b->rotation = rotation;
+    bodies.push_back(b);
+    return b;
+}
+Body* BodyCreateStatic(Body* b, Vec2 position, float rotation, Vec2 scale)
+{
+    *b = BodyCreate(scale, FLT_MAX);
+    b->position = position;
+    b->rotation = rotation;
+    bodies.push_back(b);
+    return b;
+}
+Joint* JointCreate2(Joint* j, Body* b1, Body* b2, Vec2 anchor)
+{
+    *j = JointCreate(b1, b2, anchor);
+    joints.push_back(j);
+    return j;
 }
 
 void BroadPhase()
@@ -874,9 +881,8 @@ void Demo2(Body* b, Joint* j)
     b2->friction = 0.2f;
     b++; body_s_count++;
 
-    *j = JointCreate(b1, b2, { 0.0f, 11.0f });
-    joints.push_back(j);
-    joint_s_count++;
+    JointCreate2(j, b1, b2, { 0.0f, 11.0f });
+    j++; joint_s_count++;
 }
 void Demo3(Body* b, Joint* j)
 {
@@ -941,9 +947,8 @@ void Demo6(Body* b, Joint* j)
     auto b4 = BodyCreateDynamic(b, { -5.5f, 2.0f }, 0.0f, { 0.5f, 0.5f }, 25.0f); b++; body_s_count++;
     auto b5 = BodyCreateDynamic(b, { 5.5f, 15.0f }, 0.0f, { 1.0f, 1.0f }, 100.0f); b++; body_s_count++;
 
-    *j = JointCreate(b1, b2, { 0.0f, 1.0f });
-    joints.push_back(j);
-    joint_s_count++;
+    JointCreate2(j, b1, b2, { 0.0f, 1.0f });
+    j++; joint_s_count++;
 }
 void Demo7(Body* b, Joint* j)
 {
@@ -967,17 +972,15 @@ void Demo7(Body* b, Joint* j)
 
     for (int i = 0; i < numPlanks; i++)
     {
-        *j = JointCreate(body_s+i, body_s+i+1, { -9.125f + 1.25f * i, 5.0f });
-        j->softness = softness;
-        j->biasFactor = biasFactor;
-        joints.push_back(j);
+        auto j1 = JointCreate2(j, body_s+i, body_s+i+1, { -9.125f + 1.25f * i, 5.0f });
+        j1->softness = softness;
+        j1->biasFactor = biasFactor;
         j++; joint_s_count++;
     }
 
-    *j = JointCreate(body_s + numPlanks, body_s, { -9.125f + 1.25f * numPlanks, 5.0f });
-    j->softness = softness;
-    j->biasFactor = biasFactor;
-    joints.push_back(j);
+    auto j1 = JointCreate2(j, body_s + numPlanks, body_s, { -9.125f + 1.25f * numPlanks, 5.0f });
+    j1->softness = softness;
+    j1->biasFactor = biasFactor;
     j++; joint_s_count++;
 }
 void Demo8(Body* b, Joint* j)
