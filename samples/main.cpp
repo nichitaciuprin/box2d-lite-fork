@@ -138,7 +138,7 @@ struct CollisionKey
     }
 };
 
-typedef pair<CollisionKey, Collision> ColPair;
+typedef pair<CollisionKey, Collision> CollisionPair;
 
 inline bool operator < (const CollisionKey& a1, const CollisionKey& a2)
 {
@@ -732,7 +732,7 @@ void BroadPhase()
 
         if (iter == arbiters.end())
         {
-            arbiters.insert(ColPair(key, newArb));
+            arbiters.insert(CollisionPair(key, newArb));
             continue;
         }
 
