@@ -177,9 +177,9 @@ namespace
     int selectedBodyIndex = -1;
     Vec2 selectedBodyPoint;
 
-    vector<Body> bodies;
+    vector<Body> bodie_s;
     vector<Joint> joint_s;
-    map<CollisionKey, Collision> arbiters;
+    map<CollisionKey, Collision> arbiter_s;
 }
 
 void ComputeIncidentEdge(const Body* body, Vec2 normal, ClipVertex& v0, ClipVertex& v1)
@@ -693,16 +693,16 @@ Body* BodyCreateDynamic(Vec2 position, float rotation, Vec2 scale, float mass)
     auto body = BodyCreate(scale, mass);
     body.position = position;
     body.rotation = rotation;
-    bodies.push_back(body);
-    return &bodies.back();
+    bodie_s.push_back(body);
+    return &bodie_s.back();
 }
 Body* BodyCreateStatic(Vec2 position, float rotation, Vec2 scale)
 {
     auto body = BodyCreate(scale, FLT_MAX);
     body.position = position;
     body.rotation = rotation;
-    bodies.push_back(body);
-    return &bodies.back();
+    bodie_s.push_back(body);
+    return &bodie_s.back();
 }
 
 Joint* JointCreate2(Body* b1, Body* b2, Vec2 anchor)
@@ -716,11 +716,11 @@ void BroadPhase()
 {
     // O(n^2) broad-phase
 
-    for (int i =   0; i < (int)bodies.size(); i++)
-    for (int j = i+1; j < (int)bodies.size(); j++)
+    for (int i =   0; i < (int)bodie_s.size(); i++)
+    for (int j = i+1; j < (int)bodie_s.size(); j++)
     {
-        Body* b1 = &bodies[i];
-        Body* b2 = &bodies[j];
+        Body* b1 = &bodie_s[i];
+        Body* b2 = &bodie_s[j];
 
         if (b1->massInv == 0.0f && b2->massInv == 0.0f) continue;
 
@@ -729,15 +729,15 @@ void BroadPhase()
 
         if (newArb.numContacts == 0)
         {
-            arbiters.erase(key);
+            arbiter_s.erase(key);
             continue;
         }
 
-        auto iter = arbiters.find(key);
+        auto iter = arbiter_s.find(key);
 
-        if (iter == arbiters.end())
+        if (iter == arbiter_s.end())
         {
-            arbiters.insert(CollisionPair(key, newArb));
+            arbiter_s.insert(CollisionPair(key, newArb));
             continue;
         }
 
@@ -770,7 +770,7 @@ void Step(float dt)
 
     BroadPhase();
 
-    for (auto& body : bodies)
+    for (auto& body : bodie_s)
     {
         if (body.massInv == 0.0f) continue;
 
@@ -784,16 +784,16 @@ void Step(float dt)
     }
 
     {
-        for (auto& arbiter : arbiters) ArbiterPreStep(arbiter.second, dti);
+        for (auto& arbiter : arbiter_s) ArbiterPreStep(arbiter.second, dti);
         for (auto& joint : joint_s) JointPreStep(&joint, dti);
     }
     for (int i = 0; i < Config::iterations; i++)
     {
-        for (auto& arbiter : arbiters) ArbiterApplyImpulse(arbiter.second);
+        for (auto& arbiter : arbiter_s) ArbiterApplyImpulse(arbiter.second);
         for (auto& joint : joint_s) JointApplyImpulse(&joint);
     }
 
-    for (auto& body : bodies)
+    for (auto& body : bodie_s)
     {
         if (body.massInv == 0.0f) continue;
 
@@ -804,23 +804,23 @@ void Step(float dt)
 
 void Clear()
 {
-    bodies.clear();
+    bodie_s.clear();
     joint_s.clear();
-    arbiters.clear();
+    arbiter_s.clear();
     bomb = NULL;
 }
 Body* AddGround()
 {
     auto body = BodyCreate({ 100.0f, 20.0f }, FLT_MAX);
     body.position = { 0.0f, body.scale.y * -0.5f };
-    bodies.push_back(body);
-    return &bodies.back();
+    bodie_s.push_back(body);
+    return &bodie_s.back();
 }
 void AddBox(Vec2 coord)
 {
     auto body = BodyCreate({ 1.0f, 1.0f }, 10.0f);
     body.position = coord;
-    bodies.push_back(body);
+    bodie_s.push_back(body);
 }
 
 void LaunchBomb()
@@ -829,8 +829,8 @@ void LaunchBomb()
     {
         auto bomb_ = BodyCreate({ 1.0f, 1.0f }, 50.0f);
         bomb_.friction = 0.2f;
-        bodies.push_back(bomb_);
-        bomb = &bodies.back();
+        bodie_s.push_back(bomb_);
+        bomb = &bodie_s.back();
     }
 
     bomb->position = { Random(-15.0f, 15.0f), 15.0f };
@@ -955,12 +955,12 @@ void Demo7()
 
     for (int i = 0; i < numPlanks; i++)
     {
-        auto j1 = JointCreate2(&bodies[i], &bodies[i+1], { -9.125f + 1.25f * i, 5.0f });
+        auto j1 = JointCreate2(&bodie_s[i], &bodie_s[i+1], { -9.125f + 1.25f * i, 5.0f });
         j1->softness = softness;
         j1->biasFactor = biasFactor;
     }
     {
-        auto j1 = JointCreate2(&bodies[numPlanks], &bodies[0], { -9.125f + 1.25f * numPlanks, 5.0f });
+        auto j1 = JointCreate2(&bodie_s[numPlanks], &bodie_s[0], { -9.125f + 1.25f * numPlanks, 5.0f });
         j1->softness = softness;
         j1->biasFactor = biasFactor;
     }
@@ -1056,9 +1056,9 @@ void SelectBody(Vec2 mousePos)
     Vec2 offset0;
     float offset0_ls = FLT_MAX;
 
-    for (size_t i = 0; i < bodies.size(); i++)
+    for (size_t i = 0; i < bodie_s.size(); i++)
     {
-        auto body = &bodies[i];
+        auto body = &bodie_s[i];
 
         if (body->mass == FLT_MAX) continue;
 
@@ -1210,7 +1210,7 @@ void Mouse(GLFWwindow* window, int button, int action, int mods)
     }
     else
     {
-        auto body = &bodies[selectedBodyIndex];
+        auto body = &bodie_s[selectedBodyIndex];
         auto point = selectedBodyPoint;
         auto velocity = mousePosition - point;
         BodyApplyImpulse(body, point, velocity);
@@ -1340,13 +1340,13 @@ void Draw()
     //     DrawLine(selectedBodyPoint, mousePos);
     // }
 
-    for (auto& i : bodies)
+    for (auto& i : bodie_s)
         DrawBody(&i, false);
 
     for (auto& i : joint_s)
         DrawJoint(&i);
 
-    for (auto& i : arbiters)
+    for (auto& i : arbiter_s)
         DrawArbiter(&i.second);
 
     // DrawPoint({ 0.246447, 0.000000 });
