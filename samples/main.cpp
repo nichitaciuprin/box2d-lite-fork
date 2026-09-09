@@ -610,6 +610,21 @@ void BodyApplyImpulse(Body* body, Vec2 position, Vec2 velocity)
     body->velocityLinear += velocityLinearNew;
     body->velocityAngular += velocityAngularNew;
 }
+void CalcJointProp(float mass, float frequencyHz, float dampingRatio, float& softness, float& biasFactor)
+{
+    // frequency in radians
+    float omega = frequencyHz * MATH_PI * 2.0f;
+
+    // damping coefficient
+    float d = omega * dampingRatio * mass * 2.0f;
+
+    // spring stiffness
+    float k = mass * omega * omega;
+
+    // magic formulas
+    softness =           1.0f / (d + k * timestep);
+    biasFactor = k * timestep / (d + k * timestep);
+}
 
 Body BodyCreate(Vec2 scale, float mass)
 {
@@ -686,30 +701,6 @@ Collision ArbiterCreate(Body* b1, Body* b2)
     arb.friction = sqrtf(arb.body1->friction * arb.body2->friction);
 
     return arb;
-}
-
-Body* BodyCreateDynamic(Vec2 position, float rotation, Vec2 scale, float mass)
-{
-    auto body = BodyCreate(scale, mass);
-    body.position = position;
-    body.rotation = rotation;
-    bodie_s.push_back(body);
-    return &bodie_s.back();
-}
-Body* BodyCreateStatic(Vec2 position, float rotation, Vec2 scale)
-{
-    auto body = BodyCreate(scale, FLT_MAX);
-    body.position = position;
-    body.rotation = rotation;
-    bodie_s.push_back(body);
-    return &bodie_s.back();
-}
-
-Joint* JointCreate2(Body* b1, Body* b2, Vec2 anchor)
-{
-    auto joint = JointCreate(b1, b2, anchor);
-    joint_s.push_back(joint);
-    return &joint_s[joint_s.size()-1];
 }
 
 void BroadPhase()
@@ -816,13 +807,28 @@ Body* AddGround()
     bodie_s.push_back(body);
     return &bodie_s.back();
 }
-void AddBox(Vec2 coord)
+Body* BodyCreateDynamic(Vec2 position, float rotation, Vec2 scale, float mass)
 {
-    auto body = BodyCreate({ 1.0f, 1.0f }, 10.0f);
-    body.position = coord;
+    auto body = BodyCreate(scale, mass);
+    body.position = position;
+    body.rotation = rotation;
     bodie_s.push_back(body);
+    return &bodie_s.back();
 }
-
+Body* BodyCreateStatic(Vec2 position, float rotation, Vec2 scale)
+{
+    auto body = BodyCreate(scale, FLT_MAX);
+    body.position = position;
+    body.rotation = rotation;
+    bodie_s.push_back(body);
+    return &bodie_s.back();
+}
+Joint* JointCreate2(Body* b1, Body* b2, Vec2 anchor)
+{
+    auto joint = JointCreate(b1, b2, anchor);
+    joint_s.push_back(joint);
+    return &joint_s[joint_s.size()-1];
+}
 void LaunchBomb()
 {
     if (!bomb)
@@ -837,22 +843,6 @@ void LaunchBomb()
     bomb->rotation = Random(-1.5f, 1.5f);
     bomb->velocityLinear = bomb->position * -1.5f;
     bomb->velocityAngular = Random(-20.0f, 20.0f);
-}
-
-void CalcJointProp(float mass, float frequencyHz, float dampingRatio, float& softness, float& biasFactor)
-{
-    // frequency in radians
-    float omega = frequencyHz * MATH_PI * 2.0f;
-
-    // damping coefficient
-    float d = omega * dampingRatio * mass * 2.0f;
-
-    // spring stiffness
-    float k = mass * omega * omega;
-
-    // magic formulas
-    softness =           1.0f / (d + k * timestep);
-    biasFactor = k * timestep / (d + k * timestep);
 }
 
 void Demo1()
