@@ -827,14 +827,13 @@ Joint* JointCreate2(Body* b1, Body* b2, Vec2 anchor)
 {
     auto joint = JointCreate(b1, b2, anchor);
     joint_s.push_back(joint);
-    return &joint_s[joint_s.size()-1];
+    return &joint_s.back();
 }
 void LaunchBomb()
 {
     if (!bomb)
     {
         auto bomb_ = BodyCreate({ 1.0f, 1.0f }, 50.0f);
-        bomb_.friction = 0.2f;
         bodie_s.push_back(bomb_);
         bomb = &bodie_s.back();
     }
@@ -857,7 +856,6 @@ void Demo2()
 {
     auto b1 = AddGround();
     auto b2 = BodyCreateDynamic({ 9.0f, 11.0f }, 0.0f, { 1.0f, 1.0f }, 100.0f);
-    b2->friction = 0.2f;
     JointCreate2(b1, b2, { 0.0f, 11.0f });
 }
 void Demo3()
@@ -882,10 +880,7 @@ void Demo4()
     AddGround();
 
     for (int i = 0; i < 10; i++)
-    {
         auto b1 = BodyCreateDynamic({ Random(-0.1f, 0.1f), 0.51f + 1.05f * i }, 0.0f, { 1.0f, 1.0f }, 1.0f);
-        b1->friction = 0.2f;
-    }
 }
 void Demo5()
 {
@@ -900,7 +895,6 @@ void Demo5()
         for (int j = i; j < 12; j++)
         {
             auto b1 = BodyCreateDynamic(y, 0.0f, { 1.0f, 1.0f }, 10.0f);
-            b1->friction = 0.2f;
 
             y += { 1.125f, 0.0f };
         }
@@ -977,9 +971,9 @@ void Demo8()
     b5->friction = 0.1f;
 
     JointCreate2(b1, b3, { -2.0f, 1.0f });
-    JointCreate2(b2, b4, { -7.0f, 15.0f });
-    JointCreate2(b1, b5, { 6.0f, 2.6f });
-    JointCreate2(b5, b6, { 7.0f, 3.5f });
+    // JointCreate2(b2, b4, { -7.0f, 15.0f });
+    // JointCreate2(b1, b5, { 6.0f, 2.6f });
+    // JointCreate2(b5, b6, { 7.0f, 3.5f });
 }
 void Demo9()
 {
@@ -997,7 +991,6 @@ void Demo9()
         float y = 12.0f;
 
         auto b2 = BodyCreateDynamic({ 0.5f + i, y }, 0.0f, { 0.75f, 0.25f }, mass);
-        b2->friction = 0.2f;
 
         auto j = JointCreate2(b1, b2, { (float)i, y });
         j->softness = softness;
@@ -1396,6 +1389,10 @@ void InitWindow()
 int main()
 {
     InitWindow();
+
+    // TODO ref body by index, not pointer, and remove this reserve
+    bodie_s.reserve(256);
+    joint_s.reserve(256);
 
     // InitDemo(0);
     // BroadPhase();
