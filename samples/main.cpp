@@ -118,35 +118,8 @@ struct Collision
     Body* body2;
     float friction; // Combined friction
 };
-struct CollisionKey
-{
-    Body* body1;
-    Body* body2;
 
-    CollisionKey(Body* b1, Body* b2)
-    {
-        if (b1 < b2)
-        {
-            body1 = b1;
-            body2 = b2;
-        }
-        else
-        {
-            body1 = b2;
-            body2 = b1;
-        }
-    }
-};
-
-typedef pair<CollisionKey, Collision> CollisionPair;
-
-inline bool operator < (const CollisionKey& a1, const CollisionKey& a2)
-{
-    if (a1.body1 < a2.body1) return true;
-    if (a1.body1 > a2.body1) return false;
-    if (a1.body2 < a2.body2) return true;
-    return false;
-}
+typedef pair<int, Collision> CollisionPair;
 
 namespace
 {
@@ -179,7 +152,7 @@ namespace
 
     vector<Body> bodie_s;
     vector<Joint> joint_s;
-    map<CollisionKey, Collision> arbiter_s;
+    map<int, Collision> arbiter_s;
 }
 
 void ComputeIncidentEdge(const Body* body, Vec2 normal, ClipVertex& v0, ClipVertex& v1)
@@ -716,7 +689,7 @@ void BroadPhase()
         if (b1->massInv == 0.0f && b2->massInv == 0.0f) continue;
 
         Collision newArb = ArbiterCreate(b1, b2);
-        CollisionKey key(b1, b2);
+        int key = i << 16 | j;
 
         if (newArb.numContacts == 0)
         {
@@ -971,9 +944,9 @@ void Demo8()
     b5->friction = 0.1f;
 
     JointCreate2(b1, b3, { -2.0f, 1.0f });
-    // JointCreate2(b2, b4, { -7.0f, 15.0f });
-    // JointCreate2(b1, b5, { 6.0f, 2.6f });
-    // JointCreate2(b5, b6, { 7.0f, 3.5f });
+    JointCreate2(b2, b4, { -7.0f, 15.0f });
+    JointCreate2(b1, b5, { 6.0f, 2.6f });
+    JointCreate2(b5, b6, { 7.0f, 3.5f });
 }
 void Demo9()
 {
