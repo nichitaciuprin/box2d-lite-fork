@@ -181,7 +181,7 @@ namespace
     Vec2 selectedBodyPoint;
 
     vector<Body*> bodies;
-    vector<Joint> joints;
+    vector<Joint> joint_s;
     map<CollisionKey, Collision> arbiters;
 }
 
@@ -710,8 +710,8 @@ Body* BodyCreateStatic(Body* b, Vec2 position, float rotation, Vec2 scale)
 Joint* JointCreate2(Body* b1, Body* b2, Vec2 anchor)
 {
     auto joint = JointCreate(b1, b2, anchor);
-    joints.push_back(joint);
-    return &joints[joints.size()-1];
+    joint_s.push_back(joint);
+    return &joint_s[joint_s.size()-1];
 }
 
 void BroadPhase()
@@ -787,12 +787,12 @@ void Step(float dt)
 
     {
         for (auto& arbiter : arbiters) ArbiterPreStep(arbiter.second, dti);
-        for (auto& joint : joints) JointPreStep(&joint, dti);
+        for (auto& joint : joint_s) JointPreStep(&joint, dti);
     }
     for (int i = 0; i < Config::iterations; i++)
     {
         for (auto& arbiter : arbiters) ArbiterApplyImpulse(arbiter.second);
-        for (auto& joint : joints) JointApplyImpulse(&joint);
+        for (auto& joint : joint_s) JointApplyImpulse(&joint);
     }
 
     for (auto& body : bodies)
@@ -807,7 +807,7 @@ void Step(float dt)
 void Clear()
 {
     bodies.clear();
-    joints.clear();
+    joint_s.clear();
     arbiters.clear();
     body_s_count = 0;
     bomb = NULL;
@@ -1358,7 +1358,7 @@ void Draw()
     for (int i = 0; i < body_s_count; i++)
         DrawBody(body_s + i, false);
 
-    for (auto& i : joints)
+    for (auto& i : joint_s)
         DrawJoint(&i);
 
     for (auto& i : arbiters)
