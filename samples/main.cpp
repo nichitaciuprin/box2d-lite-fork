@@ -168,9 +168,6 @@ namespace
 
     int demoIndex = 0;
 
-    Body body_s[200];
-    int body_s_count = 0;
-
     Body* bomb = NULL;
 
     int closeBodyIndex = -1;
@@ -180,7 +177,7 @@ namespace
     int selectedBodyIndex = -1;
     Vec2 selectedBodyPoint;
 
-    vector<Body*> bodies;
+    vector<Body> bodies;
     vector<Joint> joint_s;
     map<CollisionKey, Collision> arbiters;
 }
@@ -691,22 +688,23 @@ Collision ArbiterCreate(Body* b1, Body* b2)
     return arb;
 }
 
-Body* BodyCreateDynamic(Body* b, Vec2 position, float rotation, Vec2 scale, float mass)
+Body* BodyCreateDynamic(Vec2 position, float rotation, Vec2 scale, float mass)
 {
-    *b = BodyCreate(scale, mass);
-    b->position = position;
-    b->rotation = rotation;
-    bodies.push_back(b);
-    return b;
+    auto body = BodyCreate(scale, mass);
+    body.position = position;
+    body.rotation = rotation;
+    bodies.push_back(body);
+    return &bodies.back();
 }
-Body* BodyCreateStatic(Body* b, Vec2 position, float rotation, Vec2 scale)
+Body* BodyCreateStatic(Vec2 position, float rotation, Vec2 scale)
 {
-    *b = BodyCreate(scale, FLT_MAX);
-    b->position = position;
-    b->rotation = rotation;
-    bodies.push_back(b);
-    return b;
+    auto body = BodyCreate(scale, FLT_MAX);
+    body.position = position;
+    body.rotation = rotation;
+    bodies.push_back(body);
+    return &bodies.back();
 }
+
 Joint* JointCreate2(Body* b1, Body* b2, Vec2 anchor)
 {
     auto joint = JointCreate(b1, b2, anchor);
@@ -721,8 +719,8 @@ void BroadPhase()
     for (int i =   0; i < (int)bodies.size(); i++)
     for (int j = i+1; j < (int)bodies.size(); j++)
     {
-        Body* b1 = bodies[i];
-        Body* b2 = bodies[j];
+        Body* b1 = &bodies[i];
+        Body* b2 = &bodies[j];
 
         if (b1->massInv == 0.0f && b2->massInv == 0.0f) continue;
 
@@ -774,15 +772,15 @@ void Step(float dt)
 
     for (auto& body : bodies)
     {
-        if (body->massInv == 0.0f) continue;
+        if (body.massInv == 0.0f) continue;
 
-        body->velocityLinear += Config::gravity * dt;
+        body.velocityLinear += Config::gravity * dt;
 
-        body->velocityLinear  += body->force  * body->massInv    * dt;
-        body->velocityAngular += body->torque * body->inertiaInv * dt;
+        body.velocityLinear  += body.force  * body.massInv    * dt;
+        body.velocityAngular += body.torque * body.inertiaInv * dt;
 
-        body->force = { 0.0f, 0.0f };
-        body->torque = 0.0f;
+        body.force = { 0.0f, 0.0f };
+        body.torque = 0.0f;
     }
 
     {
@@ -797,10 +795,10 @@ void Step(float dt)
 
     for (auto& body : bodies)
     {
-        if (body->massInv == 0.0f) continue;
+        if (body.massInv == 0.0f) continue;
 
-        body->position += body->velocityLinear  * dt;
-        body->rotation += body->velocityAngular * dt;
+        body.position += body.velocityLinear  * dt;
+        body.rotation += body.velocityAngular * dt;
     }
 }
 
@@ -809,34 +807,30 @@ void Clear()
     bodies.clear();
     joint_s.clear();
     arbiters.clear();
-    body_s_count = 0;
     bomb = NULL;
 }
-Body* AddGround(Body* b)
+Body* AddGround()
 {
-    *b = BodyCreate({ 100.0f, 20.0f }, FLT_MAX);
-    b->position = { 0.0f, b->scale.y * -0.5f };
-    bodies.push_back(b);
-    return b;
+    auto body = BodyCreate({ 100.0f, 20.0f }, FLT_MAX);
+    body.position = { 0.0f, body.scale.y * -0.5f };
+    bodies.push_back(body);
+    return &bodies.back();
 }
 void AddBox(Vec2 coord)
 {
-    auto b = &body_s[body_s_count];
-    *b = BodyCreate({ 1.0f, 1.0f }, 10.0f);
-    b->position = coord;
-    bodies.push_back(b);
-    body_s_count++;
+    auto body = BodyCreate({ 1.0f, 1.0f }, 10.0f);
+    body.position = coord;
+    bodies.push_back(body);
 }
 
 void LaunchBomb()
 {
     if (!bomb)
     {
-        bomb = body_s + body_s_count;
-        *bomb = BodyCreate({ 1.0f, 1.0f }, 50.0f);
-        bomb->friction = 0.2f;
-        bodies.push_back(bomb);
-        body_s_count++;
+        auto bomb_ = BodyCreate({ 1.0f, 1.0f }, 50.0f);
+        bomb_.friction = 0.2f;
+        bodies.push_back(bomb_);
+        bomb = &bodies.back();
     }
 
     bomb->position = { Random(-15.0f, 15.0f), 15.0f };
@@ -861,61 +855,51 @@ void CalcJointProp(float mass, float frequencyHz, float dampingRatio, float& sof
     biasFactor = k * timestep / (d + k * timestep);
 }
 
-void Demo1(Body* b)
+void Demo1()
 {
-    AddGround(b); b++; body_s_count++;
-    BodyCreateDynamic(b, { 0.0f, 4.0f }, 0.0f, { 1.0f, 1.0f }, 1.0f); b++; body_s_count++;
+    AddGround();
+    BodyCreateDynamic({ 0.0f, 4.0f }, 0.0f, { 1.0f, 1.0f }, 1.0f);
 
     // BodyCreateStatic(b, { 0.0f, 0.0f }, 0.0f, { 1.0f, 1.0f }); b++; body_s_count++;
     // BodyCreateDynamic(b, { -0.60f, 0.0f }, -MATH_PI / 4, { 0.5f, 0.5f }, 1.0f); b++; body_s_count++;
 }
-void Demo2(Body* b)
+void Demo2()
 {
-    auto b1 = AddGround(b);
-    b++; body_s_count++;
-
-    auto b2 = BodyCreateDynamic(b, { 9.0f, 11.0f }, 0.0f, { 1.0f, 1.0f }, 100.0f);
+    auto b1 = AddGround();
+    auto b2 = BodyCreateDynamic({ 9.0f, 11.0f }, 0.0f, { 1.0f, 1.0f }, 100.0f);
     b2->friction = 0.2f;
-    b++; body_s_count++;
-
     JointCreate2(b1, b2, { 0.0f, 11.0f });
 }
-void Demo3(Body* b)
+void Demo3()
 {
-    AddGround(b);
-    b++; body_s_count++;
-
-    BodyCreateStatic(b, { -2.0f, 11.0f }, -0.25f, { 13.0f, 0.25f });  b++; body_s_count++;
-    BodyCreateStatic(b, { 5.25f, 9.5f },   0.00f, { 0.25f, 1.0f });   b++; body_s_count++;
-    BodyCreateStatic(b, { 2.0f, 7.0f },   +0.25f, { 13.0f, 0.25f });  b++; body_s_count++;
-    BodyCreateStatic(b, { -5.25f, 5.5f },  0.00f, { 0.25f, 1.0f });   b++; body_s_count++;
-    BodyCreateStatic(b, { -2.0f, 3.0f },  -0.25f, { 13.0f, 0.25f });  b++; body_s_count++;
+    AddGround();
+    BodyCreateStatic({ -2.0f, 11.0f }, -0.25f, { 13.0f, 0.25f });
+    BodyCreateStatic({ 5.25f, 9.5f },   0.00f, { 0.25f, 1.0f });
+    BodyCreateStatic({ 2.0f, 7.0f },   +0.25f, { 13.0f, 0.25f });
+    BodyCreateStatic({ -5.25f, 5.5f },  0.00f, { 0.25f, 1.0f });
+    BodyCreateStatic({ -2.0f, 3.0f },  -0.25f, { 13.0f, 0.25f });
 
     float friction[5] = { 0.75f, 0.50f, 0.35f, 0.10f, 0.0f };
 
     for (int i = 0; i < 5; i++)
     {
-        auto b1 = BodyCreateDynamic(b, { -7.5f + 2.0f * i, 14.0f }, 0.0f, { 0.5f, 0.5f }, 25.0f);
+        auto b1 = BodyCreateDynamic({ -7.5f + 2.0f * i, 14.0f }, 0.0f, { 0.5f, 0.5f }, 25.0f);
         b1->friction = friction[i];
-        b++; body_s_count++;
     }
 }
-void Demo4(Body* b)
+void Demo4()
 {
-    AddGround(b);
-    b++; body_s_count++;
+    AddGround();
 
     for (int i = 0; i < 10; i++)
     {
-        auto b1 = BodyCreateDynamic(b, { Random(-0.1f, 0.1f), 0.51f + 1.05f * i }, 0.0f, { 1.0f, 1.0f }, 1.0f);
+        auto b1 = BodyCreateDynamic({ Random(-0.1f, 0.1f), 0.51f + 1.05f * i }, 0.0f, { 1.0f, 1.0f }, 1.0f);
         b1->friction = 0.2f;
-        b++; body_s_count++;
     }
 }
-void Demo5(Body* b)
+void Demo5()
 {
-    AddGround(b);
-    b++; body_s_count++;
+    AddGround();
 
     Vec2 x = { -6.0f, 0.75f };
 
@@ -925,9 +909,8 @@ void Demo5(Body* b)
 
         for (int j = i; j < 12; j++)
         {
-            auto b1 = BodyCreateDynamic(b, y, 0.0f, { 1.0f, 1.0f }, 10.0f);
+            auto b1 = BodyCreateDynamic(y, 0.0f, { 1.0f, 1.0f }, 10.0f);
             b1->friction = 0.2f;
-            b++; body_s_count++;
 
             y += { 1.125f, 0.0f };
         }
@@ -935,17 +918,16 @@ void Demo5(Body* b)
         x += { 0.5625f, 2.0f };
     }
 }
-void Demo6(Body* b)
+void Demo6()
 {
-    auto b1 = AddGround(b); b++; body_s_count++;
-    auto b2 = BodyCreateDynamic(b, { 0.0f, 1.0f }, 0.0f, { 12.0f, 0.25f }, 100.0f); b++; body_s_count++;
-    auto b3 = BodyCreateDynamic(b, { -5.0f, 2.0f }, 0.0f, { 0.5f, 0.5f }, 25.0f); b++; body_s_count++;
-    auto b4 = BodyCreateDynamic(b, { -5.5f, 2.0f }, 0.0f, { 0.5f, 0.5f }, 25.0f); b++; body_s_count++;
-    auto b5 = BodyCreateDynamic(b, { 5.5f, 15.0f }, 0.0f, { 1.0f, 1.0f }, 100.0f); b++; body_s_count++;
-
+    auto b1 = AddGround();
+    auto b2 = BodyCreateDynamic({ 0.0f, 1.0f }, 0.0f, { 12.0f, 0.25f }, 100.0f);
+    BodyCreateDynamic({ -5.0f, 2.0f }, 0.0f, { 0.5f, 0.5f }, 25.0f);
+    BodyCreateDynamic({ -5.5f, 2.0f }, 0.0f, { 0.5f, 0.5f }, 25.0f);
+    BodyCreateDynamic({ 5.5f, 15.0f }, 0.0f, { 1.0f, 1.0f }, 100.0f);
     JointCreate2(b1, b2, { 0.0f, 1.0f });
 }
-void Demo7(Body* b)
+void Demo7()
 {
     float mass = 50.0f;
     float frequencyHz = 2.0f;
@@ -954,47 +936,53 @@ void Demo7(Body* b)
     float softness, biasFactor;
     CalcJointProp(mass, frequencyHz, dampingRatio, softness, biasFactor);
 
-    AddGround(b);
-    b++; body_s_count++;
+    AddGround();
 
     int numPlanks = 15;
 
     for (int i = 0; i < numPlanks; i++)
-    {
-        auto b1 = BodyCreateDynamic(b, { -8.5f + 1.25f * i, 5.0f }, 0.0f, { 1.0f, 0.25f }, mass);
-        b++; body_s_count++;
-    }
+        BodyCreateDynamic({ -8.5f + 1.25f * i, 5.0f }, 0.0f, { 1.0f, 0.25f }, mass);
+
+    // auto ground = &bodies.bodies[0];
+    // auto p1 = &bodies.bodies[1];
+    // auto p2 = &bodies.bodies.back();
+
+    // {
+    //     auto j1 = JointCreate2(ground, p2, { -9.125f + 1.25f * i, 5.0f });
+    //     j1->softness = softness;
+    //     j1->biasFactor = biasFactor;
+    // }
 
     for (int i = 0; i < numPlanks; i++)
     {
-        auto j1 = JointCreate2(body_s+i, body_s+i+1, { -9.125f + 1.25f * i, 5.0f });
+        auto j1 = JointCreate2(&bodies[i], &bodies[i+1], { -9.125f + 1.25f * i, 5.0f });
         j1->softness = softness;
         j1->biasFactor = biasFactor;
     }
-
-    auto j1 = JointCreate2(body_s + numPlanks, body_s, { -9.125f + 1.25f * numPlanks, 5.0f });
-    j1->softness = softness;
-    j1->biasFactor = biasFactor;
+    {
+        auto j1 = JointCreate2(&bodies[numPlanks], &bodies[0], { -9.125f + 1.25f * numPlanks, 5.0f });
+        j1->softness = softness;
+        j1->biasFactor = biasFactor;
+    }
 }
-void Demo8(Body* b)
+void Demo8()
 {
-    auto b1 = AddGround(b); b++; body_s_count++;
+    auto b1 = AddGround();
 
-    BodyCreateStatic(b, { -1.5f, 10.0f }, 0.0f, { 12.0f, 0.5f }); b++; body_s_count++;
-    BodyCreateStatic(b, { 1.0f, 6.0f }, 0.3f, { 14.0f, 0.5f }); b++; body_s_count++;
+    BodyCreateStatic({ -1.5f, 10.0f }, 0.0f, { 12.0f, 0.5f });
+    BodyCreateStatic({ 1.0f, 6.0f }, 0.3f, { 14.0f, 0.5f });
 
     for (int i = 0; i < 10; i++)
     {
-        auto b1 = BodyCreateDynamic(b, { -6.0f + 1.0f * i, 11.125f }, 0.0f, { 0.2f, 2.0f }, 10.0f);
-        b1->friction = 0.1f;
-        b++; body_s_count++;
+        auto b = BodyCreateDynamic({ -6.0f + 1.0f * i, 11.125f }, 0.0f, { 0.2f, 2.0f }, 10.0f);
+        b->friction = 0.1f;
     }
 
-    auto b2 = BodyCreateStatic(b, { -7.0f, 4.0f }, 0.0f, { 0.5f, 3.0f }); b++; body_s_count++;
-    auto b3 = BodyCreateDynamic(b, { -0.9f, 1.0f }, 0.0f, { 12.0f, 0.25f }, 20.0f); b++; body_s_count++;
-    auto b4 = BodyCreateDynamic(b, { -10.0f, 15.0f }, 0.0f, { 0.5f, 0.5f }, 10.0f); b++; body_s_count++;
-    auto b5 = BodyCreateDynamic(b, { 6.0f, 2.5f }, 0.0f, { 2.0f, 2.0f }, 20.0f); b++; body_s_count++;
-    auto b6 = BodyCreateDynamic(b, { 6.0f, 3.6f }, 0.0f, { 2.0f, 0.2f }, 10.0f); b++; body_s_count++;
+    auto b2 = BodyCreateStatic({ -7.0f, 4.0f }, 0.0f, { 0.5f, 3.0f });
+    auto b3 = BodyCreateDynamic({ -0.9f, 1.0f }, 0.0f, { 12.0f, 0.25f }, 20.0f);
+    auto b4 = BodyCreateDynamic({ -10.0f, 15.0f }, 0.0f, { 0.5f, 0.5f }, 10.0f);
+    auto b5 = BodyCreateDynamic({ 6.0f, 2.5f }, 0.0f, { 2.0f, 2.0f }, 20.0f);
+    auto b6 = BodyCreateDynamic({ 6.0f, 3.6f }, 0.0f, { 2.0f, 0.2f }, 10.0f);
 
     b5->friction = 0.1f;
 
@@ -1003,7 +991,7 @@ void Demo8(Body* b)
     JointCreate2(b1, b5, { 6.0f, 2.6f });
     JointCreate2(b5, b6, { 7.0f, 3.5f });
 }
-void Demo9(Body* b)
+void Demo9()
 {
     float mass = 10.0f;
     float frequencyHz = 4.0f;
@@ -1012,14 +1000,13 @@ void Demo9(Body* b)
     float softness, biasFactor;
     CalcJointProp(mass, frequencyHz, dampingRatio, softness, biasFactor);
 
-    auto b1 = AddGround(b);
-    b++; body_s_count++;
+    auto b1 = AddGround();
 
     for (int i = 0; i < 15; i++)
     {
         float y = 12.0f;
 
-        auto b2 = BodyCreateDynamic(b, { 0.5f + i, y }, 0.0f, { 0.75f, 0.25f }, mass);
+        auto b2 = BodyCreateDynamic({ 0.5f + i, y }, 0.0f, { 0.75f, 0.25f }, mass);
         b2->friction = 0.2f;
 
         auto j = JointCreate2(b1, b2, { (float)i, y });
@@ -1027,8 +1014,6 @@ void Demo9(Body* b)
         j->biasFactor = biasFactor;
 
         b1 = b2;
-
-        b++; body_s_count++;
     }
 }
 
@@ -1044,7 +1029,7 @@ const char* demoNames[] =
     "Demo 8: Dominos",
     "Demo 9: Multi-pendulum"
 };
-void (*demos[])(Body* b) =
+void (*demos[])() =
 {
     Demo1,
     Demo2,
@@ -1061,7 +1046,7 @@ void InitDemo(int index)
 {
     Clear();
     demoIndex = index;
-    demos[index](body_s);
+    demos[index]();
 }
 
 void SelectBody(Vec2 mousePos)
@@ -1073,7 +1058,7 @@ void SelectBody(Vec2 mousePos)
 
     for (size_t i = 0; i < bodies.size(); i++)
     {
-        auto body = bodies[i];
+        auto body = &bodies[i];
 
         if (body->mass == FLT_MAX) continue;
 
@@ -1225,7 +1210,7 @@ void Mouse(GLFWwindow* window, int button, int action, int mods)
     }
     else
     {
-        auto body = bodies[selectedBodyIndex];
+        auto body = &bodies[selectedBodyIndex];
         auto point = selectedBodyPoint;
         auto velocity = mousePosition - point;
         BodyApplyImpulse(body, point, velocity);
@@ -1355,8 +1340,8 @@ void Draw()
     //     DrawLine(selectedBodyPoint, mousePos);
     // }
 
-    for (int i = 0; i < body_s_count; i++)
-        DrawBody(body_s + i, false);
+    for (auto& i : bodies)
+        DrawBody(&i, false);
 
     for (auto& i : joint_s)
         DrawJoint(&i);
