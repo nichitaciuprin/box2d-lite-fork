@@ -119,8 +119,6 @@ struct Collision
     float friction; // Combined friction
 };
 
-typedef pair<int, Collision> CollisionPair;
-
 namespace
 {
     int width = 1280;
@@ -701,7 +699,7 @@ void BroadPhase()
 
         if (iter == arbiter_s.end())
         {
-            arbiter_s.insert(CollisionPair(key, newArb));
+            arbiter_s.insert({ key, newArb });
             continue;
         }
 
