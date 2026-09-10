@@ -60,10 +60,9 @@ struct Edges
     char edge2in;
     char edge2out;
 };
-union FeaturePair
+struct FeaturePair
 {
     Edges e;
-    int value;
 };
 struct ClipVertex
 {
@@ -708,7 +707,10 @@ void BroadPhase()
                 auto& c_new = a_new->contacts[i];
                 auto& c_old = a_old->contacts[j];
 
-                if (c_new.feature.value != c_old.feature.value) continue;
+                if (c_new.feature.e.edge1in  != c_old.feature.e.edge1in)  continue;
+                if (c_new.feature.e.edge1out != c_old.feature.e.edge1out) continue;
+                if (c_new.feature.e.edge2in  != c_old.feature.e.edge2in)  continue;
+                if (c_new.feature.e.edge2out != c_old.feature.e.edge2out) continue;
 
                 c_new.Pn = c_old.Pn;
                 c_new.Pt = c_old.Pt;
