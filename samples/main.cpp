@@ -554,16 +554,14 @@ void JointPreStep(Joint* joint, float dti)
 void JointApplyImpulse(Joint* joint)
 {
     auto vr = CalcRelativeVelocity(joint);
-
     auto impulse = joint->M * (joint->bias - vr - joint->P * joint->softness);
+
+    joint->P += impulse;
 
     joint->body1->velocityLinear -= impulse * joint->body1->massInv;
     joint->body2->velocityLinear += impulse * joint->body2->massInv;
-
     joint->body1->velocityAngular -= Cross(joint->r1, impulse) * joint->body1->inertiaInv;
     joint->body2->velocityAngular += Cross(joint->r2, impulse) * joint->body2->inertiaInv;
-
-    joint->P += impulse;
 }
 void BodyAddForce(Body& body, Vec2 force)
 {
