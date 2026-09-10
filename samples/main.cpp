@@ -72,8 +72,8 @@ struct Contact
     Vec2 r1;
     Vec2 r2;
     float separation;
-    float Pn;	// accumulated normal impulse
-    float Pt;	// accumulated tangent impulse
+    float pn;	// accumulated normal impulse
+    float pt;	// accumulated tangent impulse
     float massNormalInv;
     float massTangentInv;
     float bias;
@@ -370,8 +370,8 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
 
         auto& contact = contacts[numContacts];
 
-        contact.Pn = 0;
-        contact.Pt = 0;
+        contact.pn = 0;
+        contact.pt = 0;
 
         // clamp to reference face (easy to cull)
         contact.position = point.v - normalFront * separation;
@@ -454,7 +454,7 @@ void ArbiterPreStep(Collision& arb, float dti)
             c->bias = 0.0f;
         }
 
-        Vec2 impulse = normal * c->Pn + tangent * c->Pt;
+        Vec2 impulse = normal * c->pn + tangent * c->pt;
         UpdateVelocity(c, arb.body1, arb.body2, impulse);
     }
 }
@@ -468,26 +468,26 @@ void ArbiterApplyImpulse(Collision& arb)
             auto vr = CalcRelativeVelocity(c, arb.body1, arb.body2);
             Vec2 normal = c->normal;
             float impInit = (-Dot(normal, vr) + c->bias) * c->massNormalInv;
-            float impOld = c->Pn;
+            float impOld = c->pn;
             float impNew = Max(impOld + impInit, 0.0f);
             float impDiff = impNew - impOld;
             Vec2 impulse = normal * impDiff;
             UpdateVelocity(c, arb.body1, arb.body2, impulse);
-            c->Pn = impNew;
+            c->pn = impNew;
         }
 
-        float frictionMax = arb.friction * c->Pn;
+        float frictionMax = arb.friction * c->pn;
 
         {
             auto vr = CalcRelativeVelocity(c, arb.body1, arb.body2);
             Vec2 tangent = RotateRight(c->normal);
             float impInit = -Dot(tangent, vr) * c->massTangentInv;
-            float impOld = c->Pt;
+            float impOld = c->pt;
             float impNew = Clamp(impOld + impInit, -frictionMax, +frictionMax);
             float impDiff = impNew - impOld;
             Vec2 impulse = tangent * impDiff;
             UpdateVelocity(c, arb.body1, arb.body2, impulse);
-            c->Pt = impNew;
+            c->pt = impNew;
         }
     }
 }
@@ -708,8 +708,8 @@ void BroadPhase()
                 if (c_new.e.edge2in  != c_old.e.edge2in)  continue;
                 if (c_new.e.edge2out != c_old.e.edge2out) continue;
 
-                c_new.Pn = c_old.Pn;
-                c_new.Pt = c_old.Pt;
+                c_new.pn = c_old.pn;
+                c_new.pt = c_old.pt;
 
                 break;
             }
