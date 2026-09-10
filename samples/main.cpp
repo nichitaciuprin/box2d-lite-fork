@@ -60,10 +60,6 @@ struct Edges
     char edge2in;
     char edge2out;
 };
-struct FeaturePair
-{
-    Edges e;
-};
 struct ClipVertex
 {
     Vec2 v;
