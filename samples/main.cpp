@@ -822,6 +822,12 @@ void Demo1()
 
     // BodyCreateStatic(b, { 0.0f, 0.0f }, 0.0f, { 1.0f, 1.0f }); b++; body_s_count++;
     // BodyCreateDynamic(b, { -0.60f, 0.0f }, -MATH_PI / 4, { 0.5f, 0.5f }, 1.0f); b++; body_s_count++;
+
+    // auto b0 = BodyCreateDynamic({ -0.5f, 8.0f }, 0, { 0.5f, 0.5f }, 1.0f);
+    // auto b1 = BodyCreateDynamic({ +0.5f, 6.0f }, 0, { 0.5f, 0.5f }, 1.0f);
+    // auto j = JointCreate2(b0, b1, (b0->position + b1->position) / 2);
+    // j->softness = 1.0f;
+    // j->biasFactor = 0.0f;
 }
 void Demo2()
 {
