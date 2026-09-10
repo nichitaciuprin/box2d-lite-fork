@@ -8,9 +8,12 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
+#include <iostream>
 
 #include <vector>
 #include <map>
+
+// using namespace std;
 
 using std::vector;
 using std::map;
@@ -824,13 +827,13 @@ void Demo1()
     // j->softness = 1.0f;
     // j->biasFactor = 0.0f;
 }
-void Demo2()
+void Demo5()
 {
     auto b1 = AddGround();
     auto b2 = BodyCreateDynamic({ 9.0f, 11.0f }, 0.0f, { 1.0f, 1.0f }, 100.0f);
     JointCreate2(b1, b2, { 0.0f, 11.0f });
 }
-void Demo3()
+void Demo4()
 {
     AddGround();
     BodyCreateStatic({ -2.0f, 11.0f }, -0.25f, { 13.0f, 0.25f });
@@ -847,14 +850,14 @@ void Demo3()
         b1->friction = friction[i];
     }
 }
-void Demo4()
+void Demo2()
 {
     AddGround();
 
     for (int i = 0; i < 10; i++)
         auto b1 = BodyCreateDynamic({ Random(-0.1f, 0.1f), 0.51f + 1.05f * i }, 0.0f, { 1.0f, 1.0f }, 1.0f);
 }
-void Demo5()
+void Demo3()
 {
     AddGround();
 
@@ -874,7 +877,7 @@ void Demo5()
         x += { 0.5625f, 2.0f };
     }
 }
-void Demo6()
+void Demo8()
 {
     auto b1 = AddGround();
     auto b2 = BodyCreateDynamic({ 0.0f, 1.0f }, 0.0f, { 12.0f, 0.25f }, 100.0f);
@@ -921,7 +924,7 @@ void Demo7()
         j1->biasFactor = biasFactor;
     }
 }
-void Demo8()
+void Demo6()
 {
     float mass = 10.0f;
     float frequencyHz = 4.0f;
@@ -975,30 +978,31 @@ void Demo9()
 const char* demoNames[] =
 {
     "Demo 1: Single Box",
-    "Demo 4: Randomized Stacking",
-    "Demo 5: Pyramid Stacking",
-    "Demo 3: Varying Friction Coefficients",
-    "Demo 2: Simple Pendulum",
-    "Demo 8: Multi-pendulum",
+    "Demo 2: Randomized Stacking",
+    "Demo 3: Pyramid Stacking",
+    "Demo 4: Varying Friction Coefficients",
+    "Demo 5: Simple Pendulum",
+    "Demo 6: Multi-pendulum",
     "Demo 7: Suspension Bridge",
-    "Demo 6: Teeter",
+    "Demo 8: Teeter",
     "Demo 9: Dominos",
 };
 void (*demos[])() =
 {
     Demo1,
+    Demo2,
+    Demo3,
     Demo4,
     Demo5,
-    Demo3,
-    Demo2,
-    Demo8,
-    Demo7,
     Demo6,
+    Demo7,
+    Demo8,
     Demo9
 };
 
 void InitDemo(int index)
 {
+    std::cout << index << std::endl;
     Clear();
     demoIndex = index;
     demos[index]();
@@ -1364,7 +1368,7 @@ int main()
     // BroadPhase();
     // pause = true;
 
-    InitDemo(3);
+    InitDemo(0);
 
     while (!glfwWindowShouldClose(window))
     {
