@@ -67,7 +67,7 @@ struct FeaturePair
 struct ClipVertex
 {
     Vec2 v;
-    FeaturePair fp;
+    Edges e;
 };
 struct Contact
 {
@@ -167,26 +167,26 @@ void ComputeIncidentEdge(const Body* body, Vec2 normal, ClipVertex& v0, ClipVert
     {
         if (normal.x >= 0.0f)
         {
-            v0.v = { +scaleh.x, -scaleh.y }; v0.fp.e.edge2in = EDGE3; v0.fp.e.edge2out = EDGE4;
-            v1.v = { +scaleh.x, +scaleh.y }; v1.fp.e.edge2in = EDGE4; v1.fp.e.edge2out = EDGE1;
+            v0.v = { +scaleh.x, -scaleh.y }; v0.e.edge2in = EDGE3; v0.e.edge2out = EDGE4;
+            v1.v = { +scaleh.x, +scaleh.y }; v1.e.edge2in = EDGE4; v1.e.edge2out = EDGE1;
         }
         else
         {
-            v0.v = { -scaleh.x, +scaleh.y }; v0.fp.e.edge2in = EDGE1; v0.fp.e.edge2out = EDGE2;
-            v1.v = { -scaleh.x, -scaleh.y }; v1.fp.e.edge2in = EDGE2; v1.fp.e.edge2out = EDGE3;
+            v0.v = { -scaleh.x, +scaleh.y }; v0.e.edge2in = EDGE1; v0.e.edge2out = EDGE2;
+            v1.v = { -scaleh.x, -scaleh.y }; v1.e.edge2in = EDGE2; v1.e.edge2out = EDGE3;
         }
     }
     else
     {
         if (normal.y >= 0.0f)
         {
-            v0.v = { +scaleh.x, +scaleh.y }; v0.fp.e.edge2in = EDGE4; v0.fp.e.edge2out = EDGE1;
-            v1.v = { -scaleh.x, +scaleh.y }; v1.fp.e.edge2in = EDGE1; v1.fp.e.edge2out = EDGE2;
+            v0.v = { +scaleh.x, +scaleh.y }; v0.e.edge2in = EDGE4; v0.e.edge2out = EDGE1;
+            v1.v = { -scaleh.x, +scaleh.y }; v1.e.edge2in = EDGE1; v1.e.edge2out = EDGE2;
         }
         else
         {
-            v0.v = { -scaleh.x, -scaleh.y }; v0.fp.e.edge2in = EDGE2; v0.fp.e.edge2out = EDGE3;
-            v1.v = { +scaleh.x, -scaleh.y }; v1.fp.e.edge2in = EDGE3; v1.fp.e.edge2out = EDGE4;
+            v0.v = { -scaleh.x, -scaleh.y }; v0.e.edge2in = EDGE2; v0.e.edge2out = EDGE3;
+            v1.v = { +scaleh.x, -scaleh.y }; v1.e.edge2in = EDGE3; v1.e.edge2out = EDGE4;
         }
     }
 
@@ -209,8 +209,8 @@ bool ClipLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POINTS], Vec2 norm
         {
             vOut[0] = vIn[0];
             vOut[1] = vIn[1];
-            vOut[1].fp.e.edge1out = clipEdge;
-            vOut[1].fp.e.edge2out = NO_EDGE;
+            vOut[1].e.edge1out = clipEdge;
+            vOut[1].e.edge2out = NO_EDGE;
             vOut[1].v = Lerp(vIn[0].v, vIn[1].v, dist0 / (dist0 - dist1));
             return false;
         }
@@ -218,14 +218,14 @@ bool ClipLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POINTS], Vec2 norm
         {
             vOut[0] = vIn[1];
             vOut[1] = vIn[0];
-            vOut[1].fp.e.edge1in = clipEdge;
-            vOut[1].fp.e.edge2in = NO_EDGE;
+            vOut[1].e.edge1in = clipEdge;
+            vOut[1].e.edge2in = NO_EDGE;
             vOut[1].v = Lerp(vIn[0].v, vIn[1].v, dist0 / (dist0 - dist1));
             return false;
             // vOut[0] = vIn[0];
             // vOut[1] = vIn[1];
-            // vOut[0].fp.e.edge1in = clipEdge;
-            // vOut[0].fp.e.edge2in = NO_EDGE;
+            // vOut[0].e.edge1in = clipEdge;
+            // vOut[0].e.edge2in = NO_EDGE;
             // vOut[0].v = Lerp(vIn[0].v, vIn[1].v, dist0 / (dist0 - dist1));
             // return false;
         }
@@ -379,7 +379,7 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
 
         // clamp to reference face (easy to cull)
         contact.position = point.v - normalFront * separation;
-        contact.feature = point.fp;
+        contact.feature.e = point.e;
 
         contact.normal = normal;
         contact.separation = separation;
