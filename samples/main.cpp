@@ -535,10 +535,9 @@ void JointPreStep(Joint* joint, float dti)
 
     Vec2 p1 = joint->body1->position + joint->r1;
     Vec2 p2 = joint->body2->position + joint->r2;
-    Vec2 dp = p2 - p1;
 
     if (Config::positionCorrection)
-        joint->bias = dp * -joint->biasFactor * dti;
+        joint->bias = (p2 - p1) * -joint->biasFactor * dti;
     else
         joint->bias = { 0.0f, 0.0f };
 
@@ -556,14 +555,16 @@ void JointPreStep(Joint* joint, float dti)
 }
 void JointApplyImpulse(Joint* joint)
 {
-    Vec2 dv = joint->body2->velocityLinear + Cross(joint->body2->velocityAngular, joint->r2) - joint->body1->velocityLinear - Cross(joint->body1->velocityAngular, joint->r1);
+    Vec2 vel0 = joint->body2->velocityLinear + Cross(joint->body2->velocityAngular, joint->r2);
+    Vec2 vel1 = joint->body1->velocityLinear + Cross(joint->body1->velocityAngular, joint->r1);
+    Vec2 velocityRel = vel0 - vel1;
 
-    Vec2 impulse = joint->M * (joint->bias - dv - joint->P * joint->softness);
+    Vec2 impulse = joint->M * (joint->bias - velocityRel - joint->P * joint->softness);
 
     joint->body1->velocityLinear -= impulse * joint->body1->massInv;
-    joint->body1->velocityAngular -= Cross(joint->r1, impulse) * joint->body1->inertiaInv;
-
     joint->body2->velocityLinear += impulse * joint->body2->massInv;
+
+    joint->body1->velocityAngular -= Cross(joint->r1, impulse) * joint->body1->inertiaInv;
     joint->body2->velocityAngular += Cross(joint->r2, impulse) * joint->body2->inertiaInv;
 
     joint->P += impulse;
