@@ -98,13 +98,13 @@ struct Body
 };
 struct Joint
 {
-    Mat22 M;
+    Mat22 m;
     Vec2 localAnchor1;
     Vec2 localAnchor2;
     Vec2 r1;
     Vec2 r2;
     Vec2 bias;
-    Vec2 P;		// accumulated impulse
+    Vec2 p;		// accumulated impulse
     Body* body1;
     Body* body2;
     float biasFactor;
@@ -495,11 +495,11 @@ void ArbiterApplyImpulse(Collision& arb)
 }
 void JointPreStep(Joint* joint, float dti)
 {
-    Mat22 Rot1 = FromAngle(joint->body1->rotation);
-    Mat22 Rot2 = FromAngle(joint->body2->rotation);
+    Mat22 r1 = FromAngle(joint->body1->rotation);
+    Mat22 r2 = FromAngle(joint->body2->rotation);
 
-    joint->r1 = Rot1 * joint->localAnchor1;
-    joint->r2 = Rot2 * joint->localAnchor2;
+    joint->r1 = r1 * joint->localAnchor1;
+    joint->r2 = r2 * joint->localAnchor2;
 
     // deltaV = deltaV0 + k * impulse
     // invM = [(1/m1 + 1/m2) * eye(2) - skew(r1) * invI1 * skew(r1) - skew(r2) * invI2 * skew(r2)]
@@ -529,7 +529,7 @@ void JointPreStep(Joint* joint, float dti)
     k.col1.x += joint->softness;
     k.col2.y += joint->softness;
 
-    joint->M = Invert(k);
+    joint->m = Invert(k);
 
     auto p1 = joint->body1->position + joint->r1;
     auto p2 = joint->body2->position + joint->r2;
@@ -541,22 +541,22 @@ void JointPreStep(Joint* joint, float dti)
 
     if (Config::warmStarting)
     {
-        joint->body1->velocityLinear -= joint->P * joint->body1->massInv;
-        joint->body2->velocityLinear += joint->P * joint->body2->massInv;
-        joint->body1->velocityAngular -= Cross(joint->r1, joint->P) * joint->body1->inertiaInv;
-        joint->body2->velocityAngular += Cross(joint->r2, joint->P) * joint->body2->inertiaInv;
+        joint->body1->velocityLinear -= joint->p * joint->body1->massInv;
+        joint->body2->velocityLinear += joint->p * joint->body2->massInv;
+        joint->body1->velocityAngular -= Cross(joint->r1, joint->p) * joint->body1->inertiaInv;
+        joint->body2->velocityAngular += Cross(joint->r2, joint->p) * joint->body2->inertiaInv;
     }
     else
     {
-        joint->P = { 0.0f, 0.0f };
+        joint->p = { 0.0f, 0.0f };
     }
 }
 void JointApplyImpulse(Joint* joint)
 {
     auto vr = CalcRelativeVelocity(joint);
-    auto impulse = joint->M * (joint->bias - vr - joint->P * joint->softness);
+    auto impulse = joint->m * (joint->bias - vr - joint->p * joint->softness);
 
-    joint->P += impulse;
+    joint->p += impulse;
 
     joint->body1->velocityLinear -= impulse * joint->body1->massInv;
     joint->body2->velocityLinear += impulse * joint->body2->massInv;
@@ -629,7 +629,7 @@ Joint JointCreate(Body* b1, Body* b2, Vec2 anchor)
 {
     Joint joint;
 
-    joint.P = { 0.0f, 0.0f };
+    joint.p = { 0.0f, 0.0f };
 
     joint.softness = 0.0f;
     joint.biasFactor = 0.2f;
@@ -637,13 +637,13 @@ Joint JointCreate(Body* b1, Body* b2, Vec2 anchor)
     joint.body1 = b1;
     joint.body2 = b2;
 
-    Mat22 Rot1 = FromAngle(b1->rotation);
-    Mat22 Rot2 = FromAngle(b2->rotation);
-    Mat22 Rot1T = Transpose(Rot1);
-    Mat22 Rot2T = Transpose(Rot2);
+    Mat22 r1 = FromAngle(b1->rotation);
+    Mat22 r2 = FromAngle(b2->rotation);
+    Mat22 r1i = Transpose(r1);
+    Mat22 r2i = Transpose(r2);
 
-    joint.localAnchor1 = Rot1T * (anchor - b1->position);
-    joint.localAnchor2 = Rot2T * (anchor - b2->position);
+    joint.localAnchor1 = r1i * (anchor - b1->position);
+    joint.localAnchor2 = r2i * (anchor - b2->position);
 
     return joint;
 }
@@ -923,6 +923,30 @@ void Demo7()
 }
 void Demo8()
 {
+    float mass = 10.0f;
+    float frequencyHz = 4.0f;
+    float dampingRatio = 0.7f;
+
+    float softness, biasFactor;
+    CalcJointProp(mass, frequencyHz, dampingRatio, softness, biasFactor);
+
+    auto b1 = AddGround();
+
+    for (int i = 0; i < 15; i++)
+    {
+        float y = 12.0f;
+
+        auto b2 = BodyCreateDynamic({ 0.5f + i, y }, 0.0f, { 0.75f, 0.25f }, mass);
+
+        auto j = JointCreate2(b1, b2, { (float)i, y });
+        j->softness = softness;
+        j->biasFactor = biasFactor;
+
+        b1 = b2;
+    }
+}
+void Demo9()
+{
     auto b1 = AddGround();
 
     BodyCreateStatic({ -1.5f, 10.0f }, 0.0f, { 12.0f, 0.5f });
@@ -947,30 +971,6 @@ void Demo8()
     JointCreate2(b1, b5, { 6.0f, 2.6f });
     JointCreate2(b5, b6, { 7.0f, 3.5f });
 }
-void Demo9()
-{
-    float mass = 10.0f;
-    float frequencyHz = 4.0f;
-    float dampingRatio = 0.7f;
-
-    float softness, biasFactor;
-    CalcJointProp(mass, frequencyHz, dampingRatio, softness, biasFactor);
-
-    auto b1 = AddGround();
-
-    for (int i = 0; i < 15; i++)
-    {
-        float y = 12.0f;
-
-        auto b2 = BodyCreateDynamic({ 0.5f + i, y }, 0.0f, { 0.75f, 0.25f }, mass);
-
-        auto j = JointCreate2(b1, b2, { (float)i, y });
-        j->softness = softness;
-        j->biasFactor = biasFactor;
-
-        b1 = b2;
-    }
-}
 
 const char* demoNames[] =
 {
@@ -981,8 +981,8 @@ const char* demoNames[] =
     "Demo 5: Pyramid Stacking",
     "Demo 6: Teeter",
     "Demo 7: Suspension Bridge",
-    "Demo 8: Dominos",
-    "Demo 9: Multi-pendulum"
+    "Demo 8: Multi-pendulum",
+    "Demo 9: Dominos",
 };
 void (*demos[])() =
 {
