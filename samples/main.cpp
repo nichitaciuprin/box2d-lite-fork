@@ -998,6 +998,10 @@ void (*demos[])() =
 
 void InitDemo(int index)
 {
+    // TODO ref body by index, not pointer, and remove this reserve
+    bodie_s.reserve(256);
+    joint_s.reserve(256);
+
     Clear();
     demoIndex = index;
     demos[index]();
@@ -1261,7 +1265,6 @@ void Draw()
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    // Globally position text
     ImGui::SetNextWindowPos(ImVec2(10.0f, 10.0f));
     ImGui::Begin("Overlay", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar);
     ImGui::End();
@@ -1277,16 +1280,16 @@ void Draw()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    // if (selectedBodyIndex == -1)
-    // {
-    //     if (closeBodyIndex != -1)
-    //         DrawPoint(closeBodyPoint);
-    // }
-    // else
-    // {
-    //     DrawPoint(selectedBodyPoint);
-    //     DrawLine(selectedBodyPoint, mousePos);
-    // }
+    if (selectedBodyIndex == -1)
+    {
+        if (closeBodyIndex != -1)
+            DrawPoint(closeBodyPoint);
+    }
+    else
+    {
+        DrawPoint(selectedBodyPoint);
+        DrawLine(selectedBodyPoint, mousePos, { 0.0f, 1.0f, 0.0f });
+    }
 
     for (auto& i : bodie_s)
         DrawBody(&i, false);
@@ -1296,9 +1299,6 @@ void Draw()
 
     for (auto& i : arbiter_s)
         DrawArbiter(&i.second);
-
-    // DrawPoint({ 0.246447, 0.000000 });
-    // DrawPoint({ 0.600000, -0.353553 });
 
     ImGui::Render();
     ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
@@ -1355,14 +1355,6 @@ int main()
 {
     InitWindow();
 
-    // TODO ref body by index, not pointer, and remove this reserve
-    bodie_s.reserve(256);
-    joint_s.reserve(256);
-
-    // InitDemo(0);
-    // BroadPhase();
-    // pause = true;
-
     InitDemo(0);
 
     while (!glfwWindowShouldClose(window))
@@ -1373,10 +1365,7 @@ int main()
 
         auto update = !pause || forward; forward = false;
         if (update)
-        {
             Step(timestep);
-            // BroadPhase();
-        }
 
         Draw();
 
