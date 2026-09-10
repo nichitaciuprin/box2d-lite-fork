@@ -396,18 +396,16 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
 
     return numContacts;
 }
-Vec2 CalcRelativeVelocity(const Contact* c, Body* b1, Body* b2)
+Vec2 CalcRelativeVelocity(const Contact* c, const Body* b1, const Body* b2)
 {
-    // return
-    // b2->velocity + Cross(b2->velocityAngular, c->r2) -
-    // b1->velocity - Cross(b1->velocityAngular, c->r1);
-
-    // return
-    // b2->velocityLinear + RotateLeft(c->r2) * b2->velocityAngular -
-    // b1->velocityLinear - RotateLeft(c->r1) * b1->velocityAngular;
-
-    Vec2 vel1 = b1->velocityLinear + RotateLeft(c->r1) * b1->velocityAngular;
-    Vec2 vel2 = b2->velocityLinear + RotateLeft(c->r2) * b2->velocityAngular;
+    auto vel1 = b1->velocityLinear + Cross(b1->velocityAngular, c->r1);
+    auto vel2 = b2->velocityLinear + Cross(b2->velocityAngular, c->r2);
+    return vel2 - vel1;
+}
+Vec2 CalcRelativeVelocity(const Joint* joint)
+{
+    auto vel1 = joint->body1->velocityLinear + Cross(joint->body1->velocityAngular, joint->r1);
+    auto vel2 = joint->body2->velocityLinear + Cross(joint->body2->velocityAngular, joint->r2);
     return vel2 - vel1;
 }
 void UpdateVelocity(const Contact* c, Body* b1, Body* b2, Vec2 impulse)
@@ -555,11 +553,9 @@ void JointPreStep(Joint* joint, float dti)
 }
 void JointApplyImpulse(Joint* joint)
 {
-    Vec2 vel0 = joint->body2->velocityLinear + Cross(joint->body2->velocityAngular, joint->r2);
-    Vec2 vel1 = joint->body1->velocityLinear + Cross(joint->body1->velocityAngular, joint->r1);
-    Vec2 velocityRel = vel0 - vel1;
+    Vec2 vr = CalcRelativeVelocity(joint);
 
-    Vec2 impulse = joint->M * (joint->bias - velocityRel - joint->P * joint->softness);
+    Vec2 impulse = joint->M * (joint->bias - vr - joint->P * joint->softness);
 
     joint->body1->velocityLinear -= impulse * joint->body1->massInv;
     joint->body2->velocityLinear += impulse * joint->body2->massInv;
