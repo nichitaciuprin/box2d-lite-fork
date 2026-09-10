@@ -975,25 +975,25 @@ void Demo9()
 const char* demoNames[] =
 {
     "Demo 1: Single Box",
-    "Demo 2: Simple Pendulum",
-    "Demo 3: Varying Friction Coefficients",
     "Demo 4: Randomized Stacking",
     "Demo 5: Pyramid Stacking",
-    "Demo 6: Teeter",
-    "Demo 7: Suspension Bridge",
+    "Demo 3: Varying Friction Coefficients",
+    "Demo 2: Simple Pendulum",
     "Demo 8: Multi-pendulum",
+    "Demo 7: Suspension Bridge",
+    "Demo 6: Teeter",
     "Demo 9: Dominos",
 };
 void (*demos[])() =
 {
     Demo1,
-    Demo2,
-    Demo3,
     Demo4,
     Demo5,
-    Demo6,
-    Demo7,
+    Demo3,
+    Demo2,
     Demo8,
+    Demo7,
+    Demo6,
     Demo9
 };
 
