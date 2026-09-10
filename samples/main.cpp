@@ -1196,9 +1196,9 @@ void DrawPoint(Vec2 p)
     glEnd();
     glPointSize(1.0f);
 }
-void DrawLine(Vec2 p0, Vec2 p1)
+void DrawLine(Vec2 p0, Vec2 p1, Vec3 color)
 {
-    glColor3f(0.0f, 1.0f, 0.0f);
+    glColor3f(color.x, color.y, color.z);
     glBegin(GL_LINES);
     glVertex2f(p0.x, p0.y);
     glVertex2f(p1.x, p1.y);
@@ -1228,25 +1228,19 @@ void DrawBody(Body* body, bool selected)
 }
 void DrawJoint(Joint* joint)
 {
-    Body* b1 = joint->body1;
-    Body* b2 = joint->body2;
+    auto b0 = joint->body1;
+    auto b1 = joint->body2;
 
-    Mat22 R1 = FromAngle(b1->rotation);
-    Mat22 R2 = FromAngle(b2->rotation);
+    auto p0 = b0->position;
+    auto p1 = b1->position;
 
-    Vec2 x1 = b1->position;
-    Vec2 p1 = x1 + R1 * joint->localAnchor1;
+    auto p2 = p0 + FromAngle(b0->rotation) * joint->localAnchor1;
+    auto p3 = p1 + FromAngle(b1->rotation) * joint->localAnchor2;
 
-    Vec2 x2 = b2->position;
-    Vec2 p2 = x2 + R2 * joint->localAnchor2;
+    Vec3 color = { 0.50f, 0.50f, 0.75f };
 
-    glColor3f(0.5f, 0.5f, 0.8f);
-    glBegin(GL_LINES);
-    glVertex2f(x1.x, x1.y);
-    glVertex2f(p1.x, p1.y);
-    glVertex2f(x2.x, x2.y);
-    glVertex2f(p2.x, p2.y);
-    glEnd();
+    DrawLine(p0, p2, color);
+    DrawLine(p1, p3, color);
 }
 void DrawArbiter(Collision* arbiter)
 {
