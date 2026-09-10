@@ -495,44 +495,44 @@ void ArbiterApplyImpulse(Collision& arb)
 }
 void JointPreStep(Joint* joint, float dti)
 {
-    // Pre-compute anchors, mass matrix, and bias.
     Mat22 Rot1 = FromAngle(joint->body1->rotation);
     Mat22 Rot2 = FromAngle(joint->body2->rotation);
 
     joint->r1 = Rot1 * joint->localAnchor1;
     joint->r2 = Rot2 * joint->localAnchor2;
 
-    // deltaV = deltaV0 + K * impulse
+    // deltaV = deltaV0 + k * impulse
     // invM = [(1/m1 + 1/m2) * eye(2) - skew(r1) * invI1 * skew(r1) - skew(r2) * invI2 * skew(r2)]
     //      = [1/m1+1/m2     0    ] + invI1 * [r1.y*r1.y -r1.x*r1.y] + invI2 * [r1.y*r1.y -r1.x*r1.y]
     //        [    0     1/m1+1/m2]           [-r1.x*r1.y r1.x*r1.x]           [-r1.x*r1.y r1.x*r1.x]
 
-    Mat22 K1;
-    K1.col1.x = joint->body1->massInv + joint->body2->massInv;
-    K1.col2.x = 0.0f;
-    K1.col1.y = 0.0f;
-    K1.col2.y = joint->body1->massInv + joint->body2->massInv;
+    Mat22 k1;
+    k1.col1.x = joint->body1->massInv + joint->body2->massInv;
+    k1.col2.x = 0.0f;
+    k1.col1.y = 0.0f;
+    k1.col2.y = joint->body1->massInv + joint->body2->massInv;
 
-    Mat22 K2;
-    K2.col1.x =  joint->body1->inertiaInv * joint->r1.y * joint->r1.y;
-    K2.col2.x = -joint->body1->inertiaInv * joint->r1.x * joint->r1.y;
-    K2.col1.y = -joint->body1->inertiaInv * joint->r1.x * joint->r1.y;
-    K2.col2.y =  joint->body1->inertiaInv * joint->r1.x * joint->r1.x;
+    Mat22 k2;
+    k2.col1.x =  joint->body1->inertiaInv * joint->r1.y * joint->r1.y;
+    k2.col2.x = -joint->body1->inertiaInv * joint->r1.x * joint->r1.y;
+    k2.col1.y = -joint->body1->inertiaInv * joint->r1.x * joint->r1.y;
+    k2.col2.y =  joint->body1->inertiaInv * joint->r1.x * joint->r1.x;
 
-    Mat22 K3;
-    K3.col1.x =  joint->body2->inertiaInv * joint->r2.y * joint->r2.y;
-    K3.col2.x = -joint->body2->inertiaInv * joint->r2.x * joint->r2.y;
-    K3.col1.y = -joint->body2->inertiaInv * joint->r2.x * joint->r2.y;
-    K3.col2.y =  joint->body2->inertiaInv * joint->r2.x * joint->r2.x;
+    Mat22 k3;
+    k3.col1.x =  joint->body2->inertiaInv * joint->r2.y * joint->r2.y;
+    k3.col2.x = -joint->body2->inertiaInv * joint->r2.x * joint->r2.y;
+    k3.col1.y = -joint->body2->inertiaInv * joint->r2.x * joint->r2.y;
+    k3.col2.y =  joint->body2->inertiaInv * joint->r2.x * joint->r2.x;
 
-    Mat22 K = K1 + K2 + K3;
-    K.col1.x += joint->softness;
-    K.col2.y += joint->softness;
+    Mat22 k = k1 + k2 + k3;
 
-    joint->M = Invert(K);
+    k.col1.x += joint->softness;
+    k.col2.y += joint->softness;
 
-    Vec2 p1 = joint->body1->position + joint->r1;
-    Vec2 p2 = joint->body2->position + joint->r2;
+    joint->M = Invert(k);
+
+    auto p1 = joint->body1->position + joint->r1;
+    auto p2 = joint->body2->position + joint->r2;
 
     if (Config::positionCorrection)
         joint->bias = (p2 - p1) * -joint->biasFactor * dti;
