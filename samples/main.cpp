@@ -594,7 +594,6 @@ void CalcJointProp(float mass, float frequencyHz, float dampingRatio, float& sof
     softness =           1.0f / (d + k * timestep);
     biasFactor = k * timestep / (d + k * timestep);
 }
-
 Body BodyCreate(Vec2 scale, float mass)
 {
     Body body;
@@ -671,7 +670,6 @@ Collision ArbiterCreate(Body* b1, Body* b2)
 
     return arb;
 }
-
 void BroadPhase()
 {
     for (int i =   0; i < (int)bodie_s.size(); i++)
@@ -767,14 +765,14 @@ void Clear()
     arbiter_s.clear();
     bomb = NULL;
 }
-Body* AddGround()
+Body* CreateGround()
 {
     auto body = BodyCreate({ 100.0f, 20.0f }, FLT_MAX);
     body.position = { 0.0f, body.scale.y * -0.5f };
     bodie_s.push_back(body);
     return &bodie_s.back();
 }
-Body* BodyCreateDynamic(Vec2 position, float rotation, Vec2 scale, float mass)
+Body* CreateBoxDynamic(Vec2 position, float rotation, Vec2 scale, float mass)
 {
     auto body = BodyCreate(scale, mass);
     body.position = position;
@@ -782,7 +780,7 @@ Body* BodyCreateDynamic(Vec2 position, float rotation, Vec2 scale, float mass)
     bodie_s.push_back(body);
     return &bodie_s.back();
 }
-Body* BodyCreateStatic(Vec2 position, float rotation, Vec2 scale)
+Body* CreateBoxStatic(Vec2 position, float rotation, Vec2 scale)
 {
     auto body = BodyCreate(scale, FLT_MAX);
     body.position = position;
@@ -790,7 +788,7 @@ Body* BodyCreateStatic(Vec2 position, float rotation, Vec2 scale)
     bodie_s.push_back(body);
     return &bodie_s.back();
 }
-Joint* JointCreate2(Body* b1, Body* b2, Vec2 anchor)
+Joint* CreateJoint(Body* b1, Body* b2, Vec2 anchor)
 {
     auto joint = JointCreate(b1, b2, anchor);
     joint_s.push_back(joint);
@@ -813,28 +811,28 @@ void LaunchBomb()
 
 void Demo1()
 {
-    AddGround();
-    BodyCreateDynamic({ 0.0f, 4.0f }, 0.0f, { 1.0f, 1.0f }, 1.0f);
+    CreateGround();
+    CreateBoxDynamic({ 0.0f, 4.0f }, 0.0f, { 1.0f, 1.0f }, 1.0f);
 
-    // BodyCreateStatic(b, { 0.0f, 0.0f }, 0.0f, { 1.0f, 1.0f }); b++; body_s_count++;
-    // BodyCreateDynamic(b, { -0.60f, 0.0f }, -MATH_PI / 4, { 0.5f, 0.5f }, 1.0f); b++; body_s_count++;
+    // CreateBoxStatic(b, { 0.0f, 0.0f }, 0.0f, { 1.0f, 1.0f }); b++; body_s_count++;
+    // CreateBoxDynamic(b, { -0.60f, 0.0f }, -MATH_PI / 4, { 0.5f, 0.5f }, 1.0f); b++; body_s_count++;
 
-    // auto b0 = BodyCreateDynamic({ -0.5f, 8.0f }, 0, { 0.5f, 0.5f }, 1.0f);
-    // auto b1 = BodyCreateDynamic({ +0.5f, 6.0f }, 0, { 0.5f, 0.5f }, 1.0f);
-    // auto j = JointCreate2(b0, b1, (b0->position + b1->position) / 2);
+    // auto b0 = CreateBoxDynamic({ -0.5f, 8.0f }, 0, { 0.5f, 0.5f }, 1.0f);
+    // auto b1 = CreateBoxDynamic({ +0.5f, 6.0f }, 0, { 0.5f, 0.5f }, 1.0f);
+    // auto j = CreateJoint(b0, b1, (b0->position + b1->position) / 2);
     // j->softness = 1.0f;
     // j->biasFactor = 0.0f;
 }
 void Demo2()
 {
-    AddGround();
+    CreateGround();
 
     for (int i = 0; i < 10; i++)
-        auto b1 = BodyCreateDynamic({ Random(-0.1f, 0.1f), 0.51f + 1.05f * i }, 0.0f, { 1.0f, 1.0f }, 1.0f);
+        auto b1 = CreateBoxDynamic({ Random(-0.1f, 0.1f), 0.51f + 1.05f * i }, 0.0f, { 1.0f, 1.0f }, 1.0f);
 }
 void Demo3()
 {
-    AddGround();
+    CreateGround();
 
     Vec2 x = { -6.0f, 0.75f };
 
@@ -844,7 +842,7 @@ void Demo3()
 
         for (int j = i; j < 12; j++)
         {
-            auto b1 = BodyCreateDynamic(y, 0.0f, { 1.0f, 1.0f }, 10.0f);
+            auto b1 = CreateBoxDynamic(y, 0.0f, { 1.0f, 1.0f }, 10.0f);
 
             y += { 1.125f, 0.0f };
         }
@@ -854,26 +852,26 @@ void Demo3()
 }
 void Demo4()
 {
-    AddGround();
-    BodyCreateStatic({ -2.0f, 11.0f }, -0.25f, { 13.0f, 0.25f });
-    BodyCreateStatic({ 5.25f, 9.5f },   0.00f, { 0.25f, 1.0f });
-    BodyCreateStatic({ 2.0f, 7.0f },   +0.25f, { 13.0f, 0.25f });
-    BodyCreateStatic({ -5.25f, 5.5f },  0.00f, { 0.25f, 1.0f });
-    BodyCreateStatic({ -2.0f, 3.0f },  -0.25f, { 13.0f, 0.25f });
+    CreateGround();
+    CreateBoxStatic({ -2.0f, 11.0f }, -0.25f, { 13.0f, 0.25f });
+    CreateBoxStatic({ 5.25f, 9.5f },   0.00f, { 0.25f, 1.0f });
+    CreateBoxStatic({ 2.0f, 7.0f },   +0.25f, { 13.0f, 0.25f });
+    CreateBoxStatic({ -5.25f, 5.5f },  0.00f, { 0.25f, 1.0f });
+    CreateBoxStatic({ -2.0f, 3.0f },  -0.25f, { 13.0f, 0.25f });
 
     float friction[5] = { 0.75f, 0.50f, 0.35f, 0.10f, 0.0f };
 
     for (int i = 0; i < 5; i++)
     {
-        auto b1 = BodyCreateDynamic({ -7.5f + 2.0f * i, 14.0f }, 0.0f, { 0.5f, 0.5f }, 25.0f);
+        auto b1 = CreateBoxDynamic({ -7.5f + 2.0f * i, 14.0f }, 0.0f, { 0.5f, 0.5f }, 25.0f);
         b1->friction = friction[i];
     }
 }
 void Demo5()
 {
-    auto b1 = AddGround();
-    auto b2 = BodyCreateDynamic({ 9.0f, 11.0f }, 0.0f, { 1.0f, 1.0f }, 100.0f);
-    JointCreate2(b1, b2, { 0.0f, 11.0f });
+    auto b1 = CreateGround();
+    auto b2 = CreateBoxDynamic({ 9.0f, 11.0f }, 0.0f, { 1.0f, 1.0f }, 100.0f);
+    CreateJoint(b1, b2, { 0.0f, 11.0f });
 }
 void Demo6()
 {
@@ -884,15 +882,15 @@ void Demo6()
     float softness, biasFactor;
     CalcJointProp(mass, frequencyHz, dampingRatio, softness, biasFactor);
 
-    auto b1 = AddGround();
+    auto b1 = CreateGround();
 
     for (int i = 0; i < 15; i++)
     {
         float y = 12.0f;
 
-        auto b2 = BodyCreateDynamic({ 0.5f + i, y }, 0.0f, { 0.75f, 0.25f }, mass);
+        auto b2 = CreateBoxDynamic({ 0.5f + i, y }, 0.0f, { 0.75f, 0.25f }, mass);
 
-        auto j = JointCreate2(b1, b2, { (float)i, y });
+        auto j = CreateJoint(b1, b2, { (float)i, y });
         j->softness = softness;
         j->biasFactor = biasFactor;
 
@@ -908,69 +906,69 @@ void Demo7()
     float softness, biasFactor;
     CalcJointProp(mass, frequencyHz, dampingRatio, softness, biasFactor);
 
-    AddGround();
+    CreateGround();
 
     int numPlanks = 15;
 
     for (int i = 0; i < numPlanks; i++)
-        BodyCreateDynamic({ -8.5f + 1.25f * i, 5.0f }, 0.0f, { 1.0f, 0.25f }, mass);
+        CreateBoxDynamic({ -8.5f + 1.25f * i, 5.0f }, 0.0f, { 1.0f, 0.25f }, mass);
 
     // auto ground = &bodies.bodies[0];
     // auto p1 = &bodies.bodies[1];
     // auto p2 = &bodies.bodies.back();
 
     // {
-    //     auto j1 = JointCreate2(ground, p2, { -9.125f + 1.25f * i, 5.0f });
+    //     auto j1 = CreateJoint(ground, p2, { -9.125f + 1.25f * i, 5.0f });
     //     j1->softness = softness;
     //     j1->biasFactor = biasFactor;
     // }
 
     for (int i = 0; i < numPlanks; i++)
     {
-        auto j1 = JointCreate2(&bodie_s[i], &bodie_s[i+1], { -9.125f + 1.25f * i, 5.0f });
+        auto j1 = CreateJoint(&bodie_s[i], &bodie_s[i+1], { -9.125f + 1.25f * i, 5.0f });
         j1->softness = softness;
         j1->biasFactor = biasFactor;
     }
     {
-        auto j1 = JointCreate2(&bodie_s[numPlanks], &bodie_s[0], { -9.125f + 1.25f * numPlanks, 5.0f });
+        auto j1 = CreateJoint(&bodie_s[numPlanks], &bodie_s[0], { -9.125f + 1.25f * numPlanks, 5.0f });
         j1->softness = softness;
         j1->biasFactor = biasFactor;
     }
 }
 void Demo8()
 {
-    auto b1 = AddGround();
-    auto b2 = BodyCreateDynamic({ 0.0f, 1.0f }, 0.0f, { 12.0f, 0.25f }, 100.0f);
-    BodyCreateDynamic({ -5.0f, 2.0f }, 0.0f, { 0.5f, 0.5f }, 25.0f);
-    BodyCreateDynamic({ -5.5f, 2.0f }, 0.0f, { 0.5f, 0.5f }, 25.0f);
-    BodyCreateDynamic({ 5.5f, 15.0f }, 0.0f, { 1.0f, 1.0f }, 100.0f);
-    JointCreate2(b1, b2, { 0.0f, 1.0f });
+    auto b1 = CreateGround();
+    auto b2 = CreateBoxDynamic({ 0.0f, 1.0f }, 0.0f, { 12.0f, 0.25f }, 100.0f);
+    CreateBoxDynamic({ -5.0f, 2.0f }, 0.0f, { 0.5f, 0.5f }, 25.0f);
+    CreateBoxDynamic({ -5.5f, 2.0f }, 0.0f, { 0.5f, 0.5f }, 25.0f);
+    CreateBoxDynamic({ 5.5f, 15.0f }, 0.0f, { 1.0f, 1.0f }, 100.0f);
+    CreateJoint(b1, b2, { 0.0f, 1.0f });
 }
 void Demo9()
 {
-    auto b1 = AddGround();
+    auto b1 = CreateGround();
 
-    BodyCreateStatic({ -1.5f, 10.0f }, 0.0f, { 12.0f, 0.5f });
-    BodyCreateStatic({ 1.0f, 6.0f }, 0.3f, { 14.0f, 0.5f });
+    CreateBoxStatic({ -1.5f, 10.0f }, 0.0f, { 12.0f, 0.5f });
+    CreateBoxStatic({ 1.0f, 6.0f }, 0.3f, { 14.0f, 0.5f });
 
     for (int i = 0; i < 10; i++)
     {
-        auto b = BodyCreateDynamic({ -6.0f + 1.0f * i, 11.125f }, 0.0f, { 0.2f, 2.0f }, 10.0f);
+        auto b = CreateBoxDynamic({ -6.0f + 1.0f * i, 11.125f }, 0.0f, { 0.2f, 2.0f }, 10.0f);
         b->friction = 0.1f;
     }
 
-    auto b2 = BodyCreateStatic({ -7.0f, 4.0f }, 0.0f, { 0.5f, 3.0f });
-    auto b3 = BodyCreateDynamic({ -0.9f, 1.0f }, 0.0f, { 12.0f, 0.25f }, 20.0f);
-    auto b4 = BodyCreateDynamic({ -10.0f, 15.0f }, 0.0f, { 0.5f, 0.5f }, 10.0f);
-    auto b5 = BodyCreateDynamic({ 6.0f, 2.5f }, 0.0f, { 2.0f, 2.0f }, 20.0f);
-    auto b6 = BodyCreateDynamic({ 6.0f, 3.6f }, 0.0f, { 2.0f, 0.2f }, 10.0f);
+    auto b2 = CreateBoxStatic({ -7.0f, 4.0f }, 0.0f, { 0.5f, 3.0f });
+    auto b3 = CreateBoxDynamic({ -0.9f, 1.0f }, 0.0f, { 12.0f, 0.25f }, 20.0f);
+    auto b4 = CreateBoxDynamic({ -10.0f, 15.0f }, 0.0f, { 0.5f, 0.5f }, 10.0f);
+    auto b5 = CreateBoxDynamic({ 6.0f, 2.5f }, 0.0f, { 2.0f, 2.0f }, 20.0f);
+    auto b6 = CreateBoxDynamic({ 6.0f, 3.6f }, 0.0f, { 2.0f, 0.2f }, 10.0f);
 
     b5->friction = 0.1f;
 
-    JointCreate2(b1, b3, { -2.0f, 1.0f });
-    JointCreate2(b2, b4, { -7.0f, 15.0f });
-    JointCreate2(b1, b5, { 6.0f, 2.6f });
-    JointCreate2(b5, b6, { 7.0f, 3.5f });
+    CreateJoint(b1, b3, { -2.0f, 1.0f });
+    CreateJoint(b2, b4, { -7.0f, 15.0f });
+    CreateJoint(b1, b5, { 6.0f, 2.6f });
+    CreateJoint(b5, b6, { 7.0f, 3.5f });
 }
 
 const char* demoNames[] =
