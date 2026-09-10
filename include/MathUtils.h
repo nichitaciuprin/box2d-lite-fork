@@ -96,11 +96,13 @@ inline float Cross(Vec2 a, Vec2 b)
 }
 inline Vec2 Cross(Vec2 a, float s)
 {
-    return { s * a.y, -s * a.x };
+    // return Cross({ a.x, a.y, 0 }, { 0, 0, s });
+    return { a.y * s, a.x * -s };
 }
 inline Vec2 Cross(float s, Vec2 a)
 {
-    return { -s * a.y, s * a.x };
+    // return Cross({ 0, 0, s }, { a.x, a.y, 0 });
+    return { a.y * -s, a.x * s };
 }
 inline Vec2 RotateLeft(Vec2 a)
 {
