@@ -674,13 +674,11 @@ Collision ArbiterCreate(Body* b1, Body* b2)
 
 void BroadPhase()
 {
-    // O(n^2) broad-phase
-
     for (int i =   0; i < (int)bodie_s.size(); i++)
     for (int j = i+1; j < (int)bodie_s.size(); j++)
     {
-        Body* b1 = &bodie_s[i];
-        Body* b2 = &bodie_s[j];
+        auto b1 = &bodie_s[i];
+        auto b2 = &bodie_s[j];
 
         if (b1->massInv == 0.0f && b2->massInv == 0.0f) continue;
 
