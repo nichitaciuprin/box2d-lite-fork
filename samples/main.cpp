@@ -825,29 +825,6 @@ void Demo1()
     // j->softness = 1.0f;
     // j->biasFactor = 0.0f;
 }
-void Demo5()
-{
-    auto b1 = AddGround();
-    auto b2 = BodyCreateDynamic({ 9.0f, 11.0f }, 0.0f, { 1.0f, 1.0f }, 100.0f);
-    JointCreate2(b1, b2, { 0.0f, 11.0f });
-}
-void Demo4()
-{
-    AddGround();
-    BodyCreateStatic({ -2.0f, 11.0f }, -0.25f, { 13.0f, 0.25f });
-    BodyCreateStatic({ 5.25f, 9.5f },   0.00f, { 0.25f, 1.0f });
-    BodyCreateStatic({ 2.0f, 7.0f },   +0.25f, { 13.0f, 0.25f });
-    BodyCreateStatic({ -5.25f, 5.5f },  0.00f, { 0.25f, 1.0f });
-    BodyCreateStatic({ -2.0f, 3.0f },  -0.25f, { 13.0f, 0.25f });
-
-    float friction[5] = { 0.75f, 0.50f, 0.35f, 0.10f, 0.0f };
-
-    for (int i = 0; i < 5; i++)
-    {
-        auto b1 = BodyCreateDynamic({ -7.5f + 2.0f * i, 14.0f }, 0.0f, { 0.5f, 0.5f }, 25.0f);
-        b1->friction = friction[i];
-    }
-}
 void Demo2()
 {
     AddGround();
@@ -875,14 +852,52 @@ void Demo3()
         x += { 0.5625f, 2.0f };
     }
 }
-void Demo8()
+void Demo4()
+{
+    AddGround();
+    BodyCreateStatic({ -2.0f, 11.0f }, -0.25f, { 13.0f, 0.25f });
+    BodyCreateStatic({ 5.25f, 9.5f },   0.00f, { 0.25f, 1.0f });
+    BodyCreateStatic({ 2.0f, 7.0f },   +0.25f, { 13.0f, 0.25f });
+    BodyCreateStatic({ -5.25f, 5.5f },  0.00f, { 0.25f, 1.0f });
+    BodyCreateStatic({ -2.0f, 3.0f },  -0.25f, { 13.0f, 0.25f });
+
+    float friction[5] = { 0.75f, 0.50f, 0.35f, 0.10f, 0.0f };
+
+    for (int i = 0; i < 5; i++)
+    {
+        auto b1 = BodyCreateDynamic({ -7.5f + 2.0f * i, 14.0f }, 0.0f, { 0.5f, 0.5f }, 25.0f);
+        b1->friction = friction[i];
+    }
+}
+void Demo5()
 {
     auto b1 = AddGround();
-    auto b2 = BodyCreateDynamic({ 0.0f, 1.0f }, 0.0f, { 12.0f, 0.25f }, 100.0f);
-    BodyCreateDynamic({ -5.0f, 2.0f }, 0.0f, { 0.5f, 0.5f }, 25.0f);
-    BodyCreateDynamic({ -5.5f, 2.0f }, 0.0f, { 0.5f, 0.5f }, 25.0f);
-    BodyCreateDynamic({ 5.5f, 15.0f }, 0.0f, { 1.0f, 1.0f }, 100.0f);
-    JointCreate2(b1, b2, { 0.0f, 1.0f });
+    auto b2 = BodyCreateDynamic({ 9.0f, 11.0f }, 0.0f, { 1.0f, 1.0f }, 100.0f);
+    JointCreate2(b1, b2, { 0.0f, 11.0f });
+}
+void Demo6()
+{
+    float mass = 10.0f;
+    float frequencyHz = 4.0f;
+    float dampingRatio = 0.7f;
+
+    float softness, biasFactor;
+    CalcJointProp(mass, frequencyHz, dampingRatio, softness, biasFactor);
+
+    auto b1 = AddGround();
+
+    for (int i = 0; i < 15; i++)
+    {
+        float y = 12.0f;
+
+        auto b2 = BodyCreateDynamic({ 0.5f + i, y }, 0.0f, { 0.75f, 0.25f }, mass);
+
+        auto j = JointCreate2(b1, b2, { (float)i, y });
+        j->softness = softness;
+        j->biasFactor = biasFactor;
+
+        b1 = b2;
+    }
 }
 void Demo7()
 {
@@ -922,29 +937,14 @@ void Demo7()
         j1->biasFactor = biasFactor;
     }
 }
-void Demo6()
+void Demo8()
 {
-    float mass = 10.0f;
-    float frequencyHz = 4.0f;
-    float dampingRatio = 0.7f;
-
-    float softness, biasFactor;
-    CalcJointProp(mass, frequencyHz, dampingRatio, softness, biasFactor);
-
     auto b1 = AddGround();
-
-    for (int i = 0; i < 15; i++)
-    {
-        float y = 12.0f;
-
-        auto b2 = BodyCreateDynamic({ 0.5f + i, y }, 0.0f, { 0.75f, 0.25f }, mass);
-
-        auto j = JointCreate2(b1, b2, { (float)i, y });
-        j->softness = softness;
-        j->biasFactor = biasFactor;
-
-        b1 = b2;
-    }
+    auto b2 = BodyCreateDynamic({ 0.0f, 1.0f }, 0.0f, { 12.0f, 0.25f }, 100.0f);
+    BodyCreateDynamic({ -5.0f, 2.0f }, 0.0f, { 0.5f, 0.5f }, 25.0f);
+    BodyCreateDynamic({ -5.5f, 2.0f }, 0.0f, { 0.5f, 0.5f }, 25.0f);
+    BodyCreateDynamic({ 5.5f, 15.0f }, 0.0f, { 1.0f, 1.0f }, 100.0f);
+    JointCreate2(b1, b2, { 0.0f, 1.0f });
 }
 void Demo9()
 {
@@ -1000,7 +1000,6 @@ void (*demos[])() =
 
 void InitDemo(int index)
 {
-    std::cout << index << std::endl;
     Clear();
     demoIndex = index;
     demos[index]();
