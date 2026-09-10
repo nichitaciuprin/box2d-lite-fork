@@ -81,7 +81,7 @@ struct Contact
     float massNormalInv;
     float massTangentInv;
     float bias;
-    FeaturePair feature;
+    Edges e;
 };
 struct Body
 {
@@ -379,7 +379,7 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
 
         // clamp to reference face (easy to cull)
         contact.position = point.v - normalFront * separation;
-        contact.feature.e = point.e;
+        contact.e = point.e;
 
         contact.normal = normal;
         contact.separation = separation;
@@ -389,8 +389,8 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
 
         if (axis == FACE_B_X || axis == FACE_B_Y)
         {
-            Swap(contact.feature.e.edge1in, contact.feature.e.edge2in);
-            Swap(contact.feature.e.edge1out, contact.feature.e.edge2out);
+            Swap(contact.e.edge1in, contact.e.edge2in);
+            Swap(contact.e.edge1out, contact.e.edge2out);
         }
 
         numContacts++;
@@ -707,10 +707,10 @@ void BroadPhase()
                 auto& c_new = a_new->contacts[i];
                 auto& c_old = a_old->contacts[j];
 
-                if (c_new.feature.e.edge1in  != c_old.feature.e.edge1in)  continue;
-                if (c_new.feature.e.edge1out != c_old.feature.e.edge1out) continue;
-                if (c_new.feature.e.edge2in  != c_old.feature.e.edge2in)  continue;
-                if (c_new.feature.e.edge2out != c_old.feature.e.edge2out) continue;
+                if (c_new.e.edge1in  != c_old.e.edge1in)  continue;
+                if (c_new.e.edge1out != c_old.e.edge1out) continue;
+                if (c_new.e.edge2in  != c_old.e.edge2in)  continue;
+                if (c_new.e.edge2out != c_old.e.edge2out) continue;
 
                 c_new.Pn = c_old.Pn;
                 c_new.Pt = c_old.Pt;
