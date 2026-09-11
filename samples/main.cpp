@@ -119,17 +119,17 @@ struct Collision
 
 namespace
 {
-    int width = 1280;
-    int height = 720;
-    float zoom = 10.0f;
-    float pan_y = 8.0f;
-    GLFWwindow* window = NULL;
-
     // int width = 1280;
     // int height = 720;
-    // float zoom = 2.0f;
-    // float pan_y = 0.0f;
-    // GLFWwindow* window = NULL;
+    // float zoom = 10.0f;
+    // float pan_y = 8.0f;
+
+    int width = 1280;
+    int height = 720;
+    float zoom = 2.0f;
+    float pan_y = 0.0f;
+
+    GLFWwindow* window = NULL;
 
     float timestep = 1.0f / 60.0f;
     bool pause = false;
@@ -191,7 +191,6 @@ void ComputeIncidentEdge(const Body* body, Vec2 normal, ClipVertex& v0, ClipVert
 }
 bool ClipLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POINTS], Vec2 normal, float offset, char clipEdge)
 {
-    // Calculate the distance of end points to the line
     float dist0 = Dot(normal, vIn[0].v) - offset;
     float dist1 = Dot(normal, vIn[1].v) - offset;
 
@@ -809,11 +808,11 @@ void LaunchBomb()
 
 void Demo1()
 {
-    CreateGround();
-    CreateBoxDynamic({ 0.0f, 4.0f }, 0.0f, { 1.0f, 1.0f }, 1.0f);
+    // CreateGround();
+    // CreateBoxDynamic({ 0.0f, 4.0f }, 0.0f, { 1.0f, 1.0f }, 1.0f);
 
-    // CreateBoxStatic(b, { 0.0f, 0.0f }, 0.0f, { 1.0f, 1.0f }); b++; body_s_count++;
-    // CreateBoxDynamic(b, { -0.60f, 0.0f }, -MATH_PI / 4, { 0.5f, 0.5f }, 1.0f); b++; body_s_count++;
+    CreateBoxStatic({ 0.0f, 0.0f }, 0.0f, { 1.0f, 1.0f });
+    CreateBoxDynamic({ +0.50f, 0.0f }, -MATH_PI / 3.0f, { 0.5f, 0.5f }, 1.0f);
 
     // auto b0 = CreateBoxDynamic({ -0.5f, 8.0f }, 0, { 0.5f, 0.5f }, 1.0f);
     // auto b1 = CreateBoxDynamic({ +0.5f, 6.0f }, 0, { 0.5f, 0.5f }, 1.0f);
@@ -1183,10 +1182,10 @@ void DrawText(int x, int y, const char* string)
     ImGui::TextColored(ImColor(230, 153, 153, 255), "%s", string);
     ImGui::End();
 }
-void DrawPoint(Vec2 p)
+void DrawPoint(Vec2 p, Vec3 color)
 {
     glPointSize(4.0f);
-    glColor3f(1.0f, 0.0f, 0.0f);
+    glColor3f(color.x, color.y, color.z);
     glBegin(GL_POINTS);
     glVertex2f(p.x, p.y);
     glEnd();
@@ -1281,11 +1280,11 @@ void Draw()
     if (selectedBodyIndex == -1)
     {
         if (closeBodyIndex != -1)
-            DrawPoint(closeBodyPoint);
+            DrawPoint(closeBodyPoint, { 0.0f, 1.0f, 0.0f });
     }
     else
     {
-        DrawPoint(selectedBodyPoint);
+        DrawPoint(selectedBodyPoint, { 1.0f, 0.0f, 0.0f });
         DrawLine(selectedBodyPoint, mousePos, { 0.0f, 1.0f, 0.0f });
     }
 
@@ -1364,6 +1363,8 @@ int main()
         auto update = !pause || forward; forward = false;
         if (update)
             Step(timestep);
+
+        BroadPhase();
 
         Draw();
 
