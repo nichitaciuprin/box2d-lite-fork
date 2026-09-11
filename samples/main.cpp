@@ -55,10 +55,10 @@ enum Axis
 };
 struct Edges
 {
-    char edge1in;
-    char edge1out;
-    char edge2in;
-    char edge2out;
+    char edge1l;
+    char edge1r;
+    char edge2l;
+    char edge2r;
 };
 struct ClipVertex
 {
@@ -163,26 +163,26 @@ void ComputeIncidentEdge(const Body* body, Vec2 normal, ClipVertex& v0, ClipVert
     {
         if (normal.x >= 0.0f)
         {
-            v0.v = { +scaleh.x, -scaleh.y }; v0.e.edge2in = EDGE3; v0.e.edge2out = EDGE4;
-            v1.v = { +scaleh.x, +scaleh.y }; v1.e.edge2in = EDGE4; v1.e.edge2out = EDGE1;
+            v0.v = { +scaleh.x, -scaleh.y }; v0.e.edge2l = EDGE4; v0.e.edge2r = EDGE3;
+            v1.v = { +scaleh.x, +scaleh.y }; v1.e.edge2l = EDGE1; v1.e.edge2r = EDGE4;
         }
         else
         {
-            v0.v = { -scaleh.x, +scaleh.y }; v0.e.edge2in = EDGE1; v0.e.edge2out = EDGE2;
-            v1.v = { -scaleh.x, -scaleh.y }; v1.e.edge2in = EDGE2; v1.e.edge2out = EDGE3;
+            v0.v = { -scaleh.x, +scaleh.y }; v0.e.edge2l = EDGE2; v0.e.edge2r = EDGE1;
+            v1.v = { -scaleh.x, -scaleh.y }; v1.e.edge2l = EDGE3; v1.e.edge2r = EDGE2;
         }
     }
     else
     {
         if (normal.y >= 0.0f)
         {
-            v0.v = { +scaleh.x, +scaleh.y }; v0.e.edge2in = EDGE4; v0.e.edge2out = EDGE1;
-            v1.v = { -scaleh.x, +scaleh.y }; v1.e.edge2in = EDGE1; v1.e.edge2out = EDGE2;
+            v0.v = { +scaleh.x, +scaleh.y }; v0.e.edge2l = EDGE1; v0.e.edge2r = EDGE4;
+            v1.v = { -scaleh.x, +scaleh.y }; v1.e.edge2l = EDGE2; v1.e.edge2r = EDGE1;
         }
         else
         {
-            v0.v = { -scaleh.x, -scaleh.y }; v0.e.edge2in = EDGE2; v0.e.edge2out = EDGE3;
-            v1.v = { +scaleh.x, -scaleh.y }; v1.e.edge2in = EDGE3; v1.e.edge2out = EDGE4;
+            v0.v = { -scaleh.x, -scaleh.y }; v0.e.edge2l = EDGE3; v0.e.edge2r = EDGE2;
+            v1.v = { +scaleh.x, -scaleh.y }; v1.e.edge2l = EDGE4; v1.e.edge2r = EDGE3;
         }
     }
 
@@ -205,8 +205,8 @@ bool ClipLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POINTS], Vec2 norm
         {
             vOut[0] = vIn[0];
             vOut[1] = vIn[1];
-            vOut[1].e.edge1out = clipEdge;
-            vOut[1].e.edge2out = NO_EDGE;
+            vOut[1].e.edge1l = clipEdge;
+            vOut[1].e.edge2l = NO_EDGE;
             vOut[1].v = Lerp(vIn[0].v, vIn[1].v, dist0 / (dist0 - dist1));
             return false;
         }
@@ -214,14 +214,14 @@ bool ClipLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POINTS], Vec2 norm
         {
             vOut[0] = vIn[1];
             vOut[1] = vIn[0];
-            vOut[1].e.edge1in = clipEdge;
-            vOut[1].e.edge2in = NO_EDGE;
+            vOut[1].e.edge1r = clipEdge;
+            vOut[1].e.edge2r = NO_EDGE;
             vOut[1].v = Lerp(vIn[0].v, vIn[1].v, dist0 / (dist0 - dist1));
             return false;
             // vOut[0] = vIn[0];
             // vOut[1] = vIn[1];
-            // vOut[0].e.edge1in = clipEdge;
-            // vOut[0].e.edge2in = NO_EDGE;
+            // vOut[0].e.edge1r = clipEdge;
+            // vOut[0].e.edge2r = NO_EDGE;
             // vOut[0].v = Lerp(vIn[0].v, vIn[1].v, dist0 / (dist0 - dist1));
             // return false;
         }
@@ -385,8 +385,8 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
 
         if (axis == FACE_B_X || axis == FACE_B_Y)
         {
-            Swap(contact.e.edge1in, contact.e.edge2in);
-            Swap(contact.e.edge1out, contact.e.edge2out);
+            Swap(contact.e.edge1r, contact.e.edge2r);
+            Swap(contact.e.edge1l, contact.e.edge2l);
         }
 
         numContacts++;
@@ -703,10 +703,10 @@ void BroadPhase()
                 auto& c_new = a_new->contacts[i];
                 auto& c_old = a_old->contacts[j];
 
-                if (c_new.e.edge1in  != c_old.e.edge1in)  continue;
-                if (c_new.e.edge1out != c_old.e.edge1out) continue;
-                if (c_new.e.edge2in  != c_old.e.edge2in)  continue;
-                if (c_new.e.edge2out != c_old.e.edge2out) continue;
+                if (c_new.e.edge1l != c_old.e.edge1l) continue;
+                if (c_new.e.edge1r != c_old.e.edge1r) continue;
+                if (c_new.e.edge2l != c_old.e.edge2l) continue;
+                if (c_new.e.edge2r != c_old.e.edge2r) continue;
 
                 c_new.pn = c_old.pn;
                 c_new.pt = c_old.pt;
