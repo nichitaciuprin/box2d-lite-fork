@@ -119,15 +119,15 @@ struct Collision
 
 namespace
 {
-    // int width = 1280;
-    // int height = 720;
-    // float zoom = 10.0f;
-    // float pan_y = 8.0f;
-
     int width = 1280;
     int height = 720;
-    float zoom = 2.0f;
-    float pan_y = 0.0f;
+    float zoom = 10.0f;
+    float pan_y = 8.0f;
+
+    // int width = 1280;
+    // int height = 720;
+    // float zoom = 2.0f;
+    // float pan_y = 0.0f;
 
     GLFWwindow* window = NULL;
 
@@ -808,11 +808,11 @@ void LaunchBomb()
 
 void Demo1()
 {
-    // CreateGround();
-    // CreateBoxDynamic({ 0.0f, 4.0f }, 0.0f, { 1.0f, 1.0f }, 1.0f);
+    CreateGround();
+    CreateBoxDynamic({ 0.0f, 4.0f }, 0.0f, { 1.0f, 1.0f }, 1.0f);
 
-    CreateBoxStatic({ 0.0f, 0.0f }, 0.0f, { 1.0f, 1.0f });
-    CreateBoxDynamic({ +0.50f, 0.0f }, -MATH_PI / 3.0f, { 0.5f, 0.5f }, 1.0f);
+    // CreateBoxStatic({ 0.0f, 0.0f }, 0.0f, { 1.0f, 1.0f });
+    // CreateBoxDynamic({ +0.50f, 0.0f }, -MATH_PI / 3.0f, { 0.5f, 0.5f }, 1.0f);
 
     // auto b0 = CreateBoxDynamic({ -0.5f, 8.0f }, 0, { 0.5f, 0.5f }, 1.0f);
     // auto b1 = CreateBoxDynamic({ +0.5f, 6.0f }, 0, { 0.5f, 0.5f }, 1.0f);
