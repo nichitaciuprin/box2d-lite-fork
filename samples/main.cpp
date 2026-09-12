@@ -369,10 +369,11 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
 
         auto& contact = contacts[numContacts];
 
+        contact.position = point.v - normalFront * separation;
+
         contact.pn = 0;
         contact.pt = 0;
 
-        contact.position = point.v - normalFront * separation;
         contact.e = point.e;
 
         contact.normal = normal;
