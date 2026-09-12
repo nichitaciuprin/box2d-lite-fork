@@ -356,7 +356,7 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
     if (ClipLine(clipPoints0, clipPoints1, +normalSide, sidePos, edgePos)) return 0;
     if (ClipLine(clipPoints1, clipPoints2, -normalSide, sideNeg, edgeNeg)) return 0;
 
-    // removes points ouside referance box
+    // clamps points to reference edge
 
     int numContacts = 0;
 
@@ -372,7 +372,6 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
         contact.pn = 0;
         contact.pt = 0;
 
-        // clamp to reference face (easy to cull)
         contact.position = point.v - normalFront * separation;
         contact.e = point.e;
 
