@@ -134,7 +134,7 @@ namespace
     map<int, Collision> arbiter_s;
 }
 
-void ComputeIncidentEdge(const Body* body, Vec2 normal, ClipVertex& v0, ClipVertex& v1)
+void ComputeIncidentEdge(const Body* body, Vec2 normal, Vec2& v0, Vec2& v1)
 {
     Vec2 pos = body->position;
     Vec2 scaleh = body->scale * 0.5f;
@@ -146,36 +146,36 @@ void ComputeIncidentEdge(const Body* body, Vec2 normal, ClipVertex& v0, ClipVert
     {
         if (normal.x >= 0.0f)
         {
-            v0.v = { +scaleh.x, -scaleh.y };
-            v1.v = { +scaleh.x, +scaleh.y };
+            v0 = { +scaleh.x, -scaleh.y };
+            v1 = { +scaleh.x, +scaleh.y };
         }
         else
         {
-            v0.v = { -scaleh.x, +scaleh.y };
-            v1.v = { -scaleh.x, -scaleh.y };
+            v0 = { -scaleh.x, +scaleh.y };
+            v1 = { -scaleh.x, -scaleh.y };
         }
     }
     else
     {
         if (normal.y >= 0.0f)
         {
-            v0.v = { +scaleh.x, +scaleh.y };
-            v1.v = { -scaleh.x, +scaleh.y };
+            v0 = { +scaleh.x, +scaleh.y };
+            v1 = { -scaleh.x, +scaleh.y };
         }
         else
         {
-            v0.v = { -scaleh.x, -scaleh.y };
-            v1.v = { +scaleh.x, -scaleh.y };
+            v0 = { -scaleh.x, -scaleh.y };
+            v1 = { +scaleh.x, -scaleh.y };
         }
     }
 
-    v0.v = pos + rot * v0.v;
-    v1.v = pos + rot * v1.v;
+    v0 = pos + rot * v0;
+    v1 = pos + rot * v1;
 }
-bool ClipLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POINTS], Vec2 normal, float offset)
+bool ClipLine(Vec2 vIn[MAX_POINTS], Vec2 vOut[MAX_POINTS], Vec2 normal, float offset)
 {
-    float dist0 = Dot(normal, vIn[0].v) - offset;
-    float dist1 = Dot(normal, vIn[1].v) - offset;
+    float dist0 = Dot(normal, vIn[0]) - offset;
+    float dist1 = Dot(normal, vIn[1]) - offset;
 
     int state = 0;
     if (dist0 < 0.0f) state += 1;
@@ -187,14 +187,14 @@ bool ClipLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POINTS], Vec2 norm
         {
             vOut[0] = vIn[0];
             vOut[1] = vIn[1];
-            vOut[1].v = Lerp(vIn[0].v, vIn[1].v, dist0 / (dist0 - dist1));
+            vOut[1] = Lerp(vIn[0], vIn[1], dist0 / (dist0 - dist1));
             return false;
         }
         case 2:
         {
             vOut[0] = vIn[1];
             vOut[1] = vIn[0];
-            vOut[1].v = Lerp(vIn[0].v, vIn[1].v, dist0 / (dist0 - dist1));
+            vOut[1] = Lerp(vIn[0], vIn[1], dist0 / (dist0 - dist1));
             return false;
         }
         case 3:
@@ -263,9 +263,9 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
     auto hit = Sat(body1, body2, normal, dist, axis);
     if (!hit) return 0;
 
-    ClipVertex clipPoints0[MAX_POINTS] = {};
-    ClipVertex clipPoints1[MAX_POINTS] = {};
-    ClipVertex clipPoints2[MAX_POINTS] = {};
+    Vec2 clipPoints0[MAX_POINTS] = {};
+    Vec2 clipPoints1[MAX_POINTS] = {};
+    Vec2 clipPoints2[MAX_POINTS] = {};
 
     Vec2 normalFront, normalSide;
     float front, sideNeg, sidePos;
@@ -328,12 +328,12 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
     {
         auto& point = clipPoints2[i];
 
-        float separation = Dot(normalFront, point.v) - front;
+        float separation = Dot(normalFront, point) - front;
         if (separation > 0.0f) continue;
 
         auto& contact = contacts[numContacts];
 
-        contact.position = point.v - normalFront * separation;
+        contact.position = point - normalFront * separation;
 
         contact.pn = 0;
         contact.pt = 0;
@@ -654,13 +654,14 @@ void BroadPhase()
         {
             for (int i = 0; i < a_new->numContacts; i++)
             {
+                auto& c_new = a_new->contacts[i];
+
                 int closest = -1;
                 {
                     float dist0 = 0.05f;
 
                     for (int j = 0; j < a_old->numContacts; j++)
                     {
-                        auto& c_new = a_new->contacts[i];
                         auto& c_old = a_old->contacts[j];
 
                         float dist1 = DistSqrt(c_old.position, c_new.position);

@@ -179,12 +179,12 @@ inline void operator -= (Vec2& l, Vec2 r) { l.x -= r.x; l.y -= r.y; };
 
 inline float Dist(Vec2 a, Vec2 b)
 {
-    Vec3 v = a - b;
+    Vec2 v = a - b;
     return sqrtf(Dot(v, v));
 }
 inline float DistSqrt(Vec2 a, Vec2 b)
 {
-    Vec3 v = a - b;
+    Vec2 v = a - b;
     return Dot(v, v);
 }
 
