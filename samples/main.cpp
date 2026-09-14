@@ -217,10 +217,11 @@ bool ClipLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POINTS], Vec2 norm
             vOut[1].e.edge2r = NO_EDGE;
             vOut[1].v = Lerp(vIn[0].v, vIn[1].v, dist0 / (dist0 - dist1));
             return false;
+
             // vOut[0] = vIn[0];
             // vOut[1] = vIn[1];
-            // vOut[0].e.edge1r = NO_EDGE;
-            // vOut[0].e.edge2r = clipEdge;
+            // vOut[0].e.edge1r = clipEdge;
+            // vOut[0].e.edge2r = NO_EDGE;
             // vOut[0].v = Lerp(vIn[0].v, vIn[1].v, dist0 / (dist0 - dist1));
             // return false;
         }
