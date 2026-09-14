@@ -45,10 +45,6 @@ enum Axis
     FACE_B_X,
     FACE_B_Y
 };
-struct ClipVertex
-{
-    Vec2 v;
-};
 struct Contact
 {
     Vec2 position;
