@@ -177,6 +177,17 @@ inline Mat22 operator * (Mat22 l, Mat22 r) { return { l * r.col1, l * r.col2 }; 
 inline void operator += (Vec2& l, Vec2 r) { l.x += r.x; l.y += r.y; };
 inline void operator -= (Vec2& l, Vec2 r) { l.x -= r.x; l.y -= r.y; };
 
+inline float Dist(Vec2 a, Vec2 b)
+{
+    Vec3 v = a - b;
+    return sqrtf(Dot(v, v));
+}
+inline float DistSqrt(Vec2 a, Vec2 b)
+{
+    Vec3 v = a - b;
+    return Dot(v, v);
+}
+
 inline float Random()
 {
     // Random number in range [-1,1]

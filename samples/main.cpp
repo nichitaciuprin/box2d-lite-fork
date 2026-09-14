@@ -38,14 +38,6 @@ using std::pair;
 
 static constexpr int MAX_POINTS = 2;
 
-enum EdgeNumbers
-{
-    NO_EDGE,
-    EDGE1,
-    EDGE2,
-    EDGE3,
-    EDGE4
-};
 enum Axis
 {
     FACE_A_X,
@@ -53,17 +45,9 @@ enum Axis
     FACE_B_X,
     FACE_B_Y
 };
-struct Edges
-{
-    char edge1l;
-    char edge1r;
-    char edge2l;
-    char edge2r;
-};
 struct ClipVertex
 {
     Vec2 v;
-    Edges e;
 };
 struct Contact
 {
@@ -77,7 +61,6 @@ struct Contact
     float massNormalInv;
     float massTangentInv;
     float bias;
-    Edges e;
 };
 struct Body
 {
@@ -163,33 +146,33 @@ void ComputeIncidentEdge(const Body* body, Vec2 normal, ClipVertex& v0, ClipVert
     {
         if (normal.x >= 0.0f)
         {
-            v0.v = { +scaleh.x, -scaleh.y }; v0.e.edge2l = EDGE4; v0.e.edge2r = EDGE3;
-            v1.v = { +scaleh.x, +scaleh.y }; v1.e.edge2l = EDGE1; v1.e.edge2r = EDGE4;
+            v0.v = { +scaleh.x, -scaleh.y };
+            v1.v = { +scaleh.x, +scaleh.y };
         }
         else
         {
-            v0.v = { -scaleh.x, +scaleh.y }; v0.e.edge2l = EDGE2; v0.e.edge2r = EDGE1;
-            v1.v = { -scaleh.x, -scaleh.y }; v1.e.edge2l = EDGE3; v1.e.edge2r = EDGE2;
+            v0.v = { -scaleh.x, +scaleh.y };
+            v1.v = { -scaleh.x, -scaleh.y };
         }
     }
     else
     {
         if (normal.y >= 0.0f)
         {
-            v0.v = { +scaleh.x, +scaleh.y }; v0.e.edge2l = EDGE1; v0.e.edge2r = EDGE4;
-            v1.v = { -scaleh.x, +scaleh.y }; v1.e.edge2l = EDGE2; v1.e.edge2r = EDGE1;
+            v0.v = { +scaleh.x, +scaleh.y };
+            v1.v = { -scaleh.x, +scaleh.y };
         }
         else
         {
-            v0.v = { -scaleh.x, -scaleh.y }; v0.e.edge2l = EDGE3; v0.e.edge2r = EDGE2;
-            v1.v = { +scaleh.x, -scaleh.y }; v1.e.edge2l = EDGE4; v1.e.edge2r = EDGE3;
+            v0.v = { -scaleh.x, -scaleh.y };
+            v1.v = { +scaleh.x, -scaleh.y };
         }
     }
 
     v0.v = pos + rot * v0.v;
     v1.v = pos + rot * v1.v;
 }
-bool ClipLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POINTS], Vec2 normal, float offset, char clipEdge)
+bool ClipLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POINTS], Vec2 normal, float offset)
 {
     float dist0 = Dot(normal, vIn[0].v) - offset;
     float dist1 = Dot(normal, vIn[1].v) - offset;
@@ -204,8 +187,6 @@ bool ClipLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POINTS], Vec2 norm
         {
             vOut[0] = vIn[0];
             vOut[1] = vIn[1];
-            vOut[1].e.edge1l = clipEdge;
-            vOut[1].e.edge2l = NO_EDGE;
             vOut[1].v = Lerp(vIn[0].v, vIn[1].v, dist0 / (dist0 - dist1));
             return false;
         }
@@ -213,17 +194,8 @@ bool ClipLine(ClipVertex vIn[MAX_POINTS], ClipVertex vOut[MAX_POINTS], Vec2 norm
         {
             vOut[0] = vIn[1];
             vOut[1] = vIn[0];
-            vOut[1].e.edge1r = clipEdge;
-            vOut[1].e.edge2r = NO_EDGE;
             vOut[1].v = Lerp(vIn[0].v, vIn[1].v, dist0 / (dist0 - dist1));
             return false;
-
-            // vOut[0] = vIn[0];
-            // vOut[1] = vIn[1];
-            // vOut[0].e.edge1r = clipEdge;
-            // vOut[0].e.edge2r = NO_EDGE;
-            // vOut[0].v = Lerp(vIn[0].v, vIn[1].v, dist0 / (dist0 - dist1));
-            // return false;
         }
         case 3:
         {
@@ -297,7 +269,6 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
 
     Vec2 normalFront, normalSide;
     float front, sideNeg, sidePos;
-    char edgeNeg, edgePos;
 
     switch (axis)
     {
@@ -309,8 +280,6 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
             front   = scaleh1.x + Dot(pos1, normalFront);
             sidePos = scaleh1.y + Dot(pos1, normalSide);
             sideNeg = scaleh1.y - Dot(pos1, normalSide);
-            edgePos = EDGE1;
-            edgeNeg = EDGE3;
         }
         break;
 
@@ -322,8 +291,6 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
             front   = scaleh1.y + Dot(pos1, normalFront);
             sidePos = scaleh1.x + Dot(pos1, normalSide);
             sideNeg = scaleh1.x - Dot(pos1, normalSide);
-            edgePos = EDGE4;
-            edgeNeg = EDGE2;
         }
         break;
 
@@ -335,8 +302,6 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
             front   = scaleh2.x + Dot(pos2, normalFront);
             sidePos = scaleh2.y + Dot(pos2, normalSide);
             sideNeg = scaleh2.y - Dot(pos2, normalSide);
-            edgePos = EDGE1;
-            edgeNeg = EDGE3;
         }
         break;
 
@@ -348,14 +313,12 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
             front   = scaleh2.y + Dot(pos2, normalFront);
             sidePos = scaleh2.x + Dot(pos2, normalSide);
             sideNeg = scaleh2.x - Dot(pos2, normalSide);
-            edgePos = EDGE4;
-            edgeNeg = EDGE2;
         }
         break;
     }
 
-    if (ClipLine(clipPoints0, clipPoints1, +normalSide, sidePos, edgePos)) return 0;
-    if (ClipLine(clipPoints1, clipPoints2, -normalSide, sideNeg, edgeNeg)) return 0;
+    if (ClipLine(clipPoints0, clipPoints1, +normalSide, sidePos)) return 0;
+    if (ClipLine(clipPoints1, clipPoints2, -normalSide, sideNeg)) return 0;
 
     // clamps points to reference edge
 
@@ -375,19 +338,11 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
         contact.pn = 0;
         contact.pt = 0;
 
-        contact.e = point.e;
-
         contact.normal = normal;
         contact.separation = separation;
 
         contact.r1 = contact.position - body1->position;
         contact.r2 = contact.position - body2->position;
-
-        if (axis == FACE_B_X || axis == FACE_B_Y)
-        {
-            Swap(contact.e.edge1r, contact.e.edge2r);
-            Swap(contact.e.edge1l, contact.e.edge2l);
-        }
 
         numContacts++;
     }
@@ -698,20 +653,30 @@ void BroadPhase()
         if (Config::warmStarting)
         {
             for (int i = 0; i < a_new->numContacts; i++)
-            for (int j = 0; j < a_old->numContacts; j++)
             {
-                auto& c_new = a_new->contacts[i];
-                auto& c_old = a_old->contacts[j];
+                int closest = -1;
+                {
+                    float dist0 = 0.05f;
 
-                if (c_new.e.edge1l != c_old.e.edge1l) continue;
-                if (c_new.e.edge1r != c_old.e.edge1r) continue;
-                if (c_new.e.edge2l != c_old.e.edge2l) continue;
-                if (c_new.e.edge2r != c_old.e.edge2r) continue;
+                    for (int j = 0; j < a_old->numContacts; j++)
+                    {
+                        auto& c_new = a_new->contacts[i];
+                        auto& c_old = a_old->contacts[j];
 
-                c_new.pn = c_old.pn;
-                c_new.pt = c_old.pt;
+                        float dist1 = DistSqrt(c_old.position, c_new.position);
 
-                break;
+                        if (dist0 > dist1)
+                        {
+                            dist0 = dist1;
+                            closest = j;
+                        }
+                    }
+                }
+
+                if (closest == -1) continue;
+
+                c_new.pn = a_old->contacts[closest].pn;
+                c_new.pt = a_old->contacts[closest].pt;
             }
         }
 
