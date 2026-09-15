@@ -227,16 +227,16 @@ bool Sat(const Body* body1, const Body* body2, Vec2& normal, float& dist, int& a
 }
 void FindContacts(const Body* b1, const Body* b2, Contact contact_s[2], int& contact_num)
 {
+    Vec2 normal; float dist; int axis;
+    auto hit = Sat(b1, b2, normal, dist, axis);
+    if (!hit) return;
+
     Vec2 pos1 = b1->position;
     Vec2 pos2 = b2->position;
     Vec2 scaleh1 = b1->scale * 0.5f;
     Vec2 scaleh2 = b2->scale * 0.5f;
     Mat22 rot1 = FromAngle(b1->rotation);
     Mat22 rot2 = FromAngle(b2->rotation);
-
-    Vec2 normal; float dist; int axis;
-    auto hit = Sat(b1, b2, normal, dist, axis);
-    if (!hit) return;
 
     Vec2 p0, p1;
     Vec2 normalFront, normalSide;
@@ -548,6 +548,7 @@ Joint JointCreate(Body* b1, Body* b2, Vec2 anchor)
 
     return joint;
 }
+
 Collision Collide(Body* b1, Body* b2)
 {
     Collision collision;
@@ -573,8 +574,8 @@ void BroadPhase()
 
         if (b1->massInv == 0.0f && b2->massInv == 0.0f) continue;
 
-        Collision collision = Collide(b1, b2);
         int key = i << 16 | j;
+        Collision collision = Collide(b1, b2);
 
         if (collision.contact_num == 0)
         {
