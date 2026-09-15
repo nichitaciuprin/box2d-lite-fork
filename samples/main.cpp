@@ -66,7 +66,7 @@ struct Collision
     int contact_num;
     Body* body1;
     Body* body2;
-    float friction; // Combined friction
+    float friction; // combined friction
 };
 
 namespace
