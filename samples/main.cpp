@@ -577,17 +577,8 @@ Collision ArbiterCreate(Body* b1, Body* b2)
     Collision collision;
 
     collision.contacts_num = 0;
-
-    if (b1 < b2)
-    {
-        collision.body1 = b1;
-        collision.body2 = b2;
-    }
-    else
-    {
-        collision.body1 = b2;
-        collision.body2 = b1;
-    }
+    collision.body1 = b1;
+    collision.body2 = b2;
 
     Collide(collision);
 
