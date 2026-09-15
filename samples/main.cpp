@@ -353,7 +353,7 @@ void UpdateVelocity(Body* b1, Body* b2, Vec2 r1, Vec2 r2, Vec2 impulse)
     b2->velocityAngular += Cross(r2, impulse) * b2->inertiaInv;
 }
 
-void ArbiterPreStep(Collision& collision, float dti)
+void CollisionPreStep(Collision& collision, float dti)
 {
     for (int i = 0; i < collision.contacts_num; i++)
     {
@@ -396,39 +396,6 @@ void ArbiterPreStep(Collision& collision, float dti)
 
         Vec2 impulse = normal * c->pn + tangent * c->pt;
         UpdateVelocity(collision.body1, collision.body2, c->r1, c->r2, impulse);
-    }
-}
-void ArbiterApplyImpulse(Collision& collision)
-{
-    for (int i = 0; i < collision.contacts_num; i++)
-    {
-        Contact* c = collision.contact_s + i;
-
-        {
-            auto vr = CalcRelativeVelocity(collision.body1, collision.body2, c->r1, c->r2);
-            Vec2 normal = c->normal;
-            float impInit = (-Dot(normal, vr) + c->bias) * c->massNormalInv;
-            float impOld = c->pn;
-            float impNew = Max(impOld + impInit, 0.0f);
-            float impDiff = impNew - impOld;
-            Vec2 impulse = normal * impDiff;
-            UpdateVelocity(collision.body1, collision.body2, c->r1, c->r2, impulse);
-            c->pn = impNew;
-        }
-
-        float frictionMax = collision.friction * c->pn;
-
-        {
-            auto vr = CalcRelativeVelocity(collision.body1, collision.body2, c->r1, c->r2);
-            Vec2 tangent = RotateRight(c->normal);
-            float impInit = -Dot(tangent, vr) * c->massTangentInv;
-            float impOld = c->pt;
-            float impNew = Clamp(impOld + impInit, -frictionMax, +frictionMax);
-            float impDiff = impNew - impOld;
-            Vec2 impulse = tangent * impDiff;
-            UpdateVelocity(collision.body1, collision.body2, c->r1, c->r2, impulse);
-            c->pt = impNew;
-        }
     }
 }
 void JointPreStep(Joint* joint, float dti)
@@ -476,6 +443,40 @@ void JointPreStep(Joint* joint, float dti)
         UpdateVelocity(joint->body1, joint->body2, joint->r1, joint->r2, joint->p);
     else
         joint->p = { 0.0f, 0.0f };
+}
+
+void CollisionApplyImpulse(Collision& collision)
+{
+    for (int i = 0; i < collision.contacts_num; i++)
+    {
+        Contact* c = collision.contact_s + i;
+
+        {
+            auto vr = CalcRelativeVelocity(collision.body1, collision.body2, c->r1, c->r2);
+            Vec2 normal = c->normal;
+            float impInit = (-Dot(normal, vr) + c->bias) * c->massNormalInv;
+            float impOld = c->pn;
+            float impNew = Max(impOld + impInit, 0.0f);
+            float impDiff = impNew - impOld;
+            Vec2 impulse = normal * impDiff;
+            UpdateVelocity(collision.body1, collision.body2, c->r1, c->r2, impulse);
+            c->pn = impNew;
+        }
+
+        float frictionMax = collision.friction * c->pn;
+
+        {
+            auto vr = CalcRelativeVelocity(collision.body1, collision.body2, c->r1, c->r2);
+            Vec2 tangent = RotateRight(c->normal);
+            float impInit = -Dot(tangent, vr) * c->massTangentInv;
+            float impOld = c->pt;
+            float impNew = Clamp(impOld + impInit, -frictionMax, +frictionMax);
+            float impDiff = impNew - impOld;
+            Vec2 impulse = tangent * impDiff;
+            UpdateVelocity(collision.body1, collision.body2, c->r1, c->r2, impulse);
+            c->pt = impNew;
+        }
+    }
 }
 void JointApplyImpulse(Joint* joint)
 {
@@ -651,12 +652,12 @@ void Step(float dt)
     }
 
     {
-        for (auto& arbiter : collision_s) ArbiterPreStep(arbiter.second, dti);
+        for (auto& arbiter : collision_s) CollisionPreStep(arbiter.second, dti);
         for (auto& joint : joint_s) JointPreStep(&joint, dti);
     }
     for (int i = 0; i < Config::iterations; i++)
     {
-        for (auto& arbiter : collision_s) ArbiterApplyImpulse(arbiter.second);
+        for (auto& arbiter : collision_s) CollisionApplyImpulse(arbiter.second);
         for (auto& joint : joint_s) JointApplyImpulse(&joint);
     }
 
