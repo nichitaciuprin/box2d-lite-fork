@@ -552,9 +552,9 @@ Collision Collide(Body* b1, Body* b2)
 {
     Collision collision;
 
-    collision.contact_num = 0;
     collision.body1 = b1;
     collision.body2 = b2;
+    collision.contact_num = 0;
 
     FindContacts(collision.body1, collision.body2, collision.contact_s, collision.contact_num);
 
