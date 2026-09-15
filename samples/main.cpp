@@ -451,8 +451,8 @@ void CollisionApplyImpulse(Collision& collision)
             float impOld = c->pn;
             float impNew = Max(impOld + impInit, 0.0f);
             float impDiff = impNew - impOld;
-            Vec2 impulse = normal * impDiff;
-            UpdateVelocity(collision.body1, collision.body2, c->r1, c->r2, impulse);
+            Vec2 imp = normal * impDiff;
+            UpdateVelocity(collision.body1, collision.body2, c->r1, c->r2, imp);
             c->pn = impNew;
         }
 
@@ -465,8 +465,8 @@ void CollisionApplyImpulse(Collision& collision)
             float impOld = c->pt;
             float impNew = Clamp(impOld + impInit, -frictionMax, +frictionMax);
             float impDiff = impNew - impOld;
-            Vec2 impulse = tangent * impDiff;
-            UpdateVelocity(collision.body1, collision.body2, c->r1, c->r2, impulse);
+            Vec2 imp = tangent * impDiff;
+            UpdateVelocity(collision.body1, collision.body2, c->r1, c->r2, imp);
             c->pt = impNew;
         }
     }
@@ -474,11 +474,13 @@ void CollisionApplyImpulse(Collision& collision)
 void JointApplyImpulse(Joint* joint)
 {
     auto vr = CalcRelativeVelocity(joint->body1, joint->body2, joint->r1, joint->r2);
-    auto impulse = joint->m * (joint->bias - vr - joint->p * joint->softness);
 
-    UpdateVelocity(joint->body1, joint->body2, joint->r1, joint->r2, impulse);
+    auto impOld = joint->p;
+    auto impNew = joint->m * (joint->bias - vr - impOld * joint->softness);
 
-    joint->p += impulse;
+    UpdateVelocity(joint->body1, joint->body2, joint->r1, joint->r2, impNew);
+
+    joint->p = impNew;
 }
 
 void BodyAddForce(Body* body, Vec2 force)
