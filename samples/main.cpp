@@ -36,15 +36,6 @@ using std::pair;
 //   v3 ------ v4
 //        e3
 
-static constexpr int MAX_POINTS = 2;
-
-enum Axis
-{
-    FACE_A_X,
-    FACE_A_Y,
-    FACE_B_X,
-    FACE_B_Y
-};
 struct Contact
 {
     Vec2 position;
@@ -89,8 +80,8 @@ struct Joint
 };
 struct Collision
 {
-    Contact contacts[MAX_POINTS];
-    int numContacts;
+    Contact contact_s[2];
+    int contacts_num;
     Body* body1;
     Body* body2;
     float friction; // Combined friction
@@ -234,7 +225,7 @@ bool Sat(const Body* body1, const Body* body2, Vec2& normal, float& dist, int& a
 
     return true;
 }
-int Collide(Contact* contacts, const Body* body1, const Body* body2)
+int Collide(Contact contact_s[2], const Body* body1, const Body* body2)
 {
     const int FACE_A_X = 0;
     const int FACE_A_Y = 1;
@@ -248,7 +239,7 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
     Mat22 rot1 = FromAngle(body1->rotation);
     Mat22 rot2 = FromAngle(body2->rotation);
 
-    Vec2 normal; float dist; Axis axis;
+    Vec2 normal; float dist; int axis;
     auto hit = Sat(body1, body2, normal, dist, axis);
     if (!hit) return 0;
 
@@ -314,7 +305,7 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
         float separation = Dot(normalFront, p) - front;
         if (separation <= 0.0f)
         {
-            auto& contact = contacts[contactNum];
+            auto& contact = contact_s[contactNum];
             contact.position = p - normalFront * separation;
             contact.pn = 0;
             contact.pt = 0;
@@ -330,7 +321,7 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
         float separation = Dot(normalFront, p) - front;
         if (separation <= 0.0f)
         {
-            auto& contact = contacts[contactNum];
+            auto& contact = contact_s[contactNum];
             contact.position = p - normalFront * separation;
             contact.pn = 0;
             contact.pt = 0;
@@ -365,9 +356,9 @@ void UpdateVelocity(const Contact* c, Body* b1, Body* b2, Vec2 impulse)
 }
 void ArbiterPreStep(Collision& arb, float dti)
 {
-    for (int i = 0; i < arb.numContacts; i++)
+    for (int i = 0; i < arb.contacts_num; i++)
     {
-        Contact* c = arb.contacts + i;
+        Contact* c = arb.contact_s + i;
 
         Vec2 normal = c->normal;
         Vec2 tangent = RotateRight(c->normal);
@@ -410,9 +401,9 @@ void ArbiterPreStep(Collision& arb, float dti)
 }
 void ArbiterApplyImpulse(Collision& arb)
 {
-    for (int i = 0; i < arb.numContacts; i++)
+    for (int i = 0; i < arb.contacts_num; i++)
     {
-        Contact* c = arb.contacts + i;
+        Contact* c = arb.contact_s + i;
 
         {
             auto vr = CalcRelativeVelocity(c, arb.body1, arb.body2);
@@ -609,7 +600,7 @@ Collision ArbiterCreate(Body* b1, Body* b2)
         arb.body2 = b1;
     }
 
-    arb.numContacts = Collide(arb.contacts, arb.body1, arb.body2);
+    arb.contacts_num = Collide(arb.contact_s, arb.body1, arb.body2);
 
     arb.friction = sqrtf(arb.body1->friction * arb.body2->friction);
 
@@ -628,7 +619,7 @@ void BroadPhase()
         Collision newArb = ArbiterCreate(b1, b2);
         int key = i << 16 | j;
 
-        if (newArb.numContacts == 0)
+        if (newArb.contacts_num == 0)
         {
             arbiter_s.erase(key);
             continue;
@@ -647,17 +638,17 @@ void BroadPhase()
 
         if (Config::warmStarting)
         {
-            for (int i = 0; i < a_new->numContacts; i++)
+            for (int i = 0; i < a_new->contacts_num; i++)
             {
-                auto& c_new = a_new->contacts[i];
+                auto& c_new = a_new->contact_s[i];
 
                 int closest = -1;
                 {
                     float dist0 = 0.05f;
 
-                    for (int j = 0; j < a_old->numContacts; j++)
+                    for (int j = 0; j < a_old->contacts_num; j++)
                     {
-                        auto& c_old = a_old->contacts[j];
+                        auto& c_old = a_old->contact_s[j];
 
                         float dist1 = DistSqrt(c_old.position, c_new.position);
 
@@ -671,8 +662,8 @@ void BroadPhase()
 
                 if (closest == -1) continue;
 
-                c_new.pn = a_old->contacts[closest].pn;
-                c_new.pt = a_old->contacts[closest].pt;
+                c_new.pn = a_old->contact_s[closest].pn;
+                c_new.pt = a_old->contact_s[closest].pt;
             }
         }
 
@@ -1205,9 +1196,9 @@ void DrawArbiter(Collision* arbiter)
     glColor3f(1.0f, 0.0f, 0.0f);
     glBegin(GL_POINTS);
 
-    for (int i = 0; i < arbiter->numContacts; i++)
+    for (int i = 0; i < arbiter->contacts_num; i++)
     {
-        Vec2 p = arbiter->contacts[i].position;
+        Vec2 p = arbiter->contact_s[i].position;
         glVertex2f(p.x, p.y);
     }
 
