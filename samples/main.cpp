@@ -103,6 +103,22 @@ namespace
     map<int, Collision> collision_s;
 }
 
+void CalcJointProp(float mass, float frequencyHz, float dampingRatio, float& softness, float& biasFactor)
+{
+    // frequency in radians
+    float omega = frequencyHz * MATH_PI * 2.0f;
+
+    // damping coefficient
+    float d = omega * dampingRatio * mass * 2.0f;
+
+    // spring stiffness
+    float k = mass * omega * omega;
+
+    // magic formulas
+    softness =           1.0f / (d + k * timestep);
+    biasFactor = k * timestep / (d + k * timestep);
+}
+
 void ComputeIncidentEdge(Vec2& v0, Vec2& v1, const Body* body, Vec2 normal)
 {
     Vec2 pos = body->position;
@@ -322,32 +338,21 @@ void Collide(Collision& collision)
         }
     }
 }
-Vec2 CalcRelativeVelocity(const Contact* c, const Body* b1, const Body* b2)
+
+Vec2 CalcRelativeVelocity(Body* b1, Body* b2, Vec2 r1, Vec2 r2)
 {
-    auto vel1 = b1->velocityLinear + Cross(b1->velocityAngular, c->r1);
-    auto vel2 = b2->velocityLinear + Cross(b2->velocityAngular, c->r2);
+    auto vel1 = b1->velocityLinear + Cross(b1->velocityAngular, r1);
+    auto vel2 = b2->velocityLinear + Cross(b2->velocityAngular, r2);
     return vel2 - vel1;
 }
-Vec2 CalcRelativeVelocity(const Joint* joint)
-{
-    auto vel1 = joint->body1->velocityLinear + Cross(joint->body1->velocityAngular, joint->r1);
-    auto vel2 = joint->body2->velocityLinear + Cross(joint->body2->velocityAngular, joint->r2);
-    return vel2 - vel1;
-}
-void UpdateVelocity(Joint* joint, Vec2 impulse)
-{
-    joint->body1->velocityLinear -= impulse * joint->body1->massInv;
-    joint->body2->velocityLinear += impulse * joint->body2->massInv;
-    joint->body1->velocityAngular -= Cross(joint->r1, impulse) * joint->body1->inertiaInv;
-    joint->body2->velocityAngular += Cross(joint->r2, impulse) * joint->body2->inertiaInv;
-}
-void UpdateVelocity(const Contact* c, Body* b1, Body* b2, Vec2 impulse)
+void UpdateVelocity(Body* b1, Body* b2, Vec2 r1, Vec2 r2, Vec2 impulse)
 {
     b1->velocityLinear -= impulse * b1->massInv;
     b2->velocityLinear += impulse * b2->massInv;
-    b1->velocityAngular -= Cross(c->r1, impulse) * b1->inertiaInv;
-    b2->velocityAngular += Cross(c->r2, impulse) * b2->inertiaInv;
+    b1->velocityAngular -= Cross(r1, impulse) * b1->inertiaInv;
+    b2->velocityAngular += Cross(r2, impulse) * b2->inertiaInv;
 }
+
 void ArbiterPreStep(Collision& collision, float dti)
 {
     for (int i = 0; i < collision.contacts_num; i++)
@@ -390,7 +395,7 @@ void ArbiterPreStep(Collision& collision, float dti)
         }
 
         Vec2 impulse = normal * c->pn + tangent * c->pt;
-        UpdateVelocity(c, collision.body1, collision.body2, impulse);
+        UpdateVelocity(collision.body1, collision.body2, c->r1, c->r2, impulse);
     }
 }
 void ArbiterApplyImpulse(Collision& collision)
@@ -400,28 +405,28 @@ void ArbiterApplyImpulse(Collision& collision)
         Contact* c = collision.contact_s + i;
 
         {
-            auto vr = CalcRelativeVelocity(c, collision.body1, collision.body2);
+            auto vr = CalcRelativeVelocity(collision.body1, collision.body2, c->r1, c->r2);
             Vec2 normal = c->normal;
             float impInit = (-Dot(normal, vr) + c->bias) * c->massNormalInv;
             float impOld = c->pn;
             float impNew = Max(impOld + impInit, 0.0f);
             float impDiff = impNew - impOld;
             Vec2 impulse = normal * impDiff;
-            UpdateVelocity(c, collision.body1, collision.body2, impulse);
+            UpdateVelocity(collision.body1, collision.body2, c->r1, c->r2, impulse);
             c->pn = impNew;
         }
 
         float frictionMax = collision.friction * c->pn;
 
         {
-            auto vr = CalcRelativeVelocity(c, collision.body1, collision.body2);
+            auto vr = CalcRelativeVelocity(collision.body1, collision.body2, c->r1, c->r2);
             Vec2 tangent = RotateRight(c->normal);
             float impInit = -Dot(tangent, vr) * c->massTangentInv;
             float impOld = c->pt;
             float impNew = Clamp(impOld + impInit, -frictionMax, +frictionMax);
             float impDiff = impNew - impOld;
             Vec2 impulse = tangent * impDiff;
-            UpdateVelocity(c, collision.body1, collision.body2, impulse);
+            UpdateVelocity(collision.body1, collision.body2, c->r1, c->r2, impulse);
             c->pt = impNew;
         }
     }
@@ -468,23 +473,20 @@ void JointPreStep(Joint* joint, float dti)
         joint->bias = { 0.0f, 0.0f };
 
     if (Config::warmStarting)
-    {
-        UpdateVelocity(joint, joint->p);
-    }
+        UpdateVelocity(joint->body1, joint->body2, joint->r1, joint->r2, joint->p);
     else
-    {
         joint->p = { 0.0f, 0.0f };
-    }
 }
 void JointApplyImpulse(Joint* joint)
 {
-    auto vr = CalcRelativeVelocity(joint);
+    auto vr = CalcRelativeVelocity(joint->body1, joint->body2, joint->r1, joint->r2);
     auto impulse = joint->m * (joint->bias - vr - joint->p * joint->softness);
 
-    UpdateVelocity(joint, impulse);
+    UpdateVelocity(joint->body1, joint->body2, joint->r1, joint->r2, impulse);
 
     joint->p += impulse;
 }
+
 void BodyAddForce(Body& body, Vec2 force)
 {
     body.force += force;
@@ -498,21 +500,7 @@ void BodyApplyImpulse(Body* body, Vec2 position, Vec2 velocity)
     body->velocityLinear += velocityLinearNew;
     body->velocityAngular += velocityAngularNew;
 }
-void CalcJointProp(float mass, float frequencyHz, float dampingRatio, float& softness, float& biasFactor)
-{
-    // frequency in radians
-    float omega = frequencyHz * MATH_PI * 2.0f;
 
-    // damping coefficient
-    float d = omega * dampingRatio * mass * 2.0f;
-
-    // spring stiffness
-    float k = mass * omega * omega;
-
-    // magic formulas
-    softness =           1.0f / (d + k * timestep);
-    biasFactor = k * timestep / (d + k * timestep);
-}
 Body BodyCreate(Vec2 scale, float mass)
 {
     Body body;
@@ -580,6 +568,7 @@ Collision ArbiterCreate(Body* b1, Body* b2)
 
     return collision;
 }
+
 void BroadPhase()
 {
     for (int i =   0; i < (int)bodie_s.size(); i++)
