@@ -103,7 +103,7 @@ namespace
     map<int, Collision> arbiter_s;
 }
 
-void ComputeIncidentEdge(const Body* body, Vec2 normal, Vec2& v0, Vec2& v1)
+void ComputeIncidentEdge(Vec2& v0, Vec2& v1, const Body* body, Vec2 normal)
 {
     Vec2 pos = body->position;
     Vec2 scaleh = body->scale * 0.5f;
@@ -242,7 +242,7 @@ void Collide(Collision& collision)
     {
         case FACE_A_X:
         {
-            ComputeIncidentEdge(body2, -normal, p0, p1);
+            ComputeIncidentEdge(p0, p1, body2, -normal);
             normalFront = normal;
             normalSide = rot1.col2;
             front   = scaleh1.x + Dot(pos1, normalFront);
@@ -253,7 +253,7 @@ void Collide(Collision& collision)
 
         case FACE_A_Y:
         {
-            ComputeIncidentEdge(body2, -normal, p0, p1);
+            ComputeIncidentEdge(p0, p1, body2, -normal);
             normalFront = normal;
             normalSide = rot1.col1;
             front   = scaleh1.y + Dot(pos1, normalFront);
@@ -264,7 +264,7 @@ void Collide(Collision& collision)
 
         case FACE_B_X:
         {
-            ComputeIncidentEdge(body1, normal, p0, p1);
+            ComputeIncidentEdge(p0, p1, body1, normal);
             normalFront = -normal;
             normalSide = rot2.col2;
             front   = scaleh2.x + Dot(pos2, normalFront);
@@ -275,7 +275,7 @@ void Collide(Collision& collision)
 
         case FACE_B_Y:
         {
-            ComputeIncidentEdge(body1, normal, p0, p1);
+            ComputeIncidentEdge(p0, p1, body1, normal);
             normalFront = -normal;
             normalSide = rot2.col1;
             front   = scaleh2.y + Dot(pos2, normalFront);
@@ -341,11 +341,11 @@ void UpdateVelocity(const Contact* c, Body* b1, Body* b2, Vec2 impulse)
     b1->velocityAngular -= Cross(c->r1, impulse) * b1->inertiaInv;
     b2->velocityAngular += Cross(c->r2, impulse) * b2->inertiaInv;
 }
-void ArbiterPreStep(Collision& arb, float dti)
+void ArbiterPreStep(Collision& collision, float dti)
 {
-    for (int i = 0; i < arb.contacts_num; i++)
+    for (int i = 0; i < collision.contacts_num; i++)
     {
-        Contact* c = arb.contact_s + i;
+        Contact* c = collision.contact_s + i;
 
         Vec2 normal = c->normal;
         Vec2 tangent = RotateRight(c->normal);
@@ -363,10 +363,10 @@ void ArbiterPreStep(Collision& arb, float dti)
         float r1l = LengthSqrt(r1);
         float r2l = LengthSqrt(r2);
 
-        float massInvSum = arb.body1->massInv + arb.body2->massInv;
+        float massInvSum = collision.body1->massInv + collision.body2->massInv;
 
-        float massNormal  = massInvSum + arb.body1->inertiaInv * (r1l - r1nl) + arb.body2->inertiaInv * (r2l - r2nl);
-        float massTangent = massInvSum + arb.body1->inertiaInv * (r1l - r1tl) + arb.body2->inertiaInv * (r2l - r2tl);
+        float massNormal  = massInvSum + collision.body1->inertiaInv * (r1l - r1nl) + collision.body2->inertiaInv * (r2l - r2nl);
+        float massTangent = massInvSum + collision.body1->inertiaInv * (r1l - r1tl) + collision.body2->inertiaInv * (r2l - r2tl);
 
         c->massNormalInv  = 1.0f / massNormal;
         c->massTangentInv = 1.0f / massTangent;
@@ -383,38 +383,38 @@ void ArbiterPreStep(Collision& arb, float dti)
         }
 
         Vec2 impulse = normal * c->pn + tangent * c->pt;
-        UpdateVelocity(c, arb.body1, arb.body2, impulse);
+        UpdateVelocity(c, collision.body1, collision.body2, impulse);
     }
 }
-void ArbiterApplyImpulse(Collision& arb)
+void ArbiterApplyImpulse(Collision& collision)
 {
-    for (int i = 0; i < arb.contacts_num; i++)
+    for (int i = 0; i < collision.contacts_num; i++)
     {
-        Contact* c = arb.contact_s + i;
+        Contact* c = collision.contact_s + i;
 
         {
-            auto vr = CalcRelativeVelocity(c, arb.body1, arb.body2);
+            auto vr = CalcRelativeVelocity(c, collision.body1, collision.body2);
             Vec2 normal = c->normal;
             float impInit = (-Dot(normal, vr) + c->bias) * c->massNormalInv;
             float impOld = c->pn;
             float impNew = Max(impOld + impInit, 0.0f);
             float impDiff = impNew - impOld;
             Vec2 impulse = normal * impDiff;
-            UpdateVelocity(c, arb.body1, arb.body2, impulse);
+            UpdateVelocity(c, collision.body1, collision.body2, impulse);
             c->pn = impNew;
         }
 
-        float frictionMax = arb.friction * c->pn;
+        float frictionMax = collision.friction * c->pn;
 
         {
-            auto vr = CalcRelativeVelocity(c, arb.body1, arb.body2);
+            auto vr = CalcRelativeVelocity(c, collision.body1, collision.body2);
             Vec2 tangent = RotateRight(c->normal);
             float impInit = -Dot(tangent, vr) * c->massTangentInv;
             float impOld = c->pt;
             float impNew = Clamp(impOld + impInit, -frictionMax, +frictionMax);
             float impDiff = impNew - impOld;
             Vec2 impulse = tangent * impDiff;
-            UpdateVelocity(c, arb.body1, arb.body2, impulse);
+            UpdateVelocity(c, collision.body1, collision.body2, impulse);
             c->pt = impNew;
         }
     }
@@ -574,24 +574,24 @@ Joint JointCreate(Body* b1, Body* b2, Vec2 anchor)
 }
 Collision ArbiterCreate(Body* b1, Body* b2)
 {
-    Collision arb;
+    Collision collision;
 
-    arb.contacts_num = 0;
+    collision.contacts_num = 0;
 
     if (b1 < b2)
     {
-        arb.body1 = b1;
-        arb.body2 = b2;
+        collision.body1 = b1;
+        collision.body2 = b2;
     }
     else
     {
-        arb.body1 = b2;
-        arb.body2 = b1;
+        collision.body1 = b2;
+        collision.body2 = b1;
     }
 
-    Collide(arb);
+    Collide(collision);
 
-    return arb;
+    return collision;
 }
 void BroadPhase()
 {
