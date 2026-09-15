@@ -225,13 +225,8 @@ bool Sat(const Body* body1, const Body* body2, Vec2& normal, float& dist, int& a
 
     return true;
 }
-void FindContacts(Collision& collision)
+void FindContacts(const Body* b1, const Body* b2, Contact contact_s[2], int& contacts_num)
 {
-    Contact* contact_s = collision.contact_s;
-    const Body* b1 = collision.body1;
-    const Body* b2 = collision.body2;
-    int& contacts_num = collision.contacts_num;
-
     Vec2 pos1 = b1->position;
     Vec2 pos2 = b2->position;
     Vec2 scaleh1 = b1->scale * 0.5f;
@@ -561,7 +556,7 @@ Collision Collide(Body* b1, Body* b2)
     collision.body1 = b1;
     collision.body2 = b2;
 
-    FindContacts(collision);
+    FindContacts(collision.body1, collision.body2, collision.contact_s, collision.contacts_num);
 
     collision.friction = sqrtf(b1->friction * b2->friction);
 
