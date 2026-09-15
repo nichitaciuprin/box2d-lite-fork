@@ -13,10 +13,9 @@
 #include <vector>
 #include <map>
 
-#include "MathUtils.h"
-
 using namespace std;
 
+#include "MathUtils.h"
 #include "Config.h"
 
 struct Body
