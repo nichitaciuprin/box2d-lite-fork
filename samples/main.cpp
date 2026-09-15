@@ -487,16 +487,14 @@ void JointApplyImpulse(Joint* joint)
     joint->p += impulse;
 }
 
-void BodyAddForce(Body& body, Vec2 force)
+void BodyAddForce(Body* body, Vec2 force)
 {
-    body.force += force;
+    body->force += force;
 }
 void BodyApplyImpulse(Body* body, Vec2 position, Vec2 velocity)
 {
     auto velocityLinearNew = velocity;
     auto velocityAngularNew = Cross(position - body->position, velocity);
-    // body->velocityLinear += velocityLinearNew * body->massInv;
-    // body->velocityAngular += velocityAngularNew * body->inertiaInv;
     body->velocityLinear += velocityLinearNew;
     body->velocityAngular += velocityAngularNew;
 }
