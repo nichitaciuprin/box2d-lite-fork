@@ -559,6 +559,10 @@ Collision Collide(Body* b1, Body* b2)
 
     FindContacts(collision.body1, collision.body2, collision.contact_s, collision.contact_num);
 
+    // TODO contact_num checked downstream
+    if (collision.contact_num == 0)
+        return collision;
+
     collision.friction = sqrtf(b1->friction * b2->friction);
 
     return collision;
