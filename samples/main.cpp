@@ -225,7 +225,7 @@ bool Sat(const Body* body1, const Body* body2, Vec2& normal, float& dist, int& a
 
     return true;
 }
-void Collide(Collision& collision)
+void Collide2(Collision& collision)
 {
     Contact* contact_s = collision.contact_s;
     const Body* body1 = collision.body1;
@@ -555,7 +555,7 @@ Joint JointCreate(Body* b1, Body* b2, Vec2 anchor)
 
     return joint;
 }
-Collision ArbiterCreate(Body* b1, Body* b2)
+Collision Collide(Body* b1, Body* b2)
 {
     Collision collision;
 
@@ -563,7 +563,7 @@ Collision ArbiterCreate(Body* b1, Body* b2)
     collision.body1 = b1;
     collision.body2 = b2;
 
-    Collide(collision);
+    Collide2(collision);
 
     return collision;
 }
@@ -578,10 +578,10 @@ void BroadPhase()
 
         if (b1->massInv == 0.0f && b2->massInv == 0.0f) continue;
 
-        Collision newArb = ArbiterCreate(b1, b2);
+        Collision collision = Collide(b1, b2);
         int key = i << 16 | j;
 
-        if (newArb.contacts_num == 0)
+        if (collision.contacts_num == 0)
         {
             collision_s.erase(key);
             continue;
@@ -591,12 +591,12 @@ void BroadPhase()
 
         if (iter == collision_s.end())
         {
-            collision_s.insert({ key, newArb });
+            collision_s.insert({ key, collision });
             continue;
         }
 
         auto a_old = &iter->second;
-        auto a_new = &newArb;
+        auto a_new = &collision;
 
         if (Config::warmStarting)
         {
