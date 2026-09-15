@@ -334,6 +334,13 @@ Vec2 CalcRelativeVelocity(const Joint* joint)
     auto vel2 = joint->body2->velocityLinear + Cross(joint->body2->velocityAngular, joint->r2);
     return vel2 - vel1;
 }
+void UpdateVelocity(Joint* joint, Vec2 impulse)
+{
+    joint->body1->velocityLinear -= impulse * joint->body1->massInv;
+    joint->body2->velocityLinear += impulse * joint->body2->massInv;
+    joint->body1->velocityAngular -= Cross(joint->r1, impulse) * joint->body1->inertiaInv;
+    joint->body2->velocityAngular += Cross(joint->r2, impulse) * joint->body2->inertiaInv;
+}
 void UpdateVelocity(const Contact* c, Body* b1, Body* b2, Vec2 impulse)
 {
     b1->velocityLinear -= impulse * b1->massInv;
@@ -467,10 +474,7 @@ void JointPreStep(Joint* joint, float dti)
 
     if (Config::warmStarting)
     {
-        joint->body1->velocityLinear -= joint->p * joint->body1->massInv;
-        joint->body2->velocityLinear += joint->p * joint->body2->massInv;
-        joint->body1->velocityAngular -= Cross(joint->r1, joint->p) * joint->body1->inertiaInv;
-        joint->body2->velocityAngular += Cross(joint->r2, joint->p) * joint->body2->inertiaInv;
+        UpdateVelocity(joint, joint->p);
     }
     else
     {
@@ -482,12 +486,9 @@ void JointApplyImpulse(Joint* joint)
     auto vr = CalcRelativeVelocity(joint);
     auto impulse = joint->m * (joint->bias - vr - joint->p * joint->softness);
 
-    joint->p += impulse;
+    UpdateVelocity(joint, impulse);
 
-    joint->body1->velocityLinear -= impulse * joint->body1->massInv;
-    joint->body2->velocityLinear += impulse * joint->body2->massInv;
-    joint->body1->velocityAngular -= Cross(joint->r1, impulse) * joint->body1->inertiaInv;
-    joint->body2->velocityAngular += Cross(joint->r2, impulse) * joint->body2->inertiaInv;
+    joint->p += impulse;
 }
 void BodyAddForce(Body& body, Vec2 force)
 {
