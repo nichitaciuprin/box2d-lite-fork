@@ -63,7 +63,7 @@ struct Contact
 struct Collision
 {
     Contact contact_s[2];
-    int contacts_num;
+    int contact_num;
     Body* body1;
     Body* body2;
     float friction; // Combined friction
@@ -225,7 +225,7 @@ bool Sat(const Body* body1, const Body* body2, Vec2& normal, float& dist, int& a
 
     return true;
 }
-void FindContacts(const Body* b1, const Body* b2, Contact contact_s[2], int& contacts_num)
+void FindContacts(const Body* b1, const Body* b2, Contact contact_s[2], int& contact_num)
 {
     Vec2 pos1 = b1->position;
     Vec2 pos2 = b2->position;
@@ -303,7 +303,7 @@ void FindContacts(const Body* b1, const Body* b2, Contact contact_s[2], int& con
         float separation = Dot(normalFront, p) - front;
         if (separation <= 0.0f)
         {
-            auto& contact = contact_s[contacts_num];
+            auto& contact = contact_s[contact_num];
             contact.position = p - normalFront * separation;
             contact.pn = 0;
             contact.pt = 0;
@@ -311,7 +311,7 @@ void FindContacts(const Body* b1, const Body* b2, Contact contact_s[2], int& con
             contact.separation = separation;
             contact.r1 = contact.position - b1->position;
             contact.r2 = contact.position - b2->position;
-            contacts_num++;
+            contact_num++;
         }
     }
     {
@@ -319,7 +319,7 @@ void FindContacts(const Body* b1, const Body* b2, Contact contact_s[2], int& con
         float separation = Dot(normalFront, p) - front;
         if (separation <= 0.0f)
         {
-            auto& contact = contact_s[contacts_num];
+            auto& contact = contact_s[contact_num];
             contact.position = p - normalFront * separation;
             contact.pn = 0;
             contact.pt = 0;
@@ -327,7 +327,7 @@ void FindContacts(const Body* b1, const Body* b2, Contact contact_s[2], int& con
             contact.separation = separation;
             contact.r1 = contact.position - b1->position;
             contact.r2 = contact.position - b2->position;
-            contacts_num++;
+            contact_num++;
         }
     }
 }
@@ -348,7 +348,7 @@ void UpdateVelocity(Body* b1, Body* b2, Vec2 r1, Vec2 r2, Vec2 impulse)
 
 void CollisionPreStep(Collision& collision, float dti)
 {
-    for (int i = 0; i < collision.contacts_num; i++)
+    for (int i = 0; i < collision.contact_num; i++)
     {
         Contact* c = collision.contact_s + i;
 
@@ -440,7 +440,7 @@ void JointPreStep(Joint* joint, float dti)
 
 void CollisionApplyImpulse(Collision& collision)
 {
-    for (int i = 0; i < collision.contacts_num; i++)
+    for (int i = 0; i < collision.contact_num; i++)
     {
         Contact* c = collision.contact_s + i;
 
@@ -552,11 +552,11 @@ Collision Collide(Body* b1, Body* b2)
 {
     Collision collision;
 
-    collision.contacts_num = 0;
+    collision.contact_num = 0;
     collision.body1 = b1;
     collision.body2 = b2;
 
-    FindContacts(collision.body1, collision.body2, collision.contact_s, collision.contacts_num);
+    FindContacts(collision.body1, collision.body2, collision.contact_s, collision.contact_num);
 
     collision.friction = sqrtf(b1->friction * b2->friction);
 
@@ -576,7 +576,7 @@ void BroadPhase()
         Collision collision = Collide(b1, b2);
         int key = i << 16 | j;
 
-        if (collision.contacts_num == 0)
+        if (collision.contact_num == 0)
         {
             collision_s.erase(key);
             continue;
@@ -595,7 +595,7 @@ void BroadPhase()
 
         if (Config::warmStarting)
         {
-            for (int i = 0; i < a_new->contacts_num; i++)
+            for (int i = 0; i < a_new->contact_num; i++)
             {
                 auto& c_new = a_new->contact_s[i];
 
@@ -603,7 +603,7 @@ void BroadPhase()
                 {
                     float dist0 = 0.05f;
 
-                    for (int j = 0; j < a_old->contacts_num; j++)
+                    for (int j = 0; j < a_old->contact_num; j++)
                     {
                         auto& c_old = a_old->contact_s[j];
 
@@ -1153,7 +1153,7 @@ void DrawArbiter(Collision* arbiter)
     glColor3f(1.0f, 0.0f, 0.0f);
     glBegin(GL_POINTS);
 
-    for (int i = 0; i < arbiter->contacts_num; i++)
+    for (int i = 0; i < arbiter->contact_num; i++)
     {
         Vec2 p = arbiter->contact_s[i].position;
         glVertex2f(p.x, p.y);
