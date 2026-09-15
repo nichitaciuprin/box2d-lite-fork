@@ -225,7 +225,7 @@ bool Sat(const Body* body1, const Body* body2, Vec2& normal, float& dist, int& a
 
     return true;
 }
-void Collide2(Collision& collision)
+void FindContacts(Collision& collision)
 {
     Contact* contact_s = collision.contact_s;
     const Body* body1 = collision.body1;
@@ -242,8 +242,6 @@ void Collide2(Collision& collision)
     Vec2 normal; float dist; int axis;
     auto hit = Sat(body1, body2, normal, dist, axis);
     if (!hit) return;
-
-    collision.friction = sqrtf(body1->friction * body2->friction);
 
     Vec2 p0, p1;
     Vec2 normalFront, normalSide;
@@ -563,7 +561,9 @@ Collision Collide(Body* b1, Body* b2)
     collision.body1 = b1;
     collision.body2 = b2;
 
-    Collide2(collision);
+    FindContacts(collision);
+
+    collision.friction = sqrtf(b1->friction * b2->friction);
 
     return collision;
 }
