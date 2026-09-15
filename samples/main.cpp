@@ -185,8 +185,13 @@ bool ClipLine(Vec2& v0, Vec2& v1, Vec2 normal, float offset)
         default: return true;
     }
 }
-bool Sat(const Body* body1, const Body* body2, Vec2& normal, float& dist, Axis& axis)
+bool Sat(const Body* body1, const Body* body2, Vec2& normal, float& dist, int& axis)
 {
+    const int FACE_A_X = 0;
+    const int FACE_A_Y = 1;
+    const int FACE_B_X = 2;
+    const int FACE_B_Y = 3;
+
     Vec2 pos1 = body1->position;
     Vec2 pos2 = body2->position;
     Vec2 scale1 = body1->scale * 0.5f;
@@ -231,6 +236,11 @@ bool Sat(const Body* body1, const Body* body2, Vec2& normal, float& dist, Axis& 
 }
 int Collide(Contact* contacts, const Body* body1, const Body* body2)
 {
+    const int FACE_A_X = 0;
+    const int FACE_A_Y = 1;
+    const int FACE_B_X = 2;
+    const int FACE_B_Y = 3;
+
     Vec2 pos1 = body1->position;
     Vec2 pos2 = body2->position;
     Vec2 scaleh1 = body1->scale * 0.5f;
@@ -242,10 +252,7 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
     auto hit = Sat(body1, body2, normal, dist, axis);
     if (!hit) return 0;
 
-    Vec2 clipPoints0[MAX_POINTS] = {};
-    Vec2 clipPoints1[MAX_POINTS] = {};
-    Vec2 clipPoints2[MAX_POINTS] = {};
-
+    Vec2 p0, p1;
     Vec2 normalFront, normalSide;
     float front, sideNeg, sidePos;
 
@@ -253,7 +260,7 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
     {
         case FACE_A_X:
         {
-            ComputeIncidentEdge(body2, -normal, clipPoints0[0], clipPoints0[1]);
+            ComputeIncidentEdge(body2, -normal, p0, p1);
             normalFront = normal;
             normalSide = rot1.col2;
             front   = scaleh1.x + Dot(pos1, normalFront);
@@ -264,7 +271,7 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
 
         case FACE_A_Y:
         {
-            ComputeIncidentEdge(body2, -normal, clipPoints0[0], clipPoints0[1]);
+            ComputeIncidentEdge(body2, -normal, p0, p1);
             normalFront = normal;
             normalSide = rot1.col1;
             front   = scaleh1.y + Dot(pos1, normalFront);
@@ -275,7 +282,7 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
 
         case FACE_B_X:
         {
-            ComputeIncidentEdge(body1, normal, clipPoints0[0], clipPoints0[1]);
+            ComputeIncidentEdge(body1, normal, p0, p1);
             normalFront = -normal;
             normalSide = rot2.col2;
             front   = scaleh2.x + Dot(pos2, normalFront);
@@ -286,7 +293,7 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
 
         case FACE_B_Y:
         {
-            ComputeIncidentEdge(body1, normal, clipPoints0[0], clipPoints0[1]);
+            ComputeIncidentEdge(body1, normal, p0, p1);
             normalFront = -normal;
             normalSide = rot2.col1;
             front   = scaleh2.y + Dot(pos2, normalFront);
@@ -296,37 +303,46 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
         break;
     }
 
-    if (ClipLine(clipPoints0[0], clipPoints0[1], +normalSide, sidePos)) return 0;
-    if (ClipLine(clipPoints0[0], clipPoints0[1], -normalSide, sideNeg)) return 0;
+    if (ClipLine(p0, p1, +normalSide, sidePos)) return 0;
+    if (ClipLine(p0, p1, -normalSide, sideNeg)) return 0;
 
     // clamps points to reference edge
+    int contactNum = 0;
 
-    int numContacts = 0;
-
-    for (int i = 0; i < MAX_POINTS; i++)
     {
-        auto& point = clipPoints0[i];
-
-        float separation = Dot(normalFront, point) - front;
-        if (separation > 0.0f) continue;
-
-        auto& contact = contacts[numContacts];
-
-        contact.position = point - normalFront * separation;
-
-        contact.pn = 0;
-        contact.pt = 0;
-
-        contact.normal = normal;
-        contact.separation = separation;
-
-        contact.r1 = contact.position - body1->position;
-        contact.r2 = contact.position - body2->position;
-
-        numContacts++;
+        auto& p = p0;
+        float separation = Dot(normalFront, p) - front;
+        if (separation <= 0.0f)
+        {
+            auto& contact = contacts[contactNum];
+            contact.position = p - normalFront * separation;
+            contact.pn = 0;
+            contact.pt = 0;
+            contact.normal = normal;
+            contact.separation = separation;
+            contact.r1 = contact.position - body1->position;
+            contact.r2 = contact.position - body2->position;
+            contactNum++;
+        }
+    }
+    {
+        auto& p = p1;
+        float separation = Dot(normalFront, p) - front;
+        if (separation <= 0.0f)
+        {
+            auto& contact = contacts[contactNum];
+            contact.position = p - normalFront * separation;
+            contact.pn = 0;
+            contact.pt = 0;
+            contact.normal = normal;
+            contact.separation = separation;
+            contact.r1 = contact.position - body1->position;
+            contact.r2 = contact.position - body2->position;
+            contactNum++;
+        }
     }
 
-    return numContacts;
+    return contactNum;
 }
 Vec2 CalcRelativeVelocity(const Contact* c, const Body* b1, const Body* b2)
 {
