@@ -168,10 +168,10 @@ void ComputeIncidentEdge(const Body* body, Vec2 normal, Vec2& v0, Vec2& v1)
     v0 = pos + rot * v0;
     v1 = pos + rot * v1;
 }
-bool ClipLine(Vec2 vIn[MAX_POINTS], Vec2 vOut[MAX_POINTS], Vec2 normal, float offset)
+bool ClipLine(Vec2& v0, Vec2& v1, Vec2 normal, float offset)
 {
-    float dist0 = Dot(normal, vIn[0]) - offset;
-    float dist1 = Dot(normal, vIn[1]) - offset;
+    float dist0 = Dot(normal, v0) - offset;
+    float dist1 = Dot(normal, v1) - offset;
 
     int state = 0;
     if (dist0 < 0.0f) state += 1;
@@ -179,26 +179,9 @@ bool ClipLine(Vec2 vIn[MAX_POINTS], Vec2 vOut[MAX_POINTS], Vec2 normal, float of
 
     switch (state)
     {
-        case 1:
-        {
-            vOut[0] = vIn[0];
-            vOut[1] = vIn[1];
-            vOut[1] = Lerp(vIn[0], vIn[1], dist0 / (dist0 - dist1));
-            return false;
-        }
-        case 2:
-        {
-            vOut[0] = vIn[0];
-            vOut[1] = vIn[1];
-            vOut[0] = Lerp(vIn[0], vIn[1], dist0 / (dist0 - dist1));
-            return false;
-        }
-        case 3:
-        {
-            vOut[0] = vIn[0];
-            vOut[1] = vIn[1];
-            return false;
-        }
+        case 1: { v1 = Lerp(v0, v1, dist0 / (dist0 - dist1)); return false; }
+        case 2: { v0 = Lerp(v0, v1, dist0 / (dist0 - dist1)); return false; }
+        case 3: return false;
         default: return true;
     }
 }
@@ -313,8 +296,8 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
         break;
     }
 
-    if (ClipLine(clipPoints0, clipPoints1, +normalSide, sidePos)) return 0;
-    if (ClipLine(clipPoints1, clipPoints2, -normalSide, sideNeg)) return 0;
+    if (ClipLine(clipPoints0[0], clipPoints0[1], +normalSide, sidePos)) return 0;
+    if (ClipLine(clipPoints0[0], clipPoints0[1], -normalSide, sideNeg)) return 0;
 
     // clamps points to reference edge
 
@@ -322,7 +305,7 @@ int Collide(Contact* contacts, const Body* body1, const Body* body2)
 
     for (int i = 0; i < MAX_POINTS; i++)
     {
-        auto& point = clipPoints2[i];
+        auto& point = clipPoints0[i];
 
         float separation = Dot(normalFront, point) - front;
         if (separation > 0.0f) continue;
