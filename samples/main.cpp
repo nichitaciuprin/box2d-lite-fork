@@ -434,11 +434,6 @@ void JointPreStep(Joint* joint, float dti)
     joint->r1 = r1 * joint->localAnchor1;
     joint->r2 = r2 * joint->localAnchor2;
 
-    // deltaV = deltaV0 + k * impulse
-    // invM = [(1/m1 + 1/m2) * eye(2) - skew(r1) * invI1 * skew(r1) - skew(r2) * invI2 * skew(r2)]
-    //      = [1/m1+1/m2     0    ] + invI1 * [r1.y*r1.y -r1.x*r1.y] + invI2 * [r1.y*r1.y -r1.x*r1.y]
-    //        [    0     1/m1+1/m2]           [-r1.x*r1.y r1.x*r1.x]           [-r1.x*r1.y r1.x*r1.x]
-
     Mat22 k1;
     k1.col1.x = joint->body1->massInv + joint->body2->massInv;
     k1.col2.x = 0.0f;
