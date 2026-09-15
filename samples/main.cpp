@@ -13,13 +13,10 @@
 #include <vector>
 #include <map>
 
-// using namespace std;
-
-using std::vector;
-using std::map;
-using std::pair;
-
 #include "MathUtils.h"
+
+using namespace std;
+
 #include "Config.h"
 
 struct Body
@@ -89,7 +86,7 @@ namespace
 
     float timestep = 1.0f / 60.0f;
     bool pause = false;
-    bool forward = false;
+    bool step = false;
 
     int demoIndex = 0;
 
@@ -1059,7 +1056,7 @@ void Keyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
             break;
 
         case GLFW_KEY_RIGHT_BRACKET:
-            forward = true;
+            step = true;
             break;
 
         case GLFW_KEY_A:
@@ -1304,7 +1301,7 @@ int main()
 
         SelectBody(mousePos);
 
-        auto update = !pause || forward; forward = false;
+        auto update = !pause || step; step = false;
         if (update)
             Step(timestep);
 
