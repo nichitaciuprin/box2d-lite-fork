@@ -119,7 +119,7 @@ void CalcJointProp(float mass, float frequencyHz, float dampingRatio, float& sof
     biasFactor = k * timestep / (d + k * timestep);
 }
 
-void ComputeIncidentEdge(Vec2& v0, Vec2& v1, const Body* body, Vec2 normal)
+void ComputeIncidentEdge(Vec2& p0, Vec2& p1, const Body* body, Vec2 normal)
 {
     Vec2 pos = body->position;
     Vec2 scaleh = body->scale * 0.5f;
@@ -131,36 +131,36 @@ void ComputeIncidentEdge(Vec2& v0, Vec2& v1, const Body* body, Vec2 normal)
     {
         if (normal.x >= 0.0f)
         {
-            v0 = { +scaleh.x, -scaleh.y };
-            v1 = { +scaleh.x, +scaleh.y };
+            p0 = { +scaleh.x, -scaleh.y };
+            p1 = { +scaleh.x, +scaleh.y };
         }
         else
         {
-            v0 = { -scaleh.x, +scaleh.y };
-            v1 = { -scaleh.x, -scaleh.y };
+            p0 = { -scaleh.x, +scaleh.y };
+            p1 = { -scaleh.x, -scaleh.y };
         }
     }
     else
     {
         if (normal.y >= 0.0f)
         {
-            v0 = { +scaleh.x, +scaleh.y };
-            v1 = { -scaleh.x, +scaleh.y };
+            p0 = { +scaleh.x, +scaleh.y };
+            p1 = { -scaleh.x, +scaleh.y };
         }
         else
         {
-            v0 = { -scaleh.x, -scaleh.y };
-            v1 = { +scaleh.x, -scaleh.y };
+            p0 = { -scaleh.x, -scaleh.y };
+            p1 = { +scaleh.x, -scaleh.y };
         }
     }
 
-    v0 = pos + rot * v0;
-    v1 = pos + rot * v1;
+    p0 = pos + rot * p0;
+    p1 = pos + rot * p1;
 }
-bool ClipLine(Vec2& v0, Vec2& v1, Vec2 normal, float offset)
+bool ClipLine(Vec2& p0, Vec2& p1, Vec2 normal, float offset)
 {
-    float dist0 = Dot(normal, v0) - offset;
-    float dist1 = Dot(normal, v1) - offset;
+    float dist0 = Dot(normal, p0) - offset;
+    float dist1 = Dot(normal, p1) - offset;
 
     int state = 0;
     if (dist0 < 0.0f) state += 1;
@@ -169,8 +169,8 @@ bool ClipLine(Vec2& v0, Vec2& v1, Vec2 normal, float offset)
     switch (state)
     {
         case 0: { printf("UNREACHABLE\n"); return true; } // UNREACHABLE, clip line called after sat
-        case 1: { v1 = Lerp(v0, v1, dist0 / (dist0 - dist1)); return false; }
-        case 2: { v0 = Lerp(v0, v1, dist0 / (dist0 - dist1)); return false; }
+        case 1: { p1 = Lerp(p0, p1, dist0 / (dist0 - dist1)); return false; }
+        case 2: { p0 = Lerp(p0, p1, dist0 / (dist0 - dist1)); return false; }
         case 3: return false;
     }
 
