@@ -100,7 +100,7 @@ namespace
 
     vector<Body> bodie_s;
     vector<Joint> joint_s;
-    map<int, Collision> arbiter_s;
+    map<int, Collision> collision_s;
 }
 
 void ComputeIncidentEdge(Vec2& v0, Vec2& v1, const Body* body, Vec2 normal)
@@ -599,15 +599,15 @@ void BroadPhase()
 
         if (newArb.contacts_num == 0)
         {
-            arbiter_s.erase(key);
+            collision_s.erase(key);
             continue;
         }
 
-        auto iter = arbiter_s.find(key);
+        auto iter = collision_s.find(key);
 
-        if (iter == arbiter_s.end())
+        if (iter == collision_s.end())
         {
-            arbiter_s.insert({ key, newArb });
+            collision_s.insert({ key, newArb });
             continue;
         }
 
@@ -668,12 +668,12 @@ void Step(float dt)
     }
 
     {
-        for (auto& arbiter : arbiter_s) ArbiterPreStep(arbiter.second, dti);
+        for (auto& arbiter : collision_s) ArbiterPreStep(arbiter.second, dti);
         for (auto& joint : joint_s) JointPreStep(&joint, dti);
     }
     for (int i = 0; i < Config::iterations; i++)
     {
-        for (auto& arbiter : arbiter_s) ArbiterApplyImpulse(arbiter.second);
+        for (auto& arbiter : collision_s) ArbiterApplyImpulse(arbiter.second);
         for (auto& joint : joint_s) JointApplyImpulse(&joint);
     }
 
@@ -690,7 +690,7 @@ void Clear()
 {
     bodie_s.clear();
     joint_s.clear();
-    arbiter_s.clear();
+    collision_s.clear();
     bomb = NULL;
 }
 Body* CreateGround()
@@ -1225,7 +1225,7 @@ void Draw()
     for (auto& i : joint_s)
         DrawJoint(&i);
 
-    for (auto& i : arbiter_s)
+    for (auto& i : collision_s)
         DrawArbiter(&i.second);
 
     ImGui::Render();
