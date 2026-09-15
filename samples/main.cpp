@@ -188,9 +188,9 @@ bool ClipLine(Vec2 vIn[MAX_POINTS], Vec2 vOut[MAX_POINTS], Vec2 normal, float of
         }
         case 2:
         {
-            vOut[0] = vIn[1];
-            vOut[1] = vIn[0];
-            vOut[1] = Lerp(vIn[0], vIn[1], dist0 / (dist0 - dist1));
+            vOut[0] = vIn[0];
+            vOut[1] = vIn[1];
+            vOut[0] = Lerp(vIn[0], vIn[1], dist0 / (dist0 - dist1));
             return false;
         }
         case 3:
