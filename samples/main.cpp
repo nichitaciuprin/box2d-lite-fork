@@ -228,19 +228,19 @@ bool Sat(const Body* body1, const Body* body2, Vec2& normal, float& dist, int& a
 void FindContacts(Collision& collision)
 {
     Contact* contact_s = collision.contact_s;
-    const Body* body1 = collision.body1;
-    const Body* body2 = collision.body2;
+    const Body* b1 = collision.body1;
+    const Body* b2 = collision.body2;
     int& contacts_num = collision.contacts_num;
 
-    Vec2 pos1 = body1->position;
-    Vec2 pos2 = body2->position;
-    Vec2 scaleh1 = body1->scale * 0.5f;
-    Vec2 scaleh2 = body2->scale * 0.5f;
-    Mat22 rot1 = FromAngle(body1->rotation);
-    Mat22 rot2 = FromAngle(body2->rotation);
+    Vec2 pos1 = b1->position;
+    Vec2 pos2 = b2->position;
+    Vec2 scaleh1 = b1->scale * 0.5f;
+    Vec2 scaleh2 = b2->scale * 0.5f;
+    Mat22 rot1 = FromAngle(b1->rotation);
+    Mat22 rot2 = FromAngle(b2->rotation);
 
     Vec2 normal; float dist; int axis;
-    auto hit = Sat(body1, body2, normal, dist, axis);
+    auto hit = Sat(b1, b2, normal, dist, axis);
     if (!hit) return;
 
     Vec2 p0, p1;
@@ -256,7 +256,7 @@ void FindContacts(Collision& collision)
     {
         case FACE_A_X:
         {
-            ComputeIncidentEdge(p0, p1, body2, -normal);
+            ComputeIncidentEdge(p0, p1, b2, -normal);
             normalFront = normal;
             normalSide = rot1.col2;
             front   = scaleh1.x + Dot(pos1, normalFront);
@@ -267,7 +267,7 @@ void FindContacts(Collision& collision)
 
         case FACE_A_Y:
         {
-            ComputeIncidentEdge(p0, p1, body2, -normal);
+            ComputeIncidentEdge(p0, p1, b2, -normal);
             normalFront = normal;
             normalSide = rot1.col1;
             front   = scaleh1.y + Dot(pos1, normalFront);
@@ -278,7 +278,7 @@ void FindContacts(Collision& collision)
 
         case FACE_B_X:
         {
-            ComputeIncidentEdge(p0, p1, body1, normal);
+            ComputeIncidentEdge(p0, p1, b1, normal);
             normalFront = -normal;
             normalSide = rot2.col2;
             front   = scaleh2.x + Dot(pos2, normalFront);
@@ -289,7 +289,7 @@ void FindContacts(Collision& collision)
 
         case FACE_B_Y:
         {
-            ComputeIncidentEdge(p0, p1, body1, normal);
+            ComputeIncidentEdge(p0, p1, b1, normal);
             normalFront = -normal;
             normalSide = rot2.col1;
             front   = scaleh2.y + Dot(pos2, normalFront);
@@ -314,8 +314,8 @@ void FindContacts(Collision& collision)
             contact.pt = 0;
             contact.normal = normal;
             contact.separation = separation;
-            contact.r1 = contact.position - body1->position;
-            contact.r2 = contact.position - body2->position;
+            contact.r1 = contact.position - b1->position;
+            contact.r2 = contact.position - b2->position;
             contacts_num++;
         }
     }
@@ -330,8 +330,8 @@ void FindContacts(Collision& collision)
             contact.pt = 0;
             contact.normal = normal;
             contact.separation = separation;
-            contact.r1 = contact.position - body1->position;
-            contact.r2 = contact.position - body2->position;
+            contact.r1 = contact.position - b1->position;
+            contact.r2 = contact.position - b2->position;
             contacts_num++;
         }
     }
