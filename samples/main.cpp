@@ -22,33 +22,6 @@ using std::pair;
 #include "MathUtils.h"
 #include "Config.h"
 
-// box schema
-//
-//   ^ y
-//   |
-//   + --> x
-//
-//        e1
-//   v2 ------ v1
-//    |        |
-// e2 |        | e4
-//    |        |
-//   v3 ------ v4
-//        e3
-
-struct Contact
-{
-    Vec2 position;
-    Vec2 normal;
-    Vec2 r1;
-    Vec2 r2;
-    float separation;
-    float pn;	// accumulated normal impulse
-    float pt;	// accumulated tangent impulse
-    float massNormalInv;
-    float massTangentInv;
-    float bias;
-};
 struct Body
 {
     Vec2 position;
@@ -77,6 +50,19 @@ struct Joint
     Body* body2;
     float biasFactor;
     float softness;
+};
+struct Contact
+{
+    Vec2 position;
+    Vec2 normal;
+    Vec2 r1;
+    Vec2 r2;
+    float separation;
+    float pn;	// accumulated normal impulse
+    float pt;	// accumulated tangent impulse
+    float massNormalInv;
+    float massTangentInv;
+    float bias;
 };
 struct Collision
 {
@@ -170,11 +156,13 @@ bool ClipLine(Vec2& v0, Vec2& v1, Vec2 normal, float offset)
 
     switch (state)
     {
+        case 0: { printf("UNREACHABLE\n"); return true; } // UNREACHABLE, clip line called after sat
         case 1: { v1 = Lerp(v0, v1, dist0 / (dist0 - dist1)); return false; }
         case 2: { v0 = Lerp(v0, v1, dist0 / (dist0 - dist1)); return false; }
         case 3: return false;
-        default: return true;
     }
+
+    UNREACHABLE
 }
 bool Sat(const Body* body1, const Body* body2, Vec2& normal, float& dist, int& axis)
 {
@@ -225,12 +213,12 @@ bool Sat(const Body* body1, const Body* body2, Vec2& normal, float& dist, int& a
 
     return true;
 }
-int Collide(Contact contact_s[2], const Body* body1, const Body* body2)
+void Collide(Collision& collision)
 {
-    const int FACE_A_X = 0;
-    const int FACE_A_Y = 1;
-    const int FACE_B_X = 2;
-    const int FACE_B_Y = 3;
+    Contact* contact_s = collision.contact_s;
+    const Body* body1 = collision.body1;
+    const Body* body2 = collision.body2;
+    int& contacts_num = collision.contacts_num;
 
     Vec2 pos1 = body1->position;
     Vec2 pos2 = body2->position;
@@ -241,11 +229,18 @@ int Collide(Contact contact_s[2], const Body* body1, const Body* body2)
 
     Vec2 normal; float dist; int axis;
     auto hit = Sat(body1, body2, normal, dist, axis);
-    if (!hit) return 0;
+    if (!hit) return;
+
+    collision.friction = sqrtf(body1->friction * body2->friction);
 
     Vec2 p0, p1;
     Vec2 normalFront, normalSide;
     float front, sideNeg, sidePos;
+
+    const int FACE_A_X = 0;
+    const int FACE_A_Y = 1;
+    const int FACE_B_X = 2;
+    const int FACE_B_Y = 3;
 
     switch (axis)
     {
@@ -294,18 +289,16 @@ int Collide(Contact contact_s[2], const Body* body1, const Body* body2)
         break;
     }
 
-    if (ClipLine(p0, p1, +normalSide, sidePos)) return 0;
-    if (ClipLine(p0, p1, -normalSide, sideNeg)) return 0;
+    if (ClipLine(p0, p1, +normalSide, sidePos)) { printf("UNREACHABLE\n"); return; };
+    if (ClipLine(p0, p1, -normalSide, sideNeg)) { printf("UNREACHABLE\n"); return; };
 
     // clamps points to reference edge
-    int contactNum = 0;
-
     {
         auto& p = p0;
         float separation = Dot(normalFront, p) - front;
         if (separation <= 0.0f)
         {
-            auto& contact = contact_s[contactNum];
+            auto& contact = contact_s[contacts_num];
             contact.position = p - normalFront * separation;
             contact.pn = 0;
             contact.pt = 0;
@@ -313,7 +306,7 @@ int Collide(Contact contact_s[2], const Body* body1, const Body* body2)
             contact.separation = separation;
             contact.r1 = contact.position - body1->position;
             contact.r2 = contact.position - body2->position;
-            contactNum++;
+            contacts_num++;
         }
     }
     {
@@ -321,7 +314,7 @@ int Collide(Contact contact_s[2], const Body* body1, const Body* body2)
         float separation = Dot(normalFront, p) - front;
         if (separation <= 0.0f)
         {
-            auto& contact = contact_s[contactNum];
+            auto& contact = contact_s[contacts_num];
             contact.position = p - normalFront * separation;
             contact.pn = 0;
             contact.pt = 0;
@@ -329,11 +322,9 @@ int Collide(Contact contact_s[2], const Body* body1, const Body* body2)
             contact.separation = separation;
             contact.r1 = contact.position - body1->position;
             contact.r2 = contact.position - body2->position;
-            contactNum++;
+            contacts_num++;
         }
     }
-
-    return contactNum;
 }
 Vec2 CalcRelativeVelocity(const Contact* c, const Body* b1, const Body* b2)
 {
@@ -589,6 +580,8 @@ Collision ArbiterCreate(Body* b1, Body* b2)
 {
     Collision arb;
 
+    arb.contacts_num = 0;
+
     if (b1 < b2)
     {
         arb.body1 = b1;
@@ -600,9 +593,7 @@ Collision ArbiterCreate(Body* b1, Body* b2)
         arb.body2 = b1;
     }
 
-    arb.contacts_num = Collide(arb.contact_s, arb.body1, arb.body2);
-
-    arb.friction = sqrtf(arb.body1->friction * arb.body2->friction);
+    Collide(arb);
 
     return arb;
 }

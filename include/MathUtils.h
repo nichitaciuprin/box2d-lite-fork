@@ -20,6 +20,14 @@
 
 #define MATH_PI 3.14159265358979323846f
 
+#if defined(__GNUC__) || defined(__clang__)
+    #define UNREACHABLE __builtin_unreachable();
+#elif defined(_MSC_VER)
+    #define UNREACHABLE __assume(0);
+#else
+    #define UNREACHABLE ((void)0);
+#endif
+
 struct Vec2
 {
     float x, y;
