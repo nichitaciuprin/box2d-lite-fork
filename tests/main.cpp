@@ -1,12 +1,11 @@
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_glfw.h"
-#include "imgui/imgui_impl_opengl2.h"
-
 #define GLFW_INCLUDE_NONE
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
-#define _CRT_SECURE_NO_WARNINGS
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl2.h"
+
 #include <stdio.h>
 #include <iostream>
 
