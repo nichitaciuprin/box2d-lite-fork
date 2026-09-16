@@ -1,6 +1,6 @@
 #include "imgui/imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl2.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl2.h"
 
 #define GLFW_INCLUDE_NONE
 #include "glad/glad.h"
