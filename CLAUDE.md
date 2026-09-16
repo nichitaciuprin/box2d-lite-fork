@@ -10,4 +10,6 @@ Project uses ImGui, GLFW, OpenGL and glad
 
 This is a personal fork with in-progress modifications on top of upstream Box2D-Lite
 Expect commented-out experimental code
+
 I prefer Allman brace placement style
+I prefer short answers, avoid being too wordy
