@@ -19,4 +19,5 @@ set(IMGUI_HEADER_FILES
 
 add_library(imgui STATIC ${IMGUI_SOURCE_FILES} ${IMGUI_HEADER_FILES})
 target_include_directories(imgui PUBLIC ..)
+
 target_link_libraries(imgui PUBLIC glad glfw)
