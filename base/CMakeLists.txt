@@ -4,6 +4,7 @@ set(CONFIG_SOURCE_FILES src/Config.cpp)
 
 set(CONFIG_HEADER_FILES
     include/Config.h
+    include/Core.h
     include/MathUtils.h)
 
 add_library(config STATIC ${CONFIG_SOURCE_FILES} ${CONFIG_HEADER_FILES})
