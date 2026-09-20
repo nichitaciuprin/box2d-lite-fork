@@ -1053,13 +1053,13 @@ void Draw()
     if (selectedBodyIndex == -1)
     {
         if (closeBodyIndex != -1)
-            DrawPoint(closeBodyPoint, { 0.0f, 1.0f, 0.0f });
+            DrawPoint(closeBodyPoint, Color3::GREEN);
     }
     else
     {
         auto mousePos = GetMousePosition();
-        DrawPoint(selectedBodyPoint, { 1.0f, 0.0f, 0.0f });
-        DrawLine(selectedBodyPoint, mousePos, { 0.0f, 1.0f, 0.0f });
+        DrawPoint(selectedBodyPoint, Color3::RED);
+        DrawLine(selectedBodyPoint, mousePos, Color3::GREEN);
     }
 
     for (auto& i : bodie_s)
@@ -1081,7 +1081,7 @@ void Draw()
         DrawText(5, 5, demoNames[demoIndex]);
         DrawText(5, 35, "Keys: 1-9 Demos, Space to Launch the Bomb");
 
-        char buffer[64];
+        char buffer[512];
         sprintf(buffer, "(A) Accumulation %s",        Config::accumulateImpulses ? "ON" : "OFF"); DrawText(5, 65,  buffer);
         sprintf(buffer, "(S) Position Correction %s", Config::positionCorrection ? "ON" : "OFF"); DrawText(5, 95,  buffer);
         sprintf(buffer, "(D) Warm Starting %s",       Config::warmStarting       ? "ON" : "OFF"); DrawText(5, 125, buffer);
