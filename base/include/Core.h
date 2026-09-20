@@ -17,3 +17,4 @@ using namespace std;
 
 #include "MathUtils.h"
 #include "Config.h"
+#include "Window.h"
