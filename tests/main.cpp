@@ -920,7 +920,7 @@ void SelectBody(Vec2 mousePos)
     closeBodyPoint = mousePos + offset0;
 }
 
-void Keyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
+void OnKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (action != GLFW_PRESS) return;
 
@@ -967,7 +967,7 @@ void Keyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
             break;
     }
 }
-void Mouse(GLFWwindow* window, int button, int action, int mods)
+void OnMouse(GLFWwindow* window, int button, int action, int mods)
 {
     if (action != GLFW_PRESS) return;
     if (button != GLFW_MOUSE_BUTTON_LEFT) return;
@@ -1099,8 +1099,8 @@ int main()
 {
     InitWindow();
 
-    glfwSetMouseButtonCallback(window, Mouse);
-    glfwSetKeyCallback(window, Keyboard);
+    glfwSetMouseButtonCallback(window, OnMouse);
+    glfwSetKeyCallback(window, OnKeyboard);
 
     InitDemo(0);
 
