@@ -1048,28 +1048,7 @@ void DrawArbiter(Collision* arbiter)
 }
 void Draw()
 {
-    auto mousePos = GetMousePosition();
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    ImGui_ImplOpenGL2_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-
-    ImGui::SetNextWindowPos(ImVec2(10.0f, 10.0f));
-    ImGui::Begin("Overlay", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar);
-    ImGui::End();
-
-    DrawText(5, 5, demoNames[demoIndex]);
-    DrawText(5, 35, "Keys: 1-9 Demos, Space to Launch the Bomb");
-
-    char buffer[64];
-    sprintf(buffer, "(A) Accumulation %s",        Config::accumulateImpulses ? "ON" : "OFF"); DrawText(5, 65,  buffer);
-    sprintf(buffer, "(S) Position Correction %s", Config::positionCorrection ? "ON" : "OFF"); DrawText(5, 95,  buffer);
-    sprintf(buffer, "(D) Warm Starting %s",       Config::warmStarting       ? "ON" : "OFF"); DrawText(5, 125, buffer);
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    ClearScreen();
 
     if (selectedBodyIndex == -1)
     {
@@ -1078,6 +1057,7 @@ void Draw()
     }
     else
     {
+        auto mousePos = GetMousePosition();
         DrawPoint(selectedBodyPoint, { 1.0f, 0.0f, 0.0f });
         DrawLine(selectedBodyPoint, mousePos, { 0.0f, 1.0f, 0.0f });
     }
@@ -1091,8 +1071,22 @@ void Draw()
     for (auto& i : collision_s)
         DrawArbiter(&i.second);
 
-    ImGui::Render();
-    ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+    GuiStart();
+    {
+        ImGui::SetNextWindowPos(ImVec2(10.0f, 10.0f));
+
+        // ImGui::Begin("Overlay", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar);
+        // ImGui::End();
+
+        DrawText(5, 5, demoNames[demoIndex]);
+        DrawText(5, 35, "Keys: 1-9 Demos, Space to Launch the Bomb");
+
+        char buffer[64];
+        sprintf(buffer, "(A) Accumulation %s",        Config::accumulateImpulses ? "ON" : "OFF"); DrawText(5, 65,  buffer);
+        sprintf(buffer, "(S) Position Correction %s", Config::positionCorrection ? "ON" : "OFF"); DrawText(5, 95,  buffer);
+        sprintf(buffer, "(D) Warm Starting %s",       Config::warmStarting       ? "ON" : "OFF"); DrawText(5, 125, buffer);
+    }
+    GuiEnd();
 }
 
 int main()

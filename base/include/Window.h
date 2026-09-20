@@ -1,5 +1,23 @@
 #pragma once
 
+namespace Color3
+{
+    inline constexpr Vec3 BLACK      = { 0.0f, 0.0f, 0.0f };
+    inline constexpr Vec3 WHITE      = { 1.0f, 1.0f, 1.0f };
+    inline constexpr Vec3 RED        = { 1.0f, 0.0f, 0.0f };
+    inline constexpr Vec3 GREEN      = { 0.0f, 1.0f, 0.0f };
+    inline constexpr Vec3 BLUE       = { 0.0f, 0.0f, 1.0f };
+    inline constexpr Vec3 YELLOW     = { 1.0f, 1.0f, 0.0f };
+    inline constexpr Vec3 MAGENTA    = { 1.0f, 0.0f, 1.0f };
+    inline constexpr Vec3 CYAN       = { 0.0f, 1.0f, 1.0f };
+    inline constexpr Vec3 ORANGE     = { 1.0f, 0.5f, 0.0f };
+    inline constexpr Vec3 PINK       = { 1.0f, 0.0f, 0.5f };
+    inline constexpr Vec3 LIME       = { 0.5f, 1.0f, 0.0f };
+    inline constexpr Vec3 GREENCOLD  = { 0.0f, 1.0f, 0.5f };
+    inline constexpr Vec3 VIOLET     = { 0.5f, 0.0f, 1.0f };
+    inline constexpr Vec3 LIGHTBLUE  = { 0.0f, 0.5f, 1.0f };
+}
+
 namespace
 {
     int width = 1280;
@@ -18,6 +36,23 @@ namespace
     bool step = false;
 }
 
+void ClearScreen()
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
+void GuiStart()
+{
+    ImGui_ImplOpenGL2_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+}
+void GuiEnd()
+{
+    ImGui::Render();
+    ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+}
 Vec2 ScreenToWorld(float x, float y)
 {
     Vec2 result;
