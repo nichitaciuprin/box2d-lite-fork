@@ -107,7 +107,8 @@ bool ClipLine(Vec2& p0, Vec2& p1, Vec2 normal, float offset)
 
     switch (state)
     {
-        case 0: { printf("UNREACHABLE\n"); return true; } // UNREACHABLE, clip line called after sat
+        // case 0: { printf("UNREACHABLE\n"); return true; } // UNREACHABLE, clip line called after sat
+        case 0: UNREACHABLE // clip line called after sat
         case 1: { p1 = Lerp(p0, p1, dist0 / (dist0 - dist1)); return false; }
         case 2: { p0 = Lerp(p0, p1, dist0 / (dist0 - dist1)); return false; }
         case 3: return false;
