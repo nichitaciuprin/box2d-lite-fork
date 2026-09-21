@@ -339,9 +339,8 @@ void OnMouse(GLFWwindow* window, int button, int action, int mods)
     else
     {
         auto body = &bodie_s[selectedBodyIndex];
-        auto point = selectedBodyPoint;
-        auto velocity = mousePosition - point;
-        BodyApplyImpulse(body, point, velocity);
+        auto velocity = mousePosition - selectedBodyPoint;
+        BodyApplyImpulse(body, selectedBodyPoint, velocity);
         selectedBodyIndex = -1;
     }
 }
