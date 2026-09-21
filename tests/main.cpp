@@ -348,38 +348,6 @@ void InitDemo(int index)
     demoIndex = index;
     demos[index]();
 }
-void OnKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-    if (action != GLFW_PRESS) return;
-
-    switch (key)
-    {
-        case GLFW_KEY_ESCAPE:
-            glfwSetWindowShouldClose(window, GL_TRUE);
-            break;
-
-        case GLFW_KEY_P: pause = !pause; break;
-        case GLFW_KEY_RIGHT_BRACKET: step = true; break;
-
-        case GLFW_KEY_A: Config::accumulateImpulses = !Config::accumulateImpulses; break;
-        case GLFW_KEY_S: Config::positionCorrection = !Config::positionCorrection; break;
-        case GLFW_KEY_D: Config::warmStarting = !Config::warmStarting; break;
-
-        case GLFW_KEY_SPACE: LaunchBomb(); break;
-
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-            InitDemo(key - GLFW_KEY_1);
-            break;
-    }
-}
 void Draw()
 {
     ClearScreen();
@@ -424,16 +392,34 @@ int main()
 {
     WindowInit();
 
-    glfwSetKeyCallback(window, OnKeyboard);
+    // glfwSetKeyCallback(window, OnKeyboard);
 
     InitDemo(0);
 
     while (!WindowShouldClose())
     {
+        if (GetKeyPressed(GLFW_KEY_ESCAPE)) break;
+
+        if (GetKeyPressed(GLFW_KEY_P)) pause = !pause;
+        if (GetKeyPressed(GLFW_KEY_RIGHT_BRACKET)) step = true;
+
+        if (GetKeyPressed(GLFW_KEY_A)) Config::accumulateImpulses = !Config::accumulateImpulses;
+        if (GetKeyPressed(GLFW_KEY_S)) Config::positionCorrection = !Config::positionCorrection;
+        if (GetKeyPressed(GLFW_KEY_D)) Config::warmStarting       = !Config::warmStarting;
+
+        if (GetKeyPressed(GLFW_KEY_SPACE))
+            LaunchBomb();
+
         auto mousePos = WindowGetMousePositon();
+
         SelectBody(mousePos);
+
         if (KEY_M0_P)
             AttachAndPull();
+
+        int demoNum = GetNumKeyPressed();
+        if (demoNum > 0)
+            InitDemo(demoNum-1);
 
         auto update = !pause || step; step = false;
         if (update)

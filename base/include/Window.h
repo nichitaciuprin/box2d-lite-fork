@@ -37,8 +37,49 @@ namespace
 
     int key_m1 = 0;
     int key_m2 = 0;
+    bool keypressed[400] = {};
+    bool keyreleased[400] = {};
 }
 
+void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    (void)window;
+    (void)scancode;
+    (void)action;
+    (void)mods;
+
+    if (action == GLFW_PRESS)
+        keypressed[key] = true;
+
+    if (action == GLFW_PRESS)
+        keyreleased[key] = true;
+}
+bool GetKey(int key)
+{
+    return glfwGetKey(window, key) == GLFW_PRESS;
+}
+bool GetKeyPressed(int key)
+{
+    return keypressed[key] == 1;
+}
+bool GetKeyReleased(int key)
+{
+    return keyreleased[key] == 1;
+}
+int GetNumKeyPressed()
+{
+    if (GetKeyPressed(GLFW_KEY_0)) return 0;
+    if (GetKeyPressed(GLFW_KEY_1)) return 1;
+    if (GetKeyPressed(GLFW_KEY_2)) return 2;
+    if (GetKeyPressed(GLFW_KEY_3)) return 3;
+    if (GetKeyPressed(GLFW_KEY_4)) return 4;
+    if (GetKeyPressed(GLFW_KEY_5)) return 5;
+    if (GetKeyPressed(GLFW_KEY_6)) return 6;
+    if (GetKeyPressed(GLFW_KEY_7)) return 7;
+    if (GetKeyPressed(GLFW_KEY_8)) return 8;
+    if (GetKeyPressed(GLFW_KEY_9)) return 9;
+    return -1;
+}
 void ClearScreen()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -167,6 +208,7 @@ void WindowInit()
     }
 
     glfwMakeContextCurrent(window);
+    glfwSetKeyCallback(window, KeyCallback);
 
     int gladStatus = gladLoadGL();
     if (gladStatus == 0)
@@ -199,6 +241,9 @@ void WindowClose()
 }
 void UpdateWindow()
 {
+    memset(keypressed, 0, sizeof(keypressed));
+    memset(keyreleased, 0, sizeof(keyreleased));
+
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT))  { if (key_m1 < 2) key_m1++; } else key_m1 = 0;
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT)) { if (key_m2 < 2) key_m2++; } else key_m2 = 0;
 
@@ -214,3 +259,24 @@ bool WindowShouldClose()
 #define KEY_M1   (key_m2 > 0)
 #define KEY_M0_P (key_m1 == 1)
 #define KEY_M1_P (key_m2 == 1)
+#define KEY_0 (GetKey(GLFW_KEY_0))
+#define KEY_1 (GetKey(GLFW_KEY_1))
+#define KEY_2 (GetKey(GLFW_KEY_2))
+#define KEY_3 (GetKey(GLFW_KEY_3))
+#define KEY_4 (GetKey(GLFW_KEY_4))
+#define KEY_5 (GetKey(GLFW_KEY_5))
+#define KEY_6 (GetKey(GLFW_KEY_6))
+#define KEY_7 (GetKey(GLFW_KEY_7))
+#define KEY_8 (GetKey(GLFW_KEY_8))
+#define KEY_9 (GetKey(GLFW_KEY_9))
+#define KEY_0_P (GetKeyPressed(GLFW_KEY_0))
+#define KEY_1_P (GetKeyPressed(GLFW_KEY_1))
+#define KEY_2_P (GetKeyPressed(GLFW_KEY_2))
+#define KEY_3_P (GetKeyPressed(GLFW_KEY_3))
+#define KEY_4_P (GetKeyPressed(GLFW_KEY_4))
+#define KEY_5_P (GetKeyPressed(GLFW_KEY_5))
+#define KEY_6_P (GetKeyPressed(GLFW_KEY_6))
+#define KEY_7_P (GetKeyPressed(GLFW_KEY_7))
+#define KEY_8_P (GetKeyPressed(GLFW_KEY_8))
+#define KEY_9_P (GetKeyPressed(GLFW_KEY_9))
+#define KEY_F_P (GetKeyPressed(GLFW_KEY_F))
