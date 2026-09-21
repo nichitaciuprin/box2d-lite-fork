@@ -77,8 +77,6 @@ void LaunchBomb()
 }
 void AttachAndPull()
 {
-    auto mousePosition = GetMousePosition();
-
     if (closeBodyIndex == -1) return;
 
     if (selectedBodyIndex == -1)
@@ -91,7 +89,7 @@ void AttachAndPull()
     {
         auto body = &bodie_s[selectedBodyIndex];
         auto p0 = body->position + Rotate(selectedBodySurPointLocal, body->rotation);
-        auto p1 = GetMousePosition();
+        auto p1 = WindowGetMousePositon();
         auto velocity = p1 - p0;
         BodyApplyImpulse(body, p0, velocity);
         selectedBodyIndex = -1;
@@ -395,7 +393,7 @@ void Draw()
     {
         auto body = &bodie_s[closeBodyIndex];
         auto p0 = body->position + Rotate(selectedBodySurPointLocal, body->rotation);
-        auto p1 = GetMousePosition();
+        auto p1 = WindowGetMousePositon();
         DrawLine(p0, p1, Color3::GREEN);
         DrawPoint(p0, Color3::GREEN);
     }
@@ -429,15 +427,15 @@ void Draw()
 
 int main()
 {
-    InitWindow();
+    WindowInit();
 
     glfwSetKeyCallback(window, OnKeyboard);
 
     InitDemo(0);
 
-    while (!glfwWindowShouldClose(window))
+    while (!WindowShouldClose())
     {
-        auto mousePos = GetMousePosition();
+        auto mousePos = WindowGetMousePositon();
         SelectBody(mousePos);
         if (KEY_M0_P)
             AttachAndPull();
@@ -453,7 +451,7 @@ int main()
         UpdateWindow();
     }
 
-    glfwTerminate();
+    WindowClose();
 
     return 0;
 }

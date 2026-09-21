@@ -87,7 +87,7 @@ Vec2 ScreenToWorld(float x, float y)
 
     return result;
 }
-Vec2 GetMousePosition()
+Vec2 WindowGetMousePositon()
 {
     double xpos, ypos;
     glfwGetCursorPos(window, &xpos, &ypos);
@@ -148,7 +148,7 @@ void DrawLine(Vec2 p0, Vec2 p1, Vec3 color)
     glVertex2f(p1.x, p1.y);
     glEnd();
 }
-void InitWindow()
+void WindowInit()
 {
     glfwSetErrorCallback(ErrorCallback);
 
@@ -193,6 +193,10 @@ void InitWindow()
 
     SetProj();
 }
+void WindowClose()
+{
+    glfwTerminate();
+}
 void UpdateWindow()
 {
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT))  { if (key_m1 < 2) key_m1++; } else key_m1 = 0;
@@ -200,6 +204,10 @@ void UpdateWindow()
 
     glfwPollEvents();
     glfwSwapBuffers(window);
+}
+bool WindowShouldClose()
+{
+    return glfwWindowShouldClose(window);
 }
 
 #define KEY_M0   (key_m1 > 0)
