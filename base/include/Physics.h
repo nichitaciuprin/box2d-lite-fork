@@ -53,8 +53,9 @@ struct Collision
 
 namespace
 {
-    Vec2 gravity = { 0, -10.0f };
-    int iterations = 10;
+    static constexpr Vec2 gravity = { 0, -10.0f };
+    static constexpr int iterations = 10;
+
     vector<Body> bodie_s;
     vector<Joint> joint_s;
     map<int, Collision> collision_s;
