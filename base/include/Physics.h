@@ -53,6 +53,8 @@ struct Collision
 
 namespace
 {
+    Vec2 gravity = { 0, -10.0f };
+    int iterations = 10;
     vector<Body> bodie_s;
     vector<Joint> joint_s;
     map<int, Collision> collision_s;
@@ -602,7 +604,7 @@ void Step(float dt)
     {
         if (body.massInv == 0.0f) continue;
 
-        body.velocityLinear += Config::gravity * dt;
+        body.velocityLinear += gravity * dt;
 
         body.velocityLinear  += body.force  * body.massInv    * dt;
         body.velocityAngular += body.torque * body.inertiaInv * dt;
@@ -615,7 +617,7 @@ void Step(float dt)
         for (auto& arbiter : collision_s) CollisionPreStep(arbiter.second, dti);
         for (auto& joint : joint_s) JointPreStep(&joint, dti);
     }
-    for (int i = 0; i < Config::iterations; i++)
+    for (int i = 0; i < iterations; i++)
     {
         for (auto& arbiter : collision_s) CollisionApplyImpulse(arbiter.second);
         for (auto& joint : joint_s) JointApplyImpulse(&joint);
