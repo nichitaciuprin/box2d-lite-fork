@@ -75,6 +75,82 @@ void LaunchBomb()
     bomb->velocityLinear = bomb->position * -1.5f;
     bomb->velocityAngular = Random(-20.0f, 20.0f);
 }
+void AttachAndPull()
+{
+    auto mousePosition = GetMousePosition();
+
+    if (closeBodyIndex == -1) return;
+
+    if (selectedBodyIndex == -1)
+    {
+        auto body = &bodie_s[closeBodyIndex];
+        selectedBodySurPointLocal = Rotate(closeBodySurPoint - body->position, -body->rotation);
+        selectedBodyIndex = closeBodyIndex;
+    }
+    else
+    {
+        auto body = &bodie_s[selectedBodyIndex];
+        auto p0 = body->position + Rotate(selectedBodySurPointLocal, body->rotation);
+        auto p1 = GetMousePosition();
+        auto velocity = p1 - p0;
+        BodyApplyImpulse(body, p0, velocity);
+        selectedBodyIndex = -1;
+    }
+}
+
+void DrawBody(Body* body, bool selected)
+{
+    Mat22 r = FromAngle(body->rotation);
+    Vec2 p = body->position;
+    Vec2 h = body->scale * 0.5f;
+
+    Vec2 v1 = p + r * (Vec2){ -h.x, -h.y };
+    Vec2 v2 = p + r * (Vec2){ +h.x, -h.y };
+    Vec2 v3 = p + r * (Vec2){ +h.x, +h.y };
+    Vec2 v4 = p + r * (Vec2){ -h.x, +h.y };
+
+    if (selected)          glColor3f(1.0f, 0.0f, 0.0f);
+    else if (body == bomb) glColor3f(0.4f, 0.9f, 0.4f);
+    else                   glColor3f(0.8f, 0.8f, 0.9f);
+
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(v1.x, v1.y);
+    glVertex2f(v2.x, v2.y);
+    glVertex2f(v3.x, v3.y);
+    glVertex2f(v4.x, v4.y);
+    glEnd();
+}
+void DrawJoint(Joint* joint)
+{
+    auto b0 = joint->body1;
+    auto b1 = joint->body2;
+
+    auto p0 = b0->position;
+    auto p1 = b1->position;
+
+    auto p2 = p0 + FromAngle(b0->rotation) * joint->localAnchor1;
+    auto p3 = p1 + FromAngle(b1->rotation) * joint->localAnchor2;
+
+    Vec3 color = { 0.50f, 0.50f, 0.75f };
+
+    DrawLine(p0, p2, color);
+    DrawLine(p1, p3, color);
+}
+void DrawArbiter(Collision* arbiter)
+{
+    glPointSize(4.0f);
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glBegin(GL_POINTS);
+
+    for (int i = 0; i < arbiter->contact_num; i++)
+    {
+        Vec2 p = arbiter->contact_s[i].position;
+        glVertex2f(p.x, p.y);
+    }
+
+    glEnd();
+    glPointSize(1.0f);
+}
 
 void Demo1()
 {
@@ -274,30 +350,6 @@ void InitDemo(int index)
     demoIndex = index;
     demos[index]();
 }
-
-void AttachAndPull()
-{
-    auto mousePosition = GetMousePosition();
-
-    if (closeBodyIndex == -1) return;
-
-    if (selectedBodyIndex == -1)
-    {
-        auto body = &bodie_s[closeBodyIndex];
-        selectedBodySurPointLocal = Rotate(closeBodySurPoint - body->position, -body->rotation);
-        selectedBodyIndex = closeBodyIndex;
-    }
-    else
-    {
-        auto body = &bodie_s[selectedBodyIndex];
-        auto p0 = body->position + Rotate(selectedBodySurPointLocal, body->rotation);
-        auto p1 = GetMousePosition();
-        auto velocity = p1 - p0;
-        BodyApplyImpulse(body, p0, velocity);
-        selectedBodyIndex = -1;
-    }
-}
-
 void OnKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (action != GLFW_PRESS) return;
@@ -330,61 +382,6 @@ void OnKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
             break;
     }
 }
-
-void DrawBody(Body* body, bool selected)
-{
-    Mat22 r = FromAngle(body->rotation);
-    Vec2 p = body->position;
-    Vec2 h = body->scale * 0.5f;
-
-    Vec2 v1 = p + r * (Vec2){ -h.x, -h.y };
-    Vec2 v2 = p + r * (Vec2){ +h.x, -h.y };
-    Vec2 v3 = p + r * (Vec2){ +h.x, +h.y };
-    Vec2 v4 = p + r * (Vec2){ -h.x, +h.y };
-
-    if (selected)          glColor3f(1.0f, 0.0f, 0.0f);
-    else if (body == bomb) glColor3f(0.4f, 0.9f, 0.4f);
-    else                   glColor3f(0.8f, 0.8f, 0.9f);
-
-    glBegin(GL_LINE_LOOP);
-    glVertex2f(v1.x, v1.y);
-    glVertex2f(v2.x, v2.y);
-    glVertex2f(v3.x, v3.y);
-    glVertex2f(v4.x, v4.y);
-    glEnd();
-}
-void DrawJoint(Joint* joint)
-{
-    auto b0 = joint->body1;
-    auto b1 = joint->body2;
-
-    auto p0 = b0->position;
-    auto p1 = b1->position;
-
-    auto p2 = p0 + FromAngle(b0->rotation) * joint->localAnchor1;
-    auto p3 = p1 + FromAngle(b1->rotation) * joint->localAnchor2;
-
-    Vec3 color = { 0.50f, 0.50f, 0.75f };
-
-    DrawLine(p0, p2, color);
-    DrawLine(p1, p3, color);
-}
-void DrawArbiter(Collision* arbiter)
-{
-    glPointSize(4.0f);
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glBegin(GL_POINTS);
-
-    for (int i = 0; i < arbiter->contact_num; i++)
-    {
-        Vec2 p = arbiter->contact_s[i].position;
-        glVertex2f(p.x, p.y);
-    }
-
-    glEnd();
-    glPointSize(1.0f);
-}
-
 void Draw()
 {
     ClearScreen();
