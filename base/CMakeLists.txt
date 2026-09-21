@@ -6,6 +6,7 @@ set(CONFIG_HEADER_FILES
     include/Config.h
     include/Core.h
     include/MathUtils.h
+    include/Physics.h
     include/Window.h)
 
 add_library(base STATIC ${CONFIG_SOURCE_FILES} ${CONFIG_HEADER_FILES})
