@@ -136,15 +136,15 @@ void DrawJoint(Joint* joint)
     DrawLine(p0, p2, color);
     DrawLine(p1, p3, color);
 }
-void DrawArbiter(Collision* arbiter)
+void DrawCollision(Collision* collision)
 {
     glPointSize(4.0f);
     glColor3f(1.0f, 0.0f, 0.0f);
     glBegin(GL_POINTS);
 
-    for (int i = 0; i < arbiter->contact_num; i++)
+    for (int i = 0; i < collision->contact_num; i++)
     {
-        Vec2 p = arbiter->contact_s[i].position;
+        Vec2 p = collision->contact_s[i].position;
         glVertex2f(p.x, p.y);
     }
 
@@ -407,7 +407,7 @@ void Draw()
         DrawJoint(&i);
 
     for (auto& i : collision_s)
-        DrawArbiter(&i.second);
+        DrawCollision(&i.second);
 
     GuiStart();
     {
