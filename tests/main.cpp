@@ -490,7 +490,7 @@ Body BodyCreate(Vec2 scale, float mass)
     {
         body.mass = mass;
         body.massInv = 1.0f / body.mass;
-        body.inertia = body.mass * (body.scale.x * body.scale.x + body.scale.y * body.scale.y) / 12.0f;
+        body.inertia = body.mass * LengthSqrt(body.scale) / 12.0f;
         body.inertiaInv = 1.0f / body.inertia;
     }
 
