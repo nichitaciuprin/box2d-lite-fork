@@ -60,6 +60,8 @@ void SelectBody(Vec2 mousePos)
     closeBodyIndex = index;
     closeBodyOffset = offset0;
     closeBodyPoint = mousePos + offset0;
+
+    // closeBodyPoint
 }
 void LaunchBomb()
 {

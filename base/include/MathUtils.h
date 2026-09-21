@@ -164,6 +164,17 @@ inline Mat22 operator * (Mat22 l, Mat22 r) { return { l * r.col1, l * r.col2 }; 
 inline void operator += (Vec2& l, Vec2 r) { l.x += r.x; l.y += r.y; };
 inline void operator -= (Vec2& l, Vec2 r) { l.x -= r.x; l.y -= r.y; };
 
+inline Vec2 Rotate(Vec2 p, float rot)
+{
+    float sin = sinf(rot);
+    float cos = cosf(rot);
+
+    float x = p.x * +cos + p.y * -sin;
+    float y = p.x * +sin + p.y * +cos;
+
+    return { x, y };
+}
+
 inline float Dist(Vec2 a, Vec2 b)
 {
     Vec2 v = a - b;
@@ -217,18 +228,7 @@ inline Vec2 ShortPathToSurface(Vec2 point, Vec2 boxPosition, float boxRotation, 
     Vec2 result = {};
 
     point -= boxPosition;
-
-    // float sin = sinf(-boxRotation);
-    // float cos = cosf(-boxRotation);
-
-    // TODO opengl assumed
-    float sin = sinf(boxRotation);
-    float cos = cosf(boxRotation);
-
-    auto pointOld = point;
-
-    point.x = pointOld.x * +cos + pointOld.y * +sin;
-    point.y = pointOld.x * -sin + pointOld.y * +cos;
+    point = Rotate(point, -boxRotation);
 
     float w = boxScale.x * 0.5f;
     float h = boxScale.y * 0.5f;
@@ -262,12 +262,7 @@ inline Vec2 ShortPathToSurface(Vec2 point, Vec2 boxPosition, float boxRotation, 
         }
     }
 
-    {
-        float x_ = result.x * +cos + result.y * -sin;
-        float y_ = result.x * +sin + result.y * +cos;
-        result.x = x_;
-        result.y = y_;
-    }
+    result = Rotate(result, boxRotation);
 
     return result;
 }
