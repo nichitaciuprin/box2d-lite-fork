@@ -10,10 +10,12 @@ namespace
 
     int closeBodyIndex = -1;
     Vec2 closeBodyPoint;
+    Vec2 closeBodyPointLocal;
     Vec2 closeBodyOffset;
 
     int selectedBodyIndex = -1;
     Vec2 selectedBodyPoint;
+    Vec2 selectedBodyPointLocal;
 }
 
 void CalcJointProp(float timestep, float mass, float frequencyHz, float dampingRatio, float& softness, float& biasFactor)
@@ -57,11 +59,12 @@ void SelectBody(Vec2 mousePos)
 
     if (index == -1) PANIC
 
+    auto body = &bodie_s[index];
+
     closeBodyIndex = index;
     closeBodyOffset = offset0;
     closeBodyPoint = mousePos + offset0;
-
-    // closeBodyPoint
+    closeBodyPointLocal = Rotate(closeBodyPoint - body->position, -body->rotation);
 }
 void LaunchBomb()
 {
@@ -336,13 +339,16 @@ void OnMouse(GLFWwindow* window, int button, int action, int mods)
     if (selectedBodyIndex == -1)
     {
         selectedBodyPoint = closeBodyPoint;
+        selectedBodyPointLocal = closeBodyPointLocal;
         selectedBodyIndex = closeBodyIndex;
     }
     else
     {
         auto body = &bodie_s[selectedBodyIndex];
-        auto velocity = mousePosition - selectedBodyPoint;
-        BodyApplyImpulse(body, selectedBodyPoint, velocity);
+        auto p0 = body->position + Rotate(selectedBodyPointLocal, body->rotation);
+        auto p1 = GetMousePosition();
+        auto velocity = p1 - p0;
+        BodyApplyImpulse(body, p0, velocity);
         selectedBodyIndex = -1;
     }
 }
@@ -412,10 +418,11 @@ void Draw()
     }
     else
     {
-        auto mousePos = GetMousePosition();
-        DrawPoint(selectedBodyPoint, Color3::RED);
-        // auto p0 = bodie_s[selectedBodyIndex].position
-        DrawLine(selectedBodyPoint, mousePos, Color3::GREEN);
+        auto body = &bodie_s[closeBodyIndex];
+        auto p0 = body->position + Rotate(selectedBodyPointLocal, body->rotation);
+        auto p1 = GetMousePosition();
+        DrawLine(p0, p1, Color3::GREEN);
+        DrawPoint(p0, Color3::GREEN);
     }
 
     for (auto& i : bodie_s)
