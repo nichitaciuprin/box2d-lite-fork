@@ -398,14 +398,9 @@ void Draw()
         DrawPoint(p0, Color3::GREEN);
     }
 
-    for (auto& i : bodie_s)
-        DrawBody(&i, false);
-
-    for (auto& i : joint_s)
-        DrawJoint(&i);
-
-    for (auto& i : collision_s)
-        DrawCollision(&i.second);
+    for (auto& i : bodie_s) DrawBody(&i, false);
+    for (auto& i : joint_s) DrawJoint(&i);
+    for (auto& i : collision_s) DrawCollision(&i.second);
 
     GuiStart();
     {
