@@ -10,11 +10,8 @@ namespace
 
     int closeBodyIndex = -1;
     Vec2 closeBodyPoint;
-    Vec2 closeBodyPointLocal;
-    Vec2 closeBodyOffset;
 
     int selectedBodyIndex = -1;
-    Vec2 selectedBodyPoint;
     Vec2 selectedBodyPointLocal;
 }
 
@@ -62,9 +59,7 @@ void SelectBody(Vec2 mousePos)
     auto body = &bodie_s[index];
 
     closeBodyIndex = index;
-    closeBodyOffset = offset0;
     closeBodyPoint = mousePos + offset0;
-    closeBodyPointLocal = Rotate(closeBodyPoint - body->position, -body->rotation);
 }
 void LaunchBomb()
 {
@@ -338,8 +333,8 @@ void OnMouse(GLFWwindow* window, int button, int action, int mods)
 
     if (selectedBodyIndex == -1)
     {
-        selectedBodyPoint = closeBodyPoint;
-        selectedBodyPointLocal = closeBodyPointLocal;
+        auto body = &bodie_s[closeBodyIndex];
+        selectedBodyPointLocal = Rotate(closeBodyPoint - body->position, -body->rotation);
         selectedBodyIndex = closeBodyIndex;
     }
     else
