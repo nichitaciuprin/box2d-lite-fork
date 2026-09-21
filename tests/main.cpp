@@ -275,58 +275,8 @@ void InitDemo(int index)
     demos[index]();
 }
 
-void OnKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
+void OnMouseL()
 {
-    if (action != GLFW_PRESS) return;
-
-    switch (key)
-    {
-        case GLFW_KEY_ESCAPE:
-            glfwSetWindowShouldClose(window, GL_TRUE);
-            break;
-
-        case GLFW_KEY_P:
-            pause = !pause;
-            break;
-
-        case GLFW_KEY_RIGHT_BRACKET:
-            step = true;
-            break;
-
-        case GLFW_KEY_A:
-            Config::accumulateImpulses = !Config::accumulateImpulses;
-            break;
-
-        case GLFW_KEY_S:
-            Config::positionCorrection = !Config::positionCorrection;
-            break;
-
-        case GLFW_KEY_D:
-            Config::warmStarting = !Config::warmStarting;
-            break;
-
-        case GLFW_KEY_SPACE:
-            LaunchBomb();
-            break;
-
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-            InitDemo(key - GLFW_KEY_1);
-            break;
-    }
-}
-void OnMouse(GLFWwindow* window, int button, int action, int mods)
-{
-    if (action != GLFW_PRESS) return;
-    if (button != GLFW_MOUSE_BUTTON_LEFT) return;
-
     auto mousePosition = GetMousePosition();
 
     if (closeBodyIndex == -1) return;
@@ -346,6 +296,46 @@ void OnMouse(GLFWwindow* window, int button, int action, int mods)
         BodyApplyImpulse(body, p0, velocity);
         selectedBodyIndex = -1;
     }
+}
+
+void OnKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (action != GLFW_PRESS) return;
+
+    switch (key)
+    {
+        case GLFW_KEY_ESCAPE:
+            glfwSetWindowShouldClose(window, GL_TRUE);
+            break;
+
+        case GLFW_KEY_P: pause = !pause; break;
+        case GLFW_KEY_RIGHT_BRACKET: step = true; break;
+
+        case GLFW_KEY_A: Config::accumulateImpulses = !Config::accumulateImpulses; break;
+        case GLFW_KEY_S: Config::positionCorrection = !Config::positionCorrection; break;
+        case GLFW_KEY_D: Config::warmStarting = !Config::warmStarting; break;
+
+        case GLFW_KEY_SPACE: LaunchBomb(); break;
+
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+            InitDemo(key - GLFW_KEY_1);
+            break;
+    }
+}
+void OnMouse(GLFWwindow* window, int button, int action, int mods)
+{
+    if (action != GLFW_PRESS) return;
+    if (button != GLFW_MOUSE_BUTTON_LEFT) return;
+
+    OnMouseL();
 }
 
 void DrawBody(Body* body, bool selected)
@@ -469,9 +459,7 @@ int main()
         BroadPhase();
 
         Draw();
-
-        glfwPollEvents();
-        glfwSwapBuffers(window);
+        UpdateWindow();
     }
 
     glfwTerminate();

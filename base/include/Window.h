@@ -190,3 +190,8 @@ void InitWindow()
 
     SetProj();
 }
+void UpdateWindow()
+{
+    glfwPollEvents();
+    glfwSwapBuffers(window);
+}
