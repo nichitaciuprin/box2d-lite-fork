@@ -391,7 +391,7 @@ void Draw()
     }
     else
     {
-        auto body = &bodie_s[closeBodyIndex];
+        auto body = &bodie_s[selectedBodyIndex];
         auto p0 = body->position + Rotate(selectedBodySurPointLocal, body->rotation);
         auto p1 = WindowGetMousePositon();
         DrawLine(p0, p1, Color3::GREEN);
