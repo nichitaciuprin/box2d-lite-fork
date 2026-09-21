@@ -458,13 +458,13 @@ int main()
 
     while (!glfwWindowShouldClose(window))
     {
-        auto mousePos = GetMousePosition();
-
-        SelectBody(mousePos);
-
         auto update = !pause || step; step = false;
         if (update)
             Step(timestep);
+
+        auto mousePos = GetMousePosition();
+
+        SelectBody(mousePos);
 
         BroadPhase();
 
