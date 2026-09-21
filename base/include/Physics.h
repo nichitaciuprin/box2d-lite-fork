@@ -639,10 +639,19 @@ void Clear()
     joint_s.clear();
     collision_s.clear();
 }
-Body* CreateGround()
+
+Joint* CreateJoint(Body* b1, Body* b2, Vec2 anchor)
 {
-    auto body = BodyCreate({ 100.0f, 20.0f }, FLT_MAX);
-    body.position = { 0.0f, body.scale.y * -0.5f };
+    auto joint = JointCreate(b1, b2, anchor);
+    joint_s.push_back(joint);
+    return &joint_s.back();
+}
+
+Body* CreateBoxStatic(Vec2 position, float rotation, Vec2 scale)
+{
+    auto body = BodyCreate(scale, FLT_MAX);
+    body.position = position;
+    body.rotation = rotation;
     bodie_s.push_back(body);
     return &bodie_s.back();
 }
@@ -654,17 +663,11 @@ Body* CreateBoxDynamic(Vec2 position, float rotation, Vec2 scale, float mass)
     bodie_s.push_back(body);
     return &bodie_s.back();
 }
-Body* CreateBoxStatic(Vec2 position, float rotation, Vec2 scale)
+
+Body* CreateGround()
 {
-    auto body = BodyCreate(scale, FLT_MAX);
-    body.position = position;
-    body.rotation = rotation;
-    bodie_s.push_back(body);
-    return &bodie_s.back();
-}
-Joint* CreateJoint(Body* b1, Body* b2, Vec2 anchor)
-{
-    auto joint = JointCreate(b1, b2, anchor);
-    joint_s.push_back(joint);
-    return &joint_s.back();
+    float rotation = 0.0f;
+    Vec2 scale = { 100.0f, 20.0f };
+    Vec2 position = { 0.0f, scale.y * -0.5f };
+    return CreateBoxStatic(position, rotation, scale);
 }
