@@ -109,7 +109,7 @@ inline float Length(Vec2 a)
 {
     return sqrtf(Dot(a, a));
 }
-inline float LengthSqrt(Vec2 a)
+inline float LengthSqr(Vec2 a)
 {
     return Dot(a, a);
 }

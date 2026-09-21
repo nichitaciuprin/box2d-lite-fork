@@ -45,7 +45,7 @@ void SelectBody(Vec2 mousePos)
         if (body->mass == FLT_MAX) continue;
 
         Vec2 offset1 = ShortPathToSurface(mousePos, body->position, body->rotation, body->scale);
-        float offset1_ls = LengthSqrt(offset1);
+        float offset1_ls = LengthSqr(offset1);
 
         if (offset0_ls <= offset1_ls) continue;
 

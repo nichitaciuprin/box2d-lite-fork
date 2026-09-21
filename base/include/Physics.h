@@ -304,8 +304,8 @@ void CollisionPreStep(Collision& collision, float dti)
         float r1tl = r1t * r1t;
         float r2nl = r2n * r2n;
         float r2tl = r2t * r2t;
-        float r1l = LengthSqrt(r1);
-        float r2l = LengthSqrt(r2);
+        float r1l = LengthSqr(r1);
+        float r2l = LengthSqr(r2);
 
         float massInvSum = collision.body1->massInv + collision.body2->massInv;
 
@@ -447,7 +447,7 @@ void BodySetMass(Body* body, float mass)
     {
         body->mass = mass;
         body->massInv = 1.0f / body->mass;
-        body->inertia = body->mass * LengthSqrt(body->scale) / 12.0f;
+        body->inertia = body->mass * LengthSqr(body->scale) / 12.0f;
         body->inertiaInv = 1.0f / body->inertia;
     }
 }
@@ -479,7 +479,7 @@ Body BodyCreate(Vec2 scale, float mass)
     {
         body.mass = mass;
         body.massInv = 1.0f / body.mass;
-        body.inertia = body.mass * LengthSqrt(body.scale) / 12.0f;
+        body.inertia = body.mass * LengthSqr(body.scale) / 12.0f;
         body.inertiaInv = 1.0f / body.inertia;
     }
 
