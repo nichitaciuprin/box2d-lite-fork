@@ -34,6 +34,9 @@ namespace
 
     bool pause = false;
     bool step = false;
+
+    int key_m1 = 0;
+    int key_m2 = 0;
 }
 
 void ClearScreen()
@@ -192,6 +195,14 @@ void InitWindow()
 }
 void UpdateWindow()
 {
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT))  { if (key_m1 < 2) key_m1++; } else key_m1 = 0;
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT)) { if (key_m2 < 2) key_m2++; } else key_m2 = 0;
+
     glfwPollEvents();
     glfwSwapBuffers(window);
 }
+
+#define KEY_M0   (key_m1 > 0)
+#define KEY_M1   (key_m2 > 0)
+#define KEY_M0_P (key_m1 == 1)
+#define KEY_M1_P (key_m2 == 1)

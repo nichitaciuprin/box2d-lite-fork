@@ -275,7 +275,7 @@ void InitDemo(int index)
     demos[index]();
 }
 
-void OnMouseL()
+void AttachAndPull()
 {
     auto mousePosition = GetMousePosition();
 
@@ -329,13 +329,6 @@ void OnKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
             InitDemo(key - GLFW_KEY_1);
             break;
     }
-}
-void OnMouse(GLFWwindow* window, int button, int action, int mods)
-{
-    if (action != GLFW_PRESS) return;
-    if (button != GLFW_MOUSE_BUTTON_LEFT) return;
-
-    OnMouseL();
 }
 
 void DrawBody(Body* body, bool selected)
@@ -441,7 +434,6 @@ int main()
 {
     InitWindow();
 
-    glfwSetMouseButtonCallback(window, OnMouse);
     glfwSetKeyCallback(window, OnKeyboard);
 
     InitDemo(0);
@@ -450,6 +442,8 @@ int main()
     {
         auto mousePos = GetMousePosition();
         SelectBody(mousePos);
+        if (KEY_M0_P)
+            AttachAndPull();
 
         auto update = !pause || step; step = false;
         if (update)
