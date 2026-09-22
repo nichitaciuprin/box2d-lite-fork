@@ -82,8 +82,8 @@ void AttachAndPull()
     if (selectedBodyIndex == -1)
     {
         auto body = &bodie_s[closeBodyIndex];
-        selectedBodySurPointLocal = Rotate(closeBodySurPoint - body->position, -body->rotation);
         selectedBodyIndex = closeBodyIndex;
+        selectedBodySurPointLocal = Rotate(closeBodySurPoint - body->position, -body->rotation);
     }
     else
     {
