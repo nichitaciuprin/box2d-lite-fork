@@ -387,13 +387,16 @@ void CollisionApplyImpulse(Collision& collision)
     {
         Contact* c = collision.contact_s + i;
 
+        auto b1 = collision.body1;
+        auto b2 = collision.body2;
+
         {
             Vec2 normal = c->normal;
-            auto vr = CalcRelativeVelocity(collision.body1, collision.body2, c->r1, c->r2);
+            Vec2 vr = CalcRelativeVelocity(b1, b2, c->r1, c->r2);
             float impInit = (-Dot(normal, vr) + c->bias) * c->massNormalInv;
             float impOld = c->pn;
             float impNew = Max(0.0f, impOld + impInit);
-            UpdateVelocity(collision.body1, collision.body2, c->r1, c->r2, normal * (impNew - impOld));
+            UpdateVelocity(b1, b2, c->r1, c->r2, normal * (impNew - impOld));
             c->pn = impNew;
         }
 
@@ -401,11 +404,11 @@ void CollisionApplyImpulse(Collision& collision)
 
         {
             Vec2 tangent = RotateRight(c->normal);
-            auto vr = CalcRelativeVelocity(collision.body1, collision.body2, c->r1, c->r2);
+            Vec2 vr = CalcRelativeVelocity(b1, b2, c->r1, c->r2);
             float impInit = -Dot(tangent, vr) * c->massTangentInv;
             float impOld = c->pt;
             float impNew = Clamp(impOld + impInit, -frictionMax, +frictionMax);
-            UpdateVelocity(collision.body1, collision.body2, c->r1, c->r2, tangent * (impNew - impOld));
+            UpdateVelocity(b1, b2, c->r1, c->r2, tangent * (impNew - impOld));
             c->pt = impNew;
         }
     }
