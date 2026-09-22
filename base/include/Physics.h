@@ -643,17 +643,59 @@ Joint* CreateJoint(Body* b1, Body* b2, Vec2 anchor)
     return &joint_s.back();
 }
 
-Body* CreateBoxStatic(Vec2 position, float rotation, Vec2 scale)
+Body* CreateBox()
 {
-    auto body = BodyCreate(position, rotation, scale, 0.2f, FLT_MAX);
+    Body body;
     bodie_s.push_back(body);
     return &bodie_s.back();
 }
+Body* CreateBoxStatic(Vec2 position, float rotation, Vec2 scale)
+{
+    auto box = CreateBox();
+
+    box->position = position;
+    box->rotation = rotation;
+    box->scale = scale;
+
+    box->velocityLinear = { 0.0f, 0.0f };
+    box->velocityAngular = 0.0f;
+
+    box->force = { 0.0f, 0.0f };
+    box->torque = 0.0f;
+
+    box->friction = 0.2f;
+
+    box->mass = FLT_MAX;
+    box->inertia = FLT_MAX;
+
+    box->massInv = 0.0f;
+    box->inertiaInv = 0.0f;
+
+    return box;
+}
 Body* CreateBoxDynamic(Vec2 position, float rotation, Vec2 scale, float mass)
 {
-    auto body = BodyCreate(position, rotation, scale, 0.2f, mass);
-    bodie_s.push_back(body);
-    return &bodie_s.back();
+    auto box = CreateBox();
+
+    box->position = position;
+    box->rotation = rotation;
+    box->scale = scale;
+
+    box->velocityLinear = { 0.0f, 0.0f };
+    box->velocityAngular = 0.0f;
+
+    box->force = { 0.0f, 0.0f };
+    box->torque = 0.0f;
+
+    box->friction = 0.2f;
+
+    box->mass = mass;
+    box->inertia = mass * LengthSqr(scale) / 12.0f;
+
+    box->massInv = 1.0f / mass;
+    box->inertiaInv = 1.0f / box->inertia;
+
+    return box;
 }
 
 Body* CreateGround()
