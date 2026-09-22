@@ -60,6 +60,7 @@ void SelectBody(Vec2 mousePos)
 
     closeBodyIndex = index;
     closeBodySurPoint = mousePos + offset0;
+    closeBodySurPoint = Rotate(closeBodySurPoint - body->position, -body->rotation);
 }
 void LaunchBomb()
 {
@@ -83,7 +84,7 @@ void AttachAndPull()
     {
         auto body = &bodie_s[closeBodyIndex];
         selectedBodyIndex = closeBodyIndex;
-        selectedBodySurPointLocal = Rotate(closeBodySurPoint - body->position, -body->rotation);
+        selectedBodySurPointLocal = closeBodySurPoint;
     }
     else
     {
@@ -355,7 +356,11 @@ void Draw()
     if (selectedBodyIndex == -1)
     {
         if (closeBodyIndex != -1)
-            DrawPoint(closeBodySurPoint, Color3::GREEN);
+        {
+            auto body = &bodie_s[closeBodyIndex];
+            auto p0 = body->position + Rotate(closeBodySurPoint, body->rotation);
+            DrawPoint(p0, Color3::GREEN);
+        }
     }
     else
     {
