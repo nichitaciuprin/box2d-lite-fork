@@ -1,0 +1,19 @@
+{
+    "version": 4,
+    "configurations": [
+        {
+            "name": "MinGW",
+            "includePath": [
+                "${workspaceFolder}/base/include",
+                "${workspaceFolder}/tests",
+                "${workspaceFolder}/extern",
+                "${workspaceFolder}/extern/glad/include",
+                "${workspaceFolder}/extern/glfw/include"
+            ],
+            "compilerPath": "C:/root/Programs/mingw64/bin/g++.exe",
+            "cStandard": "c17",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "windows-gcc-x64"
+        }
+    ]
+}
