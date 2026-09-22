@@ -251,7 +251,7 @@ void FindContacts(const Body* b1, const Body* b2, Contact contact_s[2], int& con
             contact.pn = 0;
             contact.pt = 0;
             contact.normal = normal;
-            contact.separation = separation;
+            contact.separation = -separation;
             contact.r1 = contact.position - b1->position;
             contact.r2 = contact.position - b2->position;
             contact_num++;
@@ -267,7 +267,7 @@ void FindContacts(const Body* b1, const Body* b2, Contact contact_s[2], int& con
             contact.pn = 0;
             contact.pt = 0;
             contact.normal = normal;
-            contact.separation = separation;
+            contact.separation = -separation;
             contact.r1 = contact.position - b1->position;
             contact.r2 = contact.position - b2->position;
             contact_num++;
@@ -323,7 +323,7 @@ void CollisionPreStep(Collision& collision, float dti)
         {
             float allowedPenetration = 0.01f;
             float biasFactor = 0.2f;
-            c->bias = -Min(c->separation + allowedPenetration, 0.0f) * biasFactor * dti;
+            c->bias = Max(0.0f, c->separation - allowedPenetration) * biasFactor * dti;
         }
         else
         {
