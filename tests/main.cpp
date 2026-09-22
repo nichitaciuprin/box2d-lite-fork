@@ -392,8 +392,6 @@ int main()
 {
     WindowInit();
 
-    // glfwSetKeyCallback(window, OnKeyboard);
-
     InitDemo(0);
 
     while (!WindowShouldClose())
