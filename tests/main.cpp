@@ -65,14 +65,11 @@ void SelectBody(Vec2 mousePos)
 void LaunchBomb()
 {
     if (!bomb)
-    {
-        auto bomb_ = BodyCreate({ 1.0f, 1.0f }, 50.0f);
-        bodie_s.push_back(bomb_);
-        bomb = &bodie_s.back();
-    }
+        bomb = CreateBoxDynamic({}, 0.0f, { 1.0f, 1.0f }, 50.0f);
 
     bomb->position = { Random(-15.0f, 15.0f), 15.0f };
     bomb->rotation = Random(-1.5f, 1.5f);
+    bomb->scale = { 1.0f, 1.0f };
     bomb->velocityLinear = bomb->position * -1.5f;
     bomb->velocityAngular = Random(-20.0f, 20.0f);
 }

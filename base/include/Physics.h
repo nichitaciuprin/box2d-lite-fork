@@ -456,12 +456,12 @@ void BodySetMass(Body* body, float mass)
     }
 }
 
-Body BodyCreate(Vec2 scale, float mass)
+Body BodyCreate(Vec2 position, float rotation, Vec2 scale, float friction, float mass)
 {
     Body body;
 
-    body.position = { 0.0f, 0.0f };
-    body.rotation = 0.0f;
+    body.position = position;
+    body.rotation = rotation;
     body.scale = scale;
 
     body.velocityLinear = { 0.0f, 0.0f };
@@ -470,7 +470,7 @@ Body BodyCreate(Vec2 scale, float mass)
     body.force = { 0.0f, 0.0f };
     body.torque = 0.0f;
 
-    body.friction = 0.2f;
+    body.friction = friction;
 
     if (mass == FLT_MAX)
     {
@@ -649,17 +649,13 @@ Joint* CreateJoint(Body* b1, Body* b2, Vec2 anchor)
 
 Body* CreateBoxStatic(Vec2 position, float rotation, Vec2 scale)
 {
-    auto body = BodyCreate(scale, FLT_MAX);
-    body.position = position;
-    body.rotation = rotation;
+    auto body = BodyCreate(position, rotation, scale, 0.2f, FLT_MAX);
     bodie_s.push_back(body);
     return &bodie_s.back();
 }
 Body* CreateBoxDynamic(Vec2 position, float rotation, Vec2 scale, float mass)
 {
-    auto body = BodyCreate(scale, mass);
-    body.position = position;
-    body.rotation = rotation;
+    auto body = BodyCreate(position, rotation, scale, 0.2f, mass);
     bodie_s.push_back(body);
     return &bodie_s.back();
 }
