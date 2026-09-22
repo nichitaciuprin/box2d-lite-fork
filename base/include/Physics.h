@@ -388,7 +388,7 @@ void CollisionApplyImpulse(Collision& collision)
 
     for (int i = 0; i < collision.contact_num; i++)
     {
-        Contact* c = collision.contact_s + i;
+        auto c = collision.contact_s + i;
 
         auto r1 = c->r1;
         auto r2 = c->r2;
