@@ -396,8 +396,8 @@ void CollisionApplyImpulse(Collision& collision)
             float impInit = (-Dot(normal, vr) + c->bias) * c->massNormalInv;
             float impOld = c->pn;
             float impNew = Max(0.0f, impOld + impInit);
-            UpdateVelocity(b1, b2, c->r1, c->r2, normal * (impNew - impOld));
             c->pn = impNew;
+            UpdateVelocity(b1, b2, c->r1, c->r2, normal * (impNew - impOld));
         }
 
         float frictionMax = collision.friction * c->pn;
@@ -408,8 +408,8 @@ void CollisionApplyImpulse(Collision& collision)
             float impInit = -Dot(tangent, vr) * c->massTangentInv;
             float impOld = c->pt;
             float impNew = Clamp(impOld + impInit, -frictionMax, +frictionMax);
-            UpdateVelocity(b1, b2, c->r1, c->r2, tangent * (impNew - impOld));
             c->pt = impNew;
+            UpdateVelocity(b1, b2, c->r1, c->r2, tangent * (impNew - impOld));
         }
     }
 }
