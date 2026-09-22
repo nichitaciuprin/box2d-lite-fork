@@ -119,19 +119,19 @@ bool ClipLine(Vec2& p0, Vec2& p1, Vec2 normal, float offset)
 
     UNREACHABLE
 }
-bool Sat(const Body* body1, const Body* body2, Vec2& normal, float& dist, int& axis)
+bool Sat(const Body* b1, const Body* b2, Vec2& normal, float& dist, int& axis)
 {
     const int FACE_A_X = 0;
     const int FACE_A_Y = 1;
     const int FACE_B_X = 2;
     const int FACE_B_Y = 3;
 
-    Vec2 pos1 = body1->position;
-    Vec2 pos2 = body2->position;
-    Vec2 scale1 = body1->scale * 0.5f;
-    Vec2 scale2 = body2->scale * 0.5f;
-    Mat22 rot1 = FromAngle(body1->rotation);
-    Mat22 rot2 = FromAngle(body2->rotation);
+    Vec2 pos1 = b1->position;
+    Vec2 pos2 = b2->position;
+    Vec2 scale1 = b1->scale * 0.5f;
+    Vec2 scale2 = b2->scale * 0.5f;
+    Mat22 rot1 = FromAngle(b1->rotation);
+    Mat22 rot2 = FromAngle(b2->rotation);
     Mat22 rot1i = Transpose(rot1);
     Mat22 rot2i = Transpose(rot2);
     Vec2 d1 = rot1i * (pos2 - pos1);
