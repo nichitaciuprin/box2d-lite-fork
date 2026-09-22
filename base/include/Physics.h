@@ -388,8 +388,8 @@ void CollisionApplyImpulse(Collision& collision)
         Contact* c = collision.contact_s + i;
 
         {
-            auto vr = CalcRelativeVelocity(collision.body1, collision.body2, c->r1, c->r2);
             Vec2 normal = c->normal;
+            auto vr = CalcRelativeVelocity(collision.body1, collision.body2, c->r1, c->r2);
             float impInit = (-Dot(normal, vr) + c->bias) * c->massNormalInv;
             float impOld = c->pn;
             float impNew = Max(0.0f, impOld + impInit);
@@ -402,8 +402,8 @@ void CollisionApplyImpulse(Collision& collision)
         float frictionMax = collision.friction * c->pn;
 
         {
-            auto vr = CalcRelativeVelocity(collision.body1, collision.body2, c->r1, c->r2);
             Vec2 tangent = RotateRight(c->normal);
+            auto vr = CalcRelativeVelocity(collision.body1, collision.body2, c->r1, c->r2);
             float impInit = -Dot(tangent, vr) * c->massTangentInv;
             float impOld = c->pt;
             float impNew = Clamp(impOld + impInit, -frictionMax, +frictionMax);
