@@ -1,9 +1,9 @@
 #include "Core.h"
 
+#define TIMESTEP (1.0f / 60.0f)
+
 namespace
 {
-    float timestep = 1.0f / 60.0f;
-
     int demoIndex = 0;
 
     Body* bomb = NULL;
@@ -221,7 +221,7 @@ void Demo6()
     float dampingRatio = 0.7f;
 
     float softness, biasFactor;
-    CalcJointProp(timestep, mass, frequencyHz, dampingRatio, softness, biasFactor);
+    CalcJointProp(TIMESTEP, mass, frequencyHz, dampingRatio, softness, biasFactor);
 
     auto b1 = CreateGround();
 
@@ -245,7 +245,7 @@ void Demo7()
     float dampingRatio = 0.7f;
 
     float softness, biasFactor;
-    CalcJointProp(timestep, mass, frequencyHz, dampingRatio, softness, biasFactor);
+    CalcJointProp(TIMESTEP, mass, frequencyHz, dampingRatio, softness, biasFactor);
 
     CreateGround();
 
@@ -421,7 +421,7 @@ int main()
 
         auto update = !pause || step; step = false;
         if (update)
-            Step(timestep);
+            Step(TIMESTEP);
 
         // TODO for points draw
         BroadPhase();
