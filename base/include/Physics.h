@@ -434,24 +434,6 @@ void BodyApplyImpulse(Body* body, Vec2 position, Vec2 velocity)
     body->velocityAngular += velocityAngularNew;
 }
 
-void BodySetMass(Body* body, float mass)
-{
-    if (mass == FLT_MAX)
-    {
-        body->mass = FLT_MAX;
-        body->massInv = 0.0f;
-        body->inertia = FLT_MAX;
-        body->inertiaInv = 0.0f;
-    }
-    else
-    {
-        body->mass = mass;
-        body->massInv = 1.0f / body->mass;
-        body->inertia = body->mass * LengthSqr(body->scale) / 12.0f;
-        body->inertiaInv = 1.0f / body->inertia;
-    }
-}
-
 Collision Collide(Body* b1, Body* b2)
 {
     Collision collision;
@@ -663,4 +645,21 @@ Body* CreateGround()
     Vec2 scale = { 100.0f, 20.0f };
     Vec2 position = { 0.0f, scale.y * -0.5f };
     return CreateBoxStatic(position, rotation, scale);
+}
+void BodySetMass(Body* body, float mass)
+{
+    if (mass == FLT_MAX)
+    {
+        body->mass = FLT_MAX;
+        body->massInv = 0.0f;
+        body->inertia = FLT_MAX;
+        body->inertiaInv = 0.0f;
+    }
+    else
+    {
+        body->mass = mass;
+        body->massInv = 1.0f / body->mass;
+        body->inertia = body->mass * LengthSqr(body->scale) / 12.0f;
+        body->inertiaInv = 1.0f / body->inertia;
+    }
 }
