@@ -615,12 +615,12 @@ void Step(float dt)
     }
 
     {
-        for (auto& arbiter : collision_s) CollisionPreStep(arbiter.second, dti);
+        for (auto& collision : collision_s) CollisionPreStep(collision.second, dti);
         for (auto& joint : joint_s) JointPreStep(&joint, dti);
     }
     for (int i = 0; i < iterations; i++)
     {
-        for (auto& arbiter : collision_s) CollisionApplyImpulse(arbiter.second);
+        for (auto& collision : collision_s) CollisionApplyImpulse(collision.second);
         for (auto& joint : joint_s) JointApplyImpulse(&joint);
     }
 
