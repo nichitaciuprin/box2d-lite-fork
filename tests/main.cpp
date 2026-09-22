@@ -429,7 +429,8 @@ int main()
         BroadPhase();
 
         Draw();
-        UpdateWindow();
+
+        WindowUpdate();
     }
 
     WindowClose();

@@ -189,6 +189,7 @@ void DrawLine(Vec2 p0, Vec2 p1, Vec3 color)
     glVertex2f(p1.x, p1.y);
     glEnd();
 }
+
 void WindowInit()
 {
     glfwSetErrorCallback(ErrorCallback);
@@ -239,7 +240,7 @@ void WindowClose()
 {
     glfwTerminate();
 }
-void UpdateWindow()
+void WindowUpdate()
 {
     memset(keypressed, 0, sizeof(keypressed));
     memset(keyreleased, 0, sizeof(keyreleased));
