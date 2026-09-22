@@ -452,62 +452,6 @@ void BodySetMass(Body* body, float mass)
     }
 }
 
-Body BodyCreate(Vec2 position, float rotation, Vec2 scale, float friction, float mass)
-{
-    Body body;
-
-    body.position = position;
-    body.rotation = rotation;
-    body.scale = scale;
-
-    body.velocityLinear = { 0.0f, 0.0f };
-    body.velocityAngular = 0.0f;
-
-    body.force = { 0.0f, 0.0f };
-    body.torque = 0.0f;
-
-    body.friction = friction;
-
-    if (mass == FLT_MAX)
-    {
-        body.mass = FLT_MAX;
-        body.massInv = 0.0f;
-        body.inertia = FLT_MAX;
-        body.inertiaInv = 0.0f;
-    }
-    else
-    {
-        body.mass = mass;
-        body.massInv = 1.0f / body.mass;
-        body.inertia = body.mass * LengthSqr(body.scale) / 12.0f;
-        body.inertiaInv = 1.0f / body.inertia;
-    }
-
-    return body;
-}
-Joint JointCreate(Body* b1, Body* b2, Vec2 anchor)
-{
-    Joint joint;
-
-    joint.p = { 0.0f, 0.0f };
-
-    joint.softness = 0.0f;
-    joint.biasFactor = 0.2f;
-
-    joint.body1 = b1;
-    joint.body2 = b2;
-
-    Mat22 r1 = FromAngle(b1->rotation);
-    Mat22 r2 = FromAngle(b2->rotation);
-    Mat22 r1i = Transpose(r1);
-    Mat22 r2i = Transpose(r2);
-
-    joint.localAnchor1 = r1i * (anchor - b1->position);
-    joint.localAnchor2 = r2i * (anchor - b2->position);
-
-    return joint;
-}
-
 Collision Collide(Body* b1, Body* b2)
 {
     Collision collision;
@@ -635,14 +579,6 @@ void Clear()
     joint_s.clear();
     collision_s.clear();
 }
-
-Joint* CreateJoint(Body* b1, Body* b2, Vec2 anchor)
-{
-    auto joint = JointCreate(b1, b2, anchor);
-    joint_s.push_back(joint);
-    return &joint_s.back();
-}
-
 Body* CreateBox()
 {
     Body body;
@@ -697,7 +633,30 @@ Body* CreateBoxDynamic(Vec2 position, float rotation, Vec2 scale, float mass)
 
     return box;
 }
+Joint* CreateJoint(Body* b1, Body* b2, Vec2 anchor)
+{
+    Joint joint;
 
+    joint.p = { 0.0f, 0.0f };
+
+    joint.softness = 0.0f;
+    joint.biasFactor = 0.2f;
+
+    joint.body1 = b1;
+    joint.body2 = b2;
+
+    Mat22 r1 = FromAngle(b1->rotation);
+    Mat22 r2 = FromAngle(b2->rotation);
+    Mat22 r1i = Transpose(r1);
+    Mat22 r2i = Transpose(r2);
+
+    joint.localAnchor1 = r1i * (anchor - b1->position);
+    joint.localAnchor2 = r2i * (anchor - b2->position);
+
+    joint_s.push_back(joint);
+
+    return &joint_s.back();
+}
 Body* CreateGround()
 {
     float rotation = 0.0f;
