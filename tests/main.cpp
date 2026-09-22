@@ -349,6 +349,39 @@ void InitDemo(int index)
     demoIndex = index;
     demos[index]();
 }
+
+void Input()
+{
+    if (GetKeyPressed(GLFW_KEY_P)) pause = !pause;
+    if (GetKeyPressed(GLFW_KEY_RIGHT_BRACKET)) step = true;
+
+    if (GetKeyPressed(GLFW_KEY_A)) Config::accumulateImpulses = !Config::accumulateImpulses;
+    if (GetKeyPressed(GLFW_KEY_S)) Config::positionCorrection = !Config::positionCorrection;
+    if (GetKeyPressed(GLFW_KEY_D)) Config::warmStarting       = !Config::warmStarting;
+
+    if (GetKeyPressed(GLFW_KEY_SPACE))
+        LaunchBomb();
+
+    auto mousePos = WindowGetMousePositon();
+
+    SelectBody(mousePos);
+
+    if (KEY_M0_P)
+        AttachAndPull();
+
+    int demoNum = GetNumKeyPressed();
+    if (demoNum > 0)
+        InitDemo(demoNum-1);
+}
+void Update()
+{
+    auto update = !pause || step; step = false;
+    if (update)
+        Step(TIMESTEP);
+
+    // TODO for points draw
+    BroadPhase();
+}
 void Draw()
 {
     ClearScreen();
@@ -401,36 +434,10 @@ int main()
 
     while (!WindowShouldClose())
     {
-        if (GetKeyPressed(GLFW_KEY_ESCAPE)) break;
+        if (KEY_ESC) break;
 
-        if (GetKeyPressed(GLFW_KEY_P)) pause = !pause;
-        if (GetKeyPressed(GLFW_KEY_RIGHT_BRACKET)) step = true;
-
-        if (GetKeyPressed(GLFW_KEY_A)) Config::accumulateImpulses = !Config::accumulateImpulses;
-        if (GetKeyPressed(GLFW_KEY_S)) Config::positionCorrection = !Config::positionCorrection;
-        if (GetKeyPressed(GLFW_KEY_D)) Config::warmStarting       = !Config::warmStarting;
-
-        if (GetKeyPressed(GLFW_KEY_SPACE))
-            LaunchBomb();
-
-        auto mousePos = WindowGetMousePositon();
-
-        SelectBody(mousePos);
-
-        if (KEY_M0_P)
-            AttachAndPull();
-
-        int demoNum = GetNumKeyPressed();
-        if (demoNum > 0)
-            InitDemo(demoNum-1);
-
-        auto update = !pause || step; step = false;
-        if (update)
-            Step(TIMESTEP);
-
-        // TODO for points draw
-        BroadPhase();
-
+        Input();
+        Update();
         Draw();
 
         WindowUpdate();
