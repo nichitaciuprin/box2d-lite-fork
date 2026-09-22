@@ -392,7 +392,7 @@ void CollisionApplyImpulse(Collision& collision)
             Vec2 normal = c->normal;
             float impInit = (-Dot(normal, vr) + c->bias) * c->massNormalInv;
             float impOld = c->pn;
-            float impNew = Max(impOld + impInit, 0.0f);
+            float impNew = Max(0.0f, impOld + impInit);
             float impDiff = impNew - impOld;
             Vec2 imp = normal * impDiff;
             UpdateVelocity(collision.body1, collision.body2, c->r1, c->r2, imp);
