@@ -5,40 +5,11 @@
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl2.h"
 
-#include <stdio.h>
-#include <iostream>
-
-#include <vector>
-#include <map>
-
-using namespace std;
-
-template <typename T>
-inline void Swap(T& a, T& b)
-{
-    T tmp = a;
-    a = b;
-    b = tmp;
-}
-
-#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
-#define PANIC { fprintf(stderr, "\033[91mPANIC %s:%d \n\033[0m" , __FILENAME__, __LINE__); _Exit(-1); }
-
-#define MATH_PI 3.14159265358979323846f
-
-#if defined(__GNUC__) || defined(__clang__)
-    #define UNREACHABLE __builtin_unreachable();
-#elif defined(_MSC_VER)
-    #define UNREACHABLE __assume(0);
-#else
-    #define UNREACHABLE ((void)0);
-#endif
-
+#include "LangBase.h"
 #include "MathUtils.h"
 #include "Config.h"
 #include "Window.h"
-#include "Physics2.h"
-
+#include "Physics.h"
 
 #define TIMESTEP (1.0f / 60.0f)
 
@@ -157,30 +128,16 @@ void DrawCollision(Collision* collision)
     glPointSize(1.0f);
 }
 
-void Demo1()
-{
-    CreateGround();
-    CreateBoxDynamic({ 0.0f, 4.0f }, 0.0f, { 1.0f, 1.0f }, 1.0f);
-}
-
-const char* demoNames[] =
-{
-    "Demo 1: Single Box",
-};
-void (*demos[])() =
-{
-    Demo1,
-};
-
-void InitDemo(int index)
+void InitDemo()
 {
     // TODO ref body by index, not pointer, and remove this reserve
     bodie_s.reserve(256);
 
     Clear();
     bomb = NULL;
-    demoIndex = index;
-    demos[index]();
+
+    CreateGround();
+    CreateBoxDynamic({ 0.0f, 4.0f }, 0.0f, { 1.0f, 1.0f }, 1.0f);
 }
 
 void Input()
@@ -199,7 +156,7 @@ void Input()
         AttachAndPull();
 
     if (GetKeyPressed(GLFW_KEY_R))
-        InitDemo(0);
+        InitDemo();
 }
 void Update()
 {
@@ -233,29 +190,13 @@ void Draw()
 
     for (auto& i : bodie_s) DrawBody(&i, false);
     for (auto& i : collision_s) DrawCollision(&i.second);
-
-    GuiStart();
-    {
-        ImGui::SetNextWindowPos(ImVec2(10.0f, 10.0f));
-
-        // ImGui::Begin("Overlay", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar);
-        // ImGui::End();
-
-        DrawText(5, 5, demoNames[demoIndex]);
-        DrawText(5, 35, "Keys: 1-9 Demos, Space to Launch the Bomb");
-
-        char buffer[512];
-        sprintf(buffer, "(S) Position Correction %s", Config::positionCorrection ? "ON" : "OFF"); DrawText(5, 65 + 30*0, buffer);
-        sprintf(buffer, "(D) Warm Starting %s",       Config::warmStarting       ? "ON" : "OFF"); DrawText(5, 65 + 30*1, buffer);
-    }
-    GuiEnd();
 }
 
 int main()
 {
     WindowInit();
 
-    InitDemo(0);
+    InitDemo();
 
     while (!WindowShouldClose())
     {

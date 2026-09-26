@@ -5,6 +5,7 @@ set(CONFIG_SOURCE_FILES src/Config.cpp)
 set(CONFIG_HEADER_FILES
     include/Config.h
     include/Core.h
+    include/LangBase.h
     include/MathUtils.h
     include/Physics.h
     include/Physics2.h
