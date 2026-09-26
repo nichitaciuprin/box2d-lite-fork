@@ -9,7 +9,8 @@
 #include "MathUtils.h"
 #include "Config.h"
 #include "Window.h"
-#include "Physics.h"
+// #include "Physics.h"
+#include "Physics2.h"
 
 #define TIMESTEP (1.0f / 60.0f)
 
@@ -136,7 +137,6 @@ void InitDemo()
     Clear();
     bomb = NULL;
 
-    CreateGround();
     CreateBoxDynamic({ 0.0f, 4.0f }, 0.0f, { 1.0f, 1.0f }, 1.0f);
 }
 
@@ -187,6 +187,8 @@ void Draw()
         DrawLine(p0, p1, Color3::GREEN);
         DrawPoint(p0, Color3::GREEN);
     }
+
+    DrawLine({ -100, 0 }, { +100, 0 }, Color3::WHITE);
 
     for (auto& i : bodie_s) DrawBody(&i, false);
     for (auto& i : collision_s) DrawCollision(&i.second);

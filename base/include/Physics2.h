@@ -547,13 +547,6 @@ Body* CreateBoxDynamic(Vec2 position, float rotation, Vec2 scale, float mass)
 
     return box;
 }
-Body* CreateGround()
-{
-    float rotation = 0.0f;
-    Vec2 scale = { 100.0f, 20.0f };
-    Vec2 position = { 0.0f, scale.y * -0.5f };
-    return CreateBoxStatic(position, rotation, scale);
-}
 void BodySetMass(Body* body, float mass)
 {
     if (mass == FLT_MAX)
