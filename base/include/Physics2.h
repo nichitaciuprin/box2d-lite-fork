@@ -43,7 +43,6 @@ namespace
     static constexpr int iterations = 10;
 
     vector<Body> bodie_s;
-    vector<Joint> joint_s;
     map<int, Collision> collision_s;
 }
 
@@ -320,52 +319,6 @@ void CollisionPreStep(Collision& collision, float dti)
         UpdateVelocity(collision.body1, collision.body2, c->r1, c->r2, impulse);
     }
 }
-void JointPreStep(Joint* joint, float dti)
-{
-    Mat22 r1 = FromAngle(joint->body1->rotation);
-    Mat22 r2 = FromAngle(joint->body2->rotation);
-
-    joint->r1 = r1 * joint->localAnchor1;
-    joint->r2 = r2 * joint->localAnchor2;
-
-    Mat22 k1;
-    k1.col1.x = joint->body1->massInv + joint->body2->massInv;
-    k1.col2.x = 0.0f;
-    k1.col1.y = 0.0f;
-    k1.col2.y = joint->body1->massInv + joint->body2->massInv;
-
-    Mat22 k2;
-    k2.col1.x =  joint->body1->inertiaInv * joint->r1.y * joint->r1.y;
-    k2.col2.x = -joint->body1->inertiaInv * joint->r1.x * joint->r1.y;
-    k2.col1.y = -joint->body1->inertiaInv * joint->r1.x * joint->r1.y;
-    k2.col2.y =  joint->body1->inertiaInv * joint->r1.x * joint->r1.x;
-
-    Mat22 k3;
-    k3.col1.x =  joint->body2->inertiaInv * joint->r2.y * joint->r2.y;
-    k3.col2.x = -joint->body2->inertiaInv * joint->r2.x * joint->r2.y;
-    k3.col1.y = -joint->body2->inertiaInv * joint->r2.x * joint->r2.y;
-    k3.col2.y =  joint->body2->inertiaInv * joint->r2.x * joint->r2.x;
-
-    Mat22 k = k1 + k2 + k3;
-
-    k.col1.x += joint->softness;
-    k.col2.y += joint->softness;
-
-    joint->m = Invert(k);
-
-    auto p1 = joint->body1->position + joint->r1;
-    auto p2 = joint->body2->position + joint->r2;
-
-    if (Config::positionCorrection)
-        joint->bias = (p2 - p1) * -joint->biasFactor * dti;
-    else
-        joint->bias = { 0.0f, 0.0f };
-
-    if (Config::warmStarting)
-        UpdateVelocity(joint->body1, joint->body2, joint->r1, joint->r2, joint->p);
-    else
-        joint->p = { 0.0f, 0.0f };
-}
 
 void CollisionApplyImpulse(Collision& collision)
 {
@@ -401,17 +354,6 @@ void CollisionApplyImpulse(Collision& collision)
             UpdateVelocity(b1, b2, r1, r2, tangent * (impNew - impOld));
         }
     }
-}
-void JointApplyImpulse(Joint* joint)
-{
-    auto vr = CalcRelativeVelocity(joint->body1, joint->body2, joint->r1, joint->r2);
-
-    auto impOld = joint->p;
-    auto impNew = joint->m * (joint->bias - vr - impOld * joint->softness);
-
-    UpdateVelocity(joint->body1, joint->body2, joint->r1, joint->r2, impNew);
-
-    joint->p = impNew;
 }
 
 void BodyAddForce(Body* body, Vec2 force)
@@ -529,13 +471,13 @@ void Step(float dt)
     }
 
     {
-        for (auto& collision : collision_s) CollisionPreStep(collision.second, dti);
-        for (auto& joint : joint_s) JointPreStep(&joint, dti);
+        for (auto& collision : collision_s)
+            CollisionPreStep(collision.second, dti);
     }
     for (int i = 0; i < iterations; i++)
     {
-        for (auto& collision : collision_s) CollisionApplyImpulse(collision.second);
-        for (auto& joint : joint_s) JointApplyImpulse(&joint);
+        for (auto& collision : collision_s)
+            CollisionApplyImpulse(collision.second);
     }
 
     for (auto& body : bodie_s)
@@ -550,7 +492,6 @@ void Step(float dt)
 void Clear()
 {
     bodie_s.clear();
-    joint_s.clear();
     collision_s.clear();
 }
 Body* CreateBox()
@@ -606,30 +547,6 @@ Body* CreateBoxDynamic(Vec2 position, float rotation, Vec2 scale, float mass)
     box->inertiaInv = 1.0f / box->inertia;
 
     return box;
-}
-Joint* CreateJoint(Body* b1, Body* b2, Vec2 anchor)
-{
-    Joint joint;
-
-    joint.p = { 0.0f, 0.0f };
-
-    joint.softness = 0.0f;
-    joint.biasFactor = 0.2f;
-
-    joint.body1 = b1;
-    joint.body2 = b2;
-
-    Mat22 r1 = FromAngle(b1->rotation);
-    Mat22 r2 = FromAngle(b2->rotation);
-    Mat22 r1i = Transpose(r1);
-    Mat22 r2i = Transpose(r2);
-
-    joint.localAnchor1 = r1i * (anchor - b1->position);
-    joint.localAnchor2 = r2i * (anchor - b2->position);
-
-    joint_s.push_back(joint);
-
-    return &joint_s.back();
 }
 Body* CreateGround()
 {

@@ -1,4 +1,44 @@
-#include "Core.h"
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
+
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl2.h"
+
+#include <stdio.h>
+#include <iostream>
+
+#include <vector>
+#include <map>
+
+using namespace std;
+
+template <typename T>
+inline void Swap(T& a, T& b)
+{
+    T tmp = a;
+    a = b;
+    b = tmp;
+}
+
+#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+#define PANIC { fprintf(stderr, "\033[91mPANIC %s:%d \n\033[0m" , __FILENAME__, __LINE__); _Exit(-1); }
+
+#define MATH_PI 3.14159265358979323846f
+
+#if defined(__GNUC__) || defined(__clang__)
+    #define UNREACHABLE __builtin_unreachable();
+#elif defined(_MSC_VER)
+    #define UNREACHABLE __assume(0);
+#else
+    #define UNREACHABLE ((void)0);
+#endif
+
+#include "MathUtils.h"
+#include "Config.h"
+#include "Window.h"
+#include "Physics2.h"
+
 
 #define TIMESTEP (1.0f / 60.0f)
 
@@ -116,22 +156,6 @@ void DrawBody(Body* body, bool selected)
     glVertex2f(v4.x, v4.y);
     glEnd();
 }
-void DrawJoint(Joint* joint)
-{
-    auto b0 = joint->body1;
-    auto b1 = joint->body2;
-
-    auto p0 = b0->position;
-    auto p1 = b1->position;
-
-    auto p2 = p0 + FromAngle(b0->rotation) * joint->localAnchor1;
-    auto p3 = p1 + FromAngle(b1->rotation) * joint->localAnchor2;
-
-    Vec3 color = { 0.50f, 0.50f, 0.75f };
-
-    DrawLine(p0, p2, color);
-    DrawLine(p1, p3, color);
-}
 void DrawCollision(Collision* collision)
 {
     glPointSize(4.0f);
@@ -206,109 +230,6 @@ void Demo4()
         b1->friction = friction[i];
     }
 }
-void Demo5()
-{
-    auto b1 = CreateGround();
-    auto b2 = CreateBoxDynamic({ 9.0f, 11.0f }, 0.0f, { 1.0f, 1.0f }, 100.0f);
-    CreateJoint(b1, b2, { 0.0f, 11.0f });
-}
-void Demo6()
-{
-    float mass = 10.0f;
-    float frequencyHz = 4.0f;
-    float dampingRatio = 0.7f;
-
-    float softness, biasFactor;
-    CalcJointProp(TIMESTEP, mass, frequencyHz, dampingRatio, softness, biasFactor);
-
-    auto b1 = CreateGround();
-
-    for (int i = 0; i < 15; i++)
-    {
-        float y = 12.0f;
-
-        auto b2 = CreateBoxDynamic({ 0.5f + i, y }, 0.0f, { 0.75f, 0.25f }, mass);
-
-        auto j = CreateJoint(b1, b2, { (float)i, y });
-        j->softness = softness;
-        j->biasFactor = biasFactor;
-
-        b1 = b2;
-    }
-}
-void Demo7()
-{
-    float mass = 50.0f;
-    float frequencyHz = 2.0f;
-    float dampingRatio = 0.7f;
-
-    float softness, biasFactor;
-    CalcJointProp(TIMESTEP, mass, frequencyHz, dampingRatio, softness, biasFactor);
-
-    CreateGround();
-
-    int numPlanks = 15;
-
-    for (int i = 0; i < numPlanks; i++)
-        CreateBoxDynamic({ -8.5f + 1.25f * i, 5.0f }, 0.0f, { 1.0f, 0.25f }, mass);
-
-    // auto ground = &bodies.bodies[0];
-    // auto p1 = &bodies.bodies[1];
-    // auto p2 = &bodies.bodies.back();
-
-    // {
-    //     auto j1 = CreateJoint(ground, p2, { -9.125f + 1.25f * i, 5.0f });
-    //     j1->softness = softness;
-    //     j1->biasFactor = biasFactor;
-    // }
-
-    for (int i = 0; i < numPlanks; i++)
-    {
-        auto j1 = CreateJoint(&bodie_s[i], &bodie_s[i+1], { -9.125f + 1.25f * i, 5.0f });
-        j1->softness = softness;
-        j1->biasFactor = biasFactor;
-    }
-    {
-        auto j1 = CreateJoint(&bodie_s[numPlanks], &bodie_s[0], { -9.125f + 1.25f * numPlanks, 5.0f });
-        j1->softness = softness;
-        j1->biasFactor = biasFactor;
-    }
-}
-void Demo8()
-{
-    auto b1 = CreateGround();
-    auto b2 = CreateBoxDynamic({ 0.0f, 1.0f }, 0.0f, { 12.0f, 0.25f }, 100.0f);
-    CreateBoxDynamic({ -5.0f, 2.0f }, 0.0f, { 0.5f, 0.5f }, 25.0f);
-    CreateBoxDynamic({ -5.5f, 2.0f }, 0.0f, { 0.5f, 0.5f }, 25.0f);
-    CreateBoxDynamic({ 5.5f, 15.0f }, 0.0f, { 1.0f, 1.0f }, 100.0f);
-    CreateJoint(b1, b2, { 0.0f, 1.0f });
-}
-void Demo9()
-{
-    auto b1 = CreateGround();
-
-    CreateBoxStatic({ -1.5f, 10.0f }, 0.0f, { 12.0f, 0.5f });
-    CreateBoxStatic({ 1.0f, 6.0f }, 0.3f, { 14.0f, 0.5f });
-
-    for (int i = 0; i < 10; i++)
-    {
-        auto b = CreateBoxDynamic({ -6.0f + 1.0f * i, 11.125f }, 0.0f, { 0.2f, 2.0f }, 10.0f);
-        b->friction = 0.1f;
-    }
-
-    auto b2 = CreateBoxStatic({ -7.0f, 4.0f }, 0.0f, { 0.5f, 3.0f });
-    auto b3 = CreateBoxDynamic({ -0.9f, 1.0f }, 0.0f, { 12.0f, 0.25f }, 20.0f);
-    auto b4 = CreateBoxDynamic({ -10.0f, 15.0f }, 0.0f, { 0.5f, 0.5f }, 10.0f);
-    auto b5 = CreateBoxDynamic({ 6.0f, 2.5f }, 0.0f, { 2.0f, 2.0f }, 20.0f);
-    auto b6 = CreateBoxDynamic({ 6.0f, 3.6f }, 0.0f, { 2.0f, 0.2f }, 10.0f);
-
-    b5->friction = 0.1f;
-
-    CreateJoint(b1, b3, { -2.0f, 1.0f });
-    CreateJoint(b2, b4, { -7.0f, 15.0f });
-    CreateJoint(b1, b5, { 6.0f, 2.6f });
-    CreateJoint(b5, b6, { 7.0f, 3.5f });
-}
 
 const char* demoNames[] =
 {
@@ -316,30 +237,19 @@ const char* demoNames[] =
     "Demo 2: Randomized Stacking",
     "Demo 3: Pyramid Stacking",
     "Demo 4: Varying Friction Coefficients",
-    "Demo 5: Simple Pendulum",
-    "Demo 6: Multi-pendulum",
-    "Demo 7: Suspension Bridge",
-    "Demo 8: Teeter",
-    "Demo 9: Dominos",
 };
 void (*demos[])() =
 {
     Demo1,
     Demo2,
     Demo3,
-    Demo4,
-    Demo5,
-    Demo6,
-    Demo7,
-    Demo8,
-    Demo9
+    Demo4
 };
 
 void InitDemo(int index)
 {
     // TODO ref body by index, not pointer, and remove this reserve
     bodie_s.reserve(256);
-    joint_s.reserve(256);
 
     Clear();
     bomb = NULL;
@@ -366,7 +276,7 @@ void Input()
         AttachAndPull();
 
     int demoNum = GetNumKeyPressed();
-    if (demoNum > 0)
+    if (1 <= demoNum && demoNum <= 4)
         InitDemo(demoNum-1);
 }
 void Update()
@@ -401,7 +311,6 @@ void Draw()
     }
 
     for (auto& i : bodie_s) DrawBody(&i, false);
-    for (auto& i : joint_s) DrawJoint(&i);
     for (auto& i : collision_s) DrawCollision(&i.second);
 
     GuiStart();
