@@ -319,7 +319,6 @@ void CollisionPreStep(Collision& collision, float dti)
         UpdateVelocity(collision.body1, collision.body2, c->r1, c->r2, impulse);
     }
 }
-
 void CollisionApplyImpulse(Collision& collision)
 {
     auto b1 = collision.body1;

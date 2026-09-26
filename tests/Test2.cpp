@@ -55,21 +55,6 @@ namespace
     Vec2 selectedBodySurPointLocal;
 }
 
-void CalcJointProp(float timestep, float mass, float frequencyHz, float dampingRatio, float& softness, float& biasFactor)
-{
-    // frequency in radians
-    float omega = frequencyHz * MATH_PI * 2.0f;
-
-    // damping coefficient
-    float d = omega * dampingRatio * mass * 2.0f;
-
-    // spring stiffness
-    float k = mass * omega * omega;
-
-    // magic formulas
-    softness =           1.0f / (d + k * timestep);
-    biasFactor = k * timestep / (d + k * timestep);
-}
 void SelectBody(Vec2 mousePos)
 {
     int index = -1;
@@ -102,17 +87,6 @@ void SelectBody(Vec2 mousePos)
     closeBodySurPoint = mousePos + offset0;
     closeBodySurPoint = Rotate(closeBodySurPoint - body->position, -body->rotation);
 }
-void LaunchBomb()
-{
-    if (!bomb)
-        bomb = CreateBoxDynamic({}, 0.0f, { 1.0f, 1.0f }, 50.0f);
-
-    bomb->position = { Random(-15.0f, 15.0f), 15.0f };
-    bomb->rotation = Random(-1.5f, 1.5f);
-    bomb->scale = { 1.0f, 1.0f };
-    bomb->velocityLinear = bomb->position * -1.5f;
-    bomb->velocityAngular = Random(-20.0f, 20.0f);
-}
 void AttachAndPull()
 {
     if (closeBodyIndex == -1) return;
@@ -132,6 +106,17 @@ void AttachAndPull()
         BodyApplyImpulse(body, p0, velocity);
         selectedBodyIndex = -1;
     }
+}
+void LaunchBomb()
+{
+    if (!bomb)
+        bomb = CreateBoxDynamic({}, 0.0f, { 1.0f, 1.0f }, 50.0f);
+
+    bomb->position = { Random(-15.0f, 15.0f), 15.0f };
+    bomb->rotation = Random(-1.5f, 1.5f);
+    bomb->scale = { 1.0f, 1.0f };
+    bomb->velocityLinear = bomb->position * -1.5f;
+    bomb->velocityAngular = Random(-20.0f, 20.0f);
 }
 
 void DrawBody(Body* body, bool selected)
@@ -176,74 +161,15 @@ void Demo1()
 {
     CreateGround();
     CreateBoxDynamic({ 0.0f, 4.0f }, 0.0f, { 1.0f, 1.0f }, 1.0f);
-
-    // CreateBoxStatic({ 0.0f, 0.0f }, 0.0f, { 1.0f, 1.0f });
-    // CreateBoxDynamic({ +0.50f, 0.0f }, -MATH_PI / 3.0f, { 0.5f, 0.5f }, 1.0f);
-
-    // auto b0 = CreateBoxDynamic({ -0.5f, 8.0f }, 0, { 0.5f, 0.5f }, 1.0f);
-    // auto b1 = CreateBoxDynamic({ +0.5f, 6.0f }, 0, { 0.5f, 0.5f }, 1.0f);
-    // auto j = CreateJoint(b0, b1, (b0->position + b1->position) / 2);
-    // j->softness = 1.0f;
-    // j->biasFactor = 0.0f;
-}
-void Demo2()
-{
-    CreateGround();
-
-    for (int i = 0; i < 10; i++)
-        auto b1 = CreateBoxDynamic({ Random(-0.1f, 0.1f), 0.51f + 1.05f * i }, 0.0f, { 1.0f, 1.0f }, 1.0f);
-}
-void Demo3()
-{
-    CreateGround();
-
-    Vec2 x = { -6.0f, 0.75f };
-
-    for (int i = 0; i < 12; i++)
-    {
-        Vec2 y = x;
-
-        for (int j = i; j < 12; j++)
-        {
-            auto b1 = CreateBoxDynamic(y, 0.0f, { 1.0f, 1.0f }, 10.0f);
-
-            y += { 1.125f, 0.0f };
-        }
-
-        x += { 0.5625f, 2.0f };
-    }
-}
-void Demo4()
-{
-    CreateGround();
-    CreateBoxStatic({ -2.0f, 11.0f }, -0.25f, { 13.0f, 0.25f });
-    CreateBoxStatic({ 5.25f, 9.5f },   0.00f, { 0.25f, 1.0f });
-    CreateBoxStatic({ 2.0f, 7.0f },   +0.25f, { 13.0f, 0.25f });
-    CreateBoxStatic({ -5.25f, 5.5f },  0.00f, { 0.25f, 1.0f });
-    CreateBoxStatic({ -2.0f, 3.0f },  -0.25f, { 13.0f, 0.25f });
-
-    float friction[5] = { 0.75f, 0.50f, 0.35f, 0.10f, 0.0f };
-
-    for (int i = 0; i < 5; i++)
-    {
-        auto b1 = CreateBoxDynamic({ -7.5f + 2.0f * i, 14.0f }, 0.0f, { 0.5f, 0.5f }, 25.0f);
-        b1->friction = friction[i];
-    }
 }
 
 const char* demoNames[] =
 {
     "Demo 1: Single Box",
-    "Demo 2: Randomized Stacking",
-    "Demo 3: Pyramid Stacking",
-    "Demo 4: Varying Friction Coefficients",
 };
 void (*demos[])() =
 {
     Demo1,
-    Demo2,
-    Demo3,
-    Demo4
 };
 
 void InitDemo(int index)
@@ -275,9 +201,8 @@ void Input()
     if (KEY_M0_P)
         AttachAndPull();
 
-    int demoNum = GetNumKeyPressed();
-    if (1 <= demoNum && demoNum <= 4)
-        InitDemo(demoNum-1);
+    if (GetKeyPressed(GLFW_KEY_R))
+        InitDemo(0);
 }
 void Update()
 {

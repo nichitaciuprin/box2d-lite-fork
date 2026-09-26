@@ -62,17 +62,6 @@ void SelectBody(Vec2 mousePos)
     closeBodySurPoint = mousePos + offset0;
     closeBodySurPoint = Rotate(closeBodySurPoint - body->position, -body->rotation);
 }
-void LaunchBomb()
-{
-    if (!bomb)
-        bomb = CreateBoxDynamic({}, 0.0f, { 1.0f, 1.0f }, 50.0f);
-
-    bomb->position = { Random(-15.0f, 15.0f), 15.0f };
-    bomb->rotation = Random(-1.5f, 1.5f);
-    bomb->scale = { 1.0f, 1.0f };
-    bomb->velocityLinear = bomb->position * -1.5f;
-    bomb->velocityAngular = Random(-20.0f, 20.0f);
-}
 void AttachAndPull()
 {
     if (closeBodyIndex == -1) return;
@@ -92,6 +81,17 @@ void AttachAndPull()
         BodyApplyImpulse(body, p0, velocity);
         selectedBodyIndex = -1;
     }
+}
+void LaunchBomb()
+{
+    if (!bomb)
+        bomb = CreateBoxDynamic({}, 0.0f, { 1.0f, 1.0f }, 50.0f);
+
+    bomb->position = { Random(-15.0f, 15.0f), 15.0f };
+    bomb->rotation = Random(-1.5f, 1.5f);
+    bomb->scale = { 1.0f, 1.0f };
+    bomb->velocityLinear = bomb->position * -1.5f;
+    bomb->velocityAngular = Random(-20.0f, 20.0f);
 }
 
 void DrawBody(Body* body, bool selected)
