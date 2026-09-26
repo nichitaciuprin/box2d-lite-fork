@@ -420,13 +420,9 @@ void CollisionApplyImpulse(Collision& collision)
 void JointApplyImpulse(Joint* joint)
 {
     auto vr = CalcRelativeVelocity(joint->body1, joint->body2, joint->r1, joint->r2);
-
-    auto impOld = joint->p;
-    auto impNew = joint->m * (joint->bias - vr - impOld * joint->softness);
-
-    UpdateVelocity(joint->body1, joint->body2, joint->r1, joint->r2, impNew);
-
-    joint->p = impNew;
+    auto impulse = joint->m * (joint->bias - vr - joint->p * joint->softness);
+    UpdateVelocity(joint->body1, joint->body2, joint->r1, joint->r2, impulse);
+    joint->p += impulse;
 }
 
 void BodyAddForce(Body* body, Vec2 force)
