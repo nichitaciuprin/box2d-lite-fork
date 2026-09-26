@@ -269,8 +269,8 @@ Vec2 CalcRelativeVelocity(Body* b1, Body* b2, Vec2 r1, Vec2 r2)
 void UpdateVelocity(Body* b1, Body* b2, Vec2 r1, Vec2 r2, Vec2 impulse)
 {
     b1->velocityLinear -= impulse * b1->massInv;
-    b2->velocityLinear += impulse * b2->massInv;
     b1->velocityAngular -= Cross(r1, impulse) * b1->inertiaInv;
+    b2->velocityLinear += impulse * b2->massInv;
     b2->velocityAngular += Cross(r2, impulse) * b2->inertiaInv;
 }
 
@@ -282,6 +282,10 @@ void CollisionPreStep(Collision& collision, float dti)
 
         Vec2 normal = c->normal;
         Vec2 tangent = RotateRight(c->normal);
+
+        Vec2 impulse = normal * c->pn + tangent * c->pt;
+        UpdateVelocity(collision.body1, collision.body2, c->r1, c->r2, impulse);
+
         Vec2 r1 = c->r1;
         Vec2 r2 = c->r2;
 
@@ -304,19 +308,10 @@ void CollisionPreStep(Collision& collision, float dti)
         c->massNormalInv  = 1.0f / massNormal;
         c->massTangentInv = 1.0f / massTangent;
 
-        if (Config::positionCorrection)
-        {
-            float allowedPenetration = 0.01f;
-            float biasFactor = 0.2f;
-            c->bias = Max(0.0f, c->separation - allowedPenetration) * biasFactor * dti;
-        }
-        else
-        {
-            c->bias = 0.0f;
-        }
+        float allowedPenetration = 0.01f;
+        float biasFactor = 0.2f;
 
-        Vec2 impulse = normal * c->pn + tangent * c->pt;
-        UpdateVelocity(collision.body1, collision.body2, c->r1, c->r2, impulse);
+        c->bias = Max(0.0f, c->separation - allowedPenetration) * biasFactor * dti;
     }
 }
 void CollisionApplyImpulse(Collision& collision)
@@ -498,30 +493,6 @@ Body* CreateBox()
     Body body;
     bodie_s.push_back(body);
     return &bodie_s.back();
-}
-Body* CreateBoxStatic(Vec2 position, float rotation, Vec2 scale)
-{
-    auto box = CreateBox();
-
-    box->position = position;
-    box->rotation = rotation;
-    box->scale = scale;
-
-    box->velocityLinear = { 0.0f, 0.0f };
-    box->velocityAngular = 0.0f;
-
-    box->force = { 0.0f, 0.0f };
-    box->torque = 0.0f;
-
-    box->friction = 0.2f;
-
-    box->mass = FLT_MAX;
-    box->inertia = FLT_MAX;
-
-    box->massInv = 0.0f;
-    box->inertiaInv = 0.0f;
-
-    return box;
 }
 Body* CreateBoxDynamic(Vec2 position, float rotation, Vec2 scale, float mass)
 {

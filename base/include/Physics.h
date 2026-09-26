@@ -297,6 +297,10 @@ void CollisionPreStep(Collision& collision, float dti)
 
         Vec2 normal = c->normal;
         Vec2 tangent = RotateRight(c->normal);
+
+        Vec2 impulse = normal * c->pn + tangent * c->pt;
+        UpdateVelocity(collision.body1, collision.body2, c->r1, c->r2, impulse);
+
         Vec2 r1 = c->r1;
         Vec2 r2 = c->r2;
 
@@ -329,9 +333,6 @@ void CollisionPreStep(Collision& collision, float dti)
         {
             c->bias = 0.0f;
         }
-
-        Vec2 impulse = normal * c->pn + tangent * c->pt;
-        UpdateVelocity(collision.body1, collision.body2, c->r1, c->r2, impulse);
     }
 }
 void JointPreStep(Joint* joint, float dti)
