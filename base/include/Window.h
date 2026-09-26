@@ -35,6 +35,8 @@ namespace
     bool pause = false;
     bool step = false;
 
+    bool WindowUpdateLoop = true;
+
     int key_m1 = 0;
     int key_m2 = 0;
     bool keypressed[400] = {};
@@ -242,11 +244,17 @@ void WindowClose()
 }
 void WindowUpdate()
 {
+    if (GetKeyPressed(GLFW_KEY_P)) pause = !pause;
+    if (GetKeyPressed(GLFW_KEY_RIGHT_BRACKET)) step = true;
+
     memset(keypressed, 0, sizeof(keypressed));
     memset(keyreleased, 0, sizeof(keyreleased));
 
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT))  { if (key_m1 < 2) key_m1++; } else key_m1 = 0;
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT)) { if (key_m2 < 2) key_m2++; } else key_m2 = 0;
+
+    WindowUpdateLoop = !pause || step;
+    step = false;
 
     glfwPollEvents();
     glfwSwapBuffers(window);

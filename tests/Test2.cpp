@@ -185,9 +185,6 @@ void InitDemo(int index)
 
 void Input()
 {
-    if (GetKeyPressed(GLFW_KEY_P)) pause = !pause;
-    if (GetKeyPressed(GLFW_KEY_RIGHT_BRACKET)) step = true;
-
     if (GetKeyPressed(GLFW_KEY_S)) Config::positionCorrection = !Config::positionCorrection;
     if (GetKeyPressed(GLFW_KEY_D)) Config::warmStarting       = !Config::warmStarting;
 
@@ -206,8 +203,7 @@ void Input()
 }
 void Update()
 {
-    auto update = !pause || step; step = false;
-    if (update)
+    if (WindowUpdateLoop)
         Step(TIMESTEP);
 
     // TODO for points draw

@@ -371,8 +371,7 @@ void Input()
 }
 void Update()
 {
-    auto update = !pause || step; step = false;
-    if (update)
+    if (WindowUpdateLoop)
         Step(TIMESTEP);
 
     // TODO for points draw
